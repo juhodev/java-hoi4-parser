@@ -1,0 +1,19 @@
+package dev.juho.hoi4.parser.textparser;
+
+public enum HOIKey {
+
+	KEY_I_DONT_CARE_ABOUT,
+	DATE,
+	DIFFICULTY,
+	VERSION,
+	TUTORIAL,
+	PLAYER_COUNTRIES,
+	SAVE_VERSION,
+	DLCS,
+	MODS,
+	SESSION,
+	SPEED,
+	GAME_UNIQUE_SEED,
+	GAME_UNIQUE_ID
+
+}
