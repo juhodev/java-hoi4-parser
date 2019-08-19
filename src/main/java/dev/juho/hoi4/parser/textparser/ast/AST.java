@@ -12,9 +12,11 @@ import java.util.List;
 public class AST {
 
 	private List<ASTNode> nodes;
+	private TextTokenizer tokenizer;
 
-	public AST() {
+	public AST(TextTokenizer tokenizer) {
 		this.nodes = new ArrayList<>();
+		this.tokenizer = tokenizer;
 	}
 
 	public void build(TextTokenizer tokenizer) {

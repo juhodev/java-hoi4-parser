@@ -1,5 +1,6 @@
 package dev.juho.hoi4.parser.textparser;
 
+import dev.juho.hoi4.Main;
 import dev.juho.hoi4.parser.Parser;
 import dev.juho.hoi4.parser.SaveGame;
 import dev.juho.hoi4.parser.data.HOIEnum;
@@ -27,21 +28,16 @@ public class TextParser extends Parser {
 	@Override
 	public void parse() throws IOException {
 		Logger.getInstance().time("Parsing " + getFile().getName());
-		Logger.getInstance().time("test 1");
 
 		TextParserInputStream in = new TextParserInputStream(new FileInputStream(getFile()));
 
-		TextTokenizer tokenizer = new TextTokenizer();
-		tokenizer.createTokens(in);
+		TextTokenizer tokenizer = new TextTokenizer(in, 4096 * 2);
+		AST ast = new AST(tokenizer);
 
-		Logger.getInstance().timeEnd(Logger.DEBUG, "test 1");
-
-		Logger.getInstance().time("test 2");
-		AST ast = new AST();
 		ast.build(tokenizer);
-		Logger.getInstance().timeEnd(Logger.DEBUG, "test 2");
-
 		Logger.getInstance().timeEnd(Logger.INFO, "Parsing " + getFile().getName());
+
+		Logger.getInstance().log(Logger.INFO, "nodes in ast: " + ast.getNodes().size());
 
 //		List<ASTNode> nodes = ast.getNodes();
 //

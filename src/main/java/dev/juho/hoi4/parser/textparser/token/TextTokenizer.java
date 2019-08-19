@@ -21,22 +21,31 @@ public class TextTokenizer {
 	public static final String OPERATIONS = "=";
 
 	private boolean isKey;
-	private List<TextParserToken> tokens;
+	private TextParserToken[] tokens;
+	private int tokensCapacity;
+	private int tokensSize;
 
 	private int position;
 
-	public TextTokenizer() {
+	private StringBuilder strBuilder;
+	private TextParserInputStream in;
+
+	public TextTokenizer(TextParserInputStream in, int capacity) {
+		this.in = in;
 		this.isKey = true;
-		this.tokens = new ArrayList<>();
+		this.tokens = new TextParserToken[capacity];
+		this.tokensCapacity = capacity;
+		this.tokensSize = 0;
 		this.position = 0;
+		this.strBuilder = new StringBuilder();
 	}
 
-	public void createTokens(TextParserInputStream in) {
+	private void createTokens(TextParserInputStream in) {
 		while (!in.eof()) {
 			TextParserToken token = read(in);
 
 			if (token != null) {
-				tokens.add(token);
+				tokens[tokensSize++] = token;
 //				Logger.getInstance().log(Logger.DEBUG, token.getType() + " - " + token.getValue().toString());
 			}
 
@@ -46,23 +55,47 @@ public class TextTokenizer {
 		}
 	}
 
+	private void createNewTokens() {
+		tokensSize = 0;
+		position = 0;
+		while (!in.eof()) {
+			TextParserToken token = read(in);
+
+			if (token != null) {
+				tokens[tokensSize++] = token;
+			}
+
+			if (tokensSize >= tokensCapacity) {
+				break;
+			}
+		}
+	}
+
 	public TextParserToken peek() {
-		return tokens.get(position);
+		if (position == tokensSize) {
+			createNewTokens();
+		}
+
+		return tokens[position];
 	}
 
 	public TextParserToken next() {
-		return tokens.get(position++);
+		if (position == tokensSize) {
+			createNewTokens();
+		}
+
+		return tokens[position++];
 	}
 
 	public boolean eof() {
-		return position >= tokens.size();
+		return in.eof();
 	}
 
 	public int getPosition() {
 		return position;
 	}
 
-	public List<TextParserToken> getTokens() {
+	public TextParserToken[] getTokens() {
 		return tokens;
 	}
 
@@ -103,7 +136,6 @@ public class TextTokenizer {
 	}
 
 	private TextParserToken readKey(TextParserInputStream in) {
-		StringBuilder builder = new StringBuilder();
 		boolean isProbablyAValue = false;
 
 		while (!in.eof()) {
@@ -117,12 +149,13 @@ public class TextTokenizer {
 				isProbablyAValue = true;
 				break;
 			} else {
-				builder.append(in.next());
+				strBuilder.append(in.next());
 			}
 		}
 
 		if (isProbablyAValue) {
-			String str = builder.toString();
+			String str = strBuilder.toString();
+			strBuilder.setLength(0);
 
 //			match both
 
@@ -133,7 +166,7 @@ public class TextTokenizer {
 					return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.INTEGER, Integer.parseInt(str));
 				}
 			} else if (str.matches("^([0-9]|\\.)*$")) {
-				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.DOUBLE, Double.parseDouble(builder.toString()));
+				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.DOUBLE, Double.parseDouble(str));
 			} else if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
 				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.BOOLEAN, str);
 			} else if (Utils.hasEnum(HOIEnum.values(), str)) {
@@ -143,12 +176,12 @@ public class TextTokenizer {
 				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.STRING, str);
 			}
 		}
-		return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.KEY, builder.toString());
+		String str = strBuilder.toString();
+		strBuilder.setLength(0);
+		return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.KEY, str);
 	}
 
 	private TextParserToken readEnumOrBoolean(TextParserInputStream in) {
-		StringBuilder builder = new StringBuilder();
-
 		while (!in.eof()) {
 			char next = in.peek();
 
@@ -156,11 +189,12 @@ public class TextTokenizer {
 				isKey = true;
 				break;
 			} else {
-				builder.append(in.next());
+				strBuilder.append(in.next());
 			}
 		}
 
-		String str = builder.toString();
+		String str = strBuilder.toString();
+		strBuilder.setLength(0);
 
 		if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
 			return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.BOOLEAN, str);
@@ -200,8 +234,6 @@ public class TextTokenizer {
 	}
 
 	private TextParserToken readString(TextParserInputStream in) {
-		StringBuilder builder = new StringBuilder();
-
 		// Skip "
 		in.next();
 		while (!in.eof()) {
@@ -211,24 +243,25 @@ public class TextTokenizer {
 				isKey = true;
 				break;
 			} else {
-				builder.append(next);
+				strBuilder.append(next);
 			}
 		}
 
-		return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.STRING, builder.toString());
+		String str = strBuilder.toString();
+		strBuilder.setLength(0);
+		return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.STRING, str);
 	}
 
 	private TextParserToken readNumber(TextParserInputStream in) {
-		StringBuilder builder = new StringBuilder();
 		TextParserToken.Type type = TextParserToken.Type.INTEGER;
 
 		while (!in.eof()) {
 			char next = in.next();
 
 			if (isDigit(next)) {
-				builder.append(next);
+				strBuilder.append(next);
 			} else if (next == '.') {
-				builder.append(next);
+				strBuilder.append(next);
 				type = TextParserToken.Type.DOUBLE;
 			} else {
 				isKey = true;
@@ -237,14 +270,17 @@ public class TextTokenizer {
 		}
 
 		if (type == TextParserToken.Type.INTEGER) {
-			String str = builder.toString();
+			String str = strBuilder.toString();
+			strBuilder.setLength(0);
 			if (str.length() <= 9) {
 				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, type, Integer.parseInt(str));
 			} else {
 				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.LONG, Long.parseLong(str));
 			}
 		} else {
-			return new TextParserToken(new int[]{in.getLine(), in.getCol()}, type, Double.parseDouble(builder.toString()));
+			String str = strBuilder.toString();
+			strBuilder.setLength(0);
+			return new TextParserToken(new int[]{in.getLine(), in.getCol()}, type, Double.parseDouble(str));
 		}
 	}
 
