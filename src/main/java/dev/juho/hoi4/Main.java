@@ -9,10 +9,8 @@ import java.io.IOException;
 
 public class Main {
 
-	public static final boolean DEBUG_MODE = false;
-
 	public static void main(String[] args) {
-		if (DEBUG_MODE) Logger.getInstance().LOG_LEVEL = Logger.DEBUG;
+		Logger.getInstance().LOG_LEVEL = Logger.DEBUG;
 
 		File realFile = new File("C:\\Users\\Juho\\Documents\\Paradox Interactive\\Hearts of Iron IV\\save games\\SOV_1949_07_19_14.hoi4");
 		File testFile = new File("test.hoi4");

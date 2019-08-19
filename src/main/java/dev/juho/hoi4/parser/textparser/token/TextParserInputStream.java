@@ -32,12 +32,10 @@ public class TextParserInputStream {
 	}
 
 	public int getLine() {
-		if (Main.DEBUG_MODE) return 0;
 		return line;
 	}
 
 	public int getCol() {
-		if (Main.DEBUG_MODE) return 0;
 		return col;
 	}
 
@@ -48,13 +46,11 @@ public class TextParserInputStream {
 
 		char next = (char) buffer[currentPos++];
 
-		if (Main.DEBUG_MODE) {
-			if (next == '\n') {
-				line++;
-				col = 0;
-			} else {
-				col++;
-			}
+		if (next == '\n') {
+			line++;
+			col = 0;
+		} else {
+			col++;
 		}
 
 		return next;
