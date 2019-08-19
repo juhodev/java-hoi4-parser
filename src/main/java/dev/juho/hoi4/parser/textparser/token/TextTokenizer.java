@@ -1,24 +1,21 @@
 package dev.juho.hoi4.parser.textparser.token;
 
 import dev.juho.hoi4.parser.data.HOIEnum;
-import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class TextTokenizer {
 
-	public static final char NEW_LINE = '\n';
-	public static final char TAB = '\t';
-	public static final char WHITESPACE = ' ';
-	public static final char STRING_START = '"';
-	public static final char COMMENT_START = '#';
-	public static final char K_V_SEPARATOR = '=';
-	public static final char LINE_RETURN = '\r';
-	public static final char START_OBJECT = '{';
-	public static final char END_OBJECT = '}';
-	public static final String OPERATIONS = "=";
+	private static final char NEW_LINE = '\n';
+	private static final char TAB = '\t';
+	private static final char WHITESPACE = ' ';
+	private static final char STRING_START = '"';
+	private static final char COMMENT_START = '#';
+	private static final char K_V_SEPARATOR = '=';
+	private static final char LINE_RETURN = '\r';
+	private static final char START_OBJECT = '{';
+	private static final char END_OBJECT = '}';
+	private static final char EQUALS = '=';
 
 	private boolean isKey;
 	private TextParserToken[] tokens;
@@ -42,7 +39,7 @@ public class TextTokenizer {
 
 	private void createTokens(TextParserInputStream in) {
 		while (!in.eof()) {
-			TextParserToken token = read(in);
+			TextParserToken token = read();
 
 			if (token != null) {
 				tokens[tokensSize++] = token;
@@ -59,7 +56,7 @@ public class TextTokenizer {
 		tokensSize = 0;
 		position = 0;
 		while (!in.eof()) {
-			TextParserToken token = read(in);
+			TextParserToken token = read();
 
 			if (token != null) {
 				tokens[tokensSize++] = token;
@@ -99,43 +96,43 @@ public class TextTokenizer {
 		return tokens;
 	}
 
-	private TextParserToken read(TextParserInputStream in) {
+	private TextParserToken read() {
 		char nextChar = in.peek();
 
 		if (nextChar == WHITESPACE || nextChar == TAB || nextChar == NEW_LINE || nextChar == LINE_RETURN)
-			return ignoreUntilSomethingNotStupid(in);
-		if (nextChar == COMMENT_START) return readComment(in);
-		if (nextChar == START_OBJECT) return readOpenObject(in);
-		if (nextChar == END_OBJECT) return readEndObject(in);
-		if (isStartOfKey()) return readKey(in);
-		if (nextChar == STRING_START) return readString(in);
-		if (isOperation(nextChar)) return readOperation(in);
-		if (isStartOfKeyEnumOrBoolean(nextChar)) return readEnumOrBoolean(in);
-		if (isDigit(nextChar)) return readNumber(in);
+			return ignoreUntilSomethingNotStupid();
+		if (nextChar == COMMENT_START) return readComment();
+		if (nextChar == START_OBJECT) return readOpenObject();
+		if (nextChar == END_OBJECT) return readEndObject();
+		if (isStartOfKey()) return readKey();
+		if (nextChar == STRING_START) return readString();
+		if (nextChar == EQUALS) return readEquals();
+		if (isStartOfKeyEnumOrBoolean(nextChar)) return readEnumOrBoolean();
+		if (isDigit(nextChar)) return readNumber();
 		return null;
 	}
 
-	private TextParserToken readOpenObject(TextParserInputStream in) {
+	private TextParserToken readOpenObject() {
 		char nextChar = in.next();
 		isKey = true;
 
-		return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.START_OBJECT, nextChar);
+		return new TextParserToken<>(TextParserToken.Type.START_OBJECT, nextChar);
 	}
 
-	private TextParserToken readEndObject(TextParserInputStream in) {
+	private TextParserToken readEndObject() {
 		char nextChar = in.next();
 		isKey = true;
 
-		return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.END_OBJECT, nextChar);
+		return new TextParserToken<>(TextParserToken.Type.END_OBJECT, nextChar);
 	}
 
-	private TextParserToken readOperation(TextParserInputStream in) {
+	private TextParserToken readEquals() {
 		char nextChar = in.next();
 
-		return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.OPERATION, nextChar);
+		return new TextParserToken<>(TextParserToken.Type.OPERATION, nextChar);
 	}
 
-	private TextParserToken readKey(TextParserInputStream in) {
+	private TextParserToken readKey() {
 		boolean isProbablyAValue = false;
 
 		while (!in.eof()) {
@@ -157,31 +154,29 @@ public class TextTokenizer {
 			String str = strBuilder.toString();
 			strBuilder.setLength(0);
 
-//			match both
-
 			if (str.matches("^[0-9]*$")) {
 				if (str.length() > 9) {
-					return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.LONG, Long.parseLong(str));
+					return new TextParserToken<>(TextParserToken.Type.LONG, Long.parseLong(str));
 				} else {
-					return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.INTEGER, Integer.parseInt(str));
+					return new TextParserToken<>(TextParserToken.Type.INTEGER, Integer.parseInt(str));
 				}
 			} else if (str.matches("^([0-9]|\\.)*$")) {
-				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.DOUBLE, Double.parseDouble(str));
+				return new TextParserToken<>(TextParserToken.Type.DOUBLE, Double.parseDouble(str));
 			} else if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
-				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.BOOLEAN, str);
+				return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
 			} else if (Utils.hasEnum(HOIEnum.values(), str)) {
-				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.ENUM, HOIEnum.valueOf(str.toUpperCase()));
+				return new TextParserToken<>(TextParserToken.Type.ENUM, HOIEnum.valueOf(str.toUpperCase()));
 			} else {
 				if (str.equalsIgnoreCase("HOI4txt")) return null;
-				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.STRING, str);
+				return new TextParserToken<>(TextParserToken.Type.STRING, str);
 			}
 		}
 		String str = strBuilder.toString();
 		strBuilder.setLength(0);
-		return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.KEY, str);
+		return new TextParserToken<>(TextParserToken.Type.KEY, str);
 	}
 
-	private TextParserToken readEnumOrBoolean(TextParserInputStream in) {
+	private TextParserToken readEnumOrBoolean() {
 		while (!in.eof()) {
 			char next = in.peek();
 
@@ -197,21 +192,21 @@ public class TextTokenizer {
 		strBuilder.setLength(0);
 
 		if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
-			return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.BOOLEAN, str);
+			return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
 		} else if (Utils.hasEnum(HOIEnum.values(), str)) {
-			return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.ENUM, HOIEnum.valueOf(str.toUpperCase()));
+			return new TextParserToken<>(TextParserToken.Type.ENUM, HOIEnum.valueOf(str.toUpperCase()));
 		} else {
-			return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.STRING, str.toUpperCase());
+			return new TextParserToken<>(TextParserToken.Type.STRING, str.toUpperCase());
 		}
 	}
 
-	private TextParserToken ignoreUntilSomethingNotStupid(TextParserInputStream in) {
+	private TextParserToken ignoreUntilSomethingNotStupid() {
 		in.next();
 
 		while (!in.eof()) {
 			char next = in.peek();
 
-			if (next != WHITESPACE || next != TAB || next == NEW_LINE || next == LINE_RETURN) {
+			if (next != WHITESPACE && next != TAB) {
 				isKey = true;
 				break;
 			}
@@ -221,7 +216,7 @@ public class TextTokenizer {
 		return null;
 	}
 
-	private TextParserToken readComment(TextParserInputStream in) {
+	private TextParserToken readComment() {
 //		Skip #
 		in.next();
 		while (!in.eof()) {
@@ -233,7 +228,7 @@ public class TextTokenizer {
 		return null;
 	}
 
-	private TextParserToken readString(TextParserInputStream in) {
+	private TextParserToken readString() {
 		// Skip "
 		in.next();
 		while (!in.eof()) {
@@ -249,10 +244,10 @@ public class TextTokenizer {
 
 		String str = strBuilder.toString();
 		strBuilder.setLength(0);
-		return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.STRING, str);
+		return new TextParserToken<>(TextParserToken.Type.STRING, str);
 	}
 
-	private TextParserToken readNumber(TextParserInputStream in) {
+	private TextParserToken readNumber() {
 		TextParserToken.Type type = TextParserToken.Type.INTEGER;
 
 		while (!in.eof()) {
@@ -273,14 +268,14 @@ public class TextTokenizer {
 			String str = strBuilder.toString();
 			strBuilder.setLength(0);
 			if (str.length() <= 9) {
-				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, type, Integer.parseInt(str));
+				return new TextParserToken<>(type, Integer.parseInt(str));
 			} else {
-				return new TextParserToken(new int[]{in.getLine(), in.getCol()}, TextParserToken.Type.LONG, Long.parseLong(str));
+				return new TextParserToken<>(TextParserToken.Type.LONG, Long.parseLong(str));
 			}
 		} else {
 			String str = strBuilder.toString();
 			strBuilder.setLength(0);
-			return new TextParserToken(new int[]{in.getLine(), in.getCol()}, type, Double.parseDouble(str));
+			return new TextParserToken<>(type, Double.parseDouble(str));
 		}
 	}
 
@@ -290,10 +285,6 @@ public class TextTokenizer {
 
 	private boolean isStartOfKeyEnumOrBoolean(char c) {
 		return Character.isLetter(c);
-	}
-
-	private boolean isOperation(char c) {
-		return OPERATIONS.indexOf(c) != -1;
 	}
 
 	private boolean isDigit(char c) {

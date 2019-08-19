@@ -4,10 +4,8 @@ public class TextParserToken<T> {
 
 	private Type type;
 	private T value;
-	public int[] position;
 
-	public TextParserToken(int[] position, Type type, T value) {
-		this.position = position;
+	public TextParserToken(Type type, T value) {
 		this.type = type;
 		this.value = value;
 	}
@@ -18,10 +16,6 @@ public class TextParserToken<T> {
 
 	public T getValue() {
 		return value;
-	}
-
-	public int[] getPosition() {
-		return position;
 	}
 
 	public enum Type {

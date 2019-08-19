@@ -12,11 +12,9 @@ import java.util.List;
 public class AST {
 
 	private List<ASTNode> nodes;
-	private TextTokenizer tokenizer;
 
-	public AST(TextTokenizer tokenizer) {
+	public AST() {
 		this.nodes = new ArrayList<>();
-		this.tokenizer = tokenizer;
 	}
 
 	public void build(TextTokenizer tokenizer) {
@@ -41,7 +39,7 @@ public class AST {
 		TextParserToken next = tokenizer.peek();
 
 		if (next.getType() == TextParserToken.Type.KEY) return readProperty(tokenizer);
-		Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + next.getValue() + " at " + tokenizer.getPosition() + "(" + next.getPosition()[0] + ":" + next.getPosition()[1] + ")");
+		Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + next.getValue() + " at " + tokenizer.getPosition());
 		System.exit(0);
 		return null;
 	}
@@ -55,53 +53,55 @@ public class AST {
 			if (next.getType() == TextParserToken.Type.KEY) {
 				TextParserToken value = tokenizer.peek();
 
-				if (value.getType() == TextParserToken.Type.STRING)
-					return new PropertyNode(next.getValue().toString(), readString(tokenizer));
+				switch (value.getType()) {
+					case STRING:
+						return new PropertyNode<>(next.getValue().toString(), readString(tokenizer));
 
-				if (value.getType() == TextParserToken.Type.INTEGER)
-					return new PropertyNode(next.getValue().toString(), readInt(tokenizer));
+					case INTEGER:
+						return new PropertyNode<>(next.getValue().toString(), readInt(tokenizer));
 
-				if (value.getType() == TextParserToken.Type.DOUBLE)
-					return new PropertyNode(next.getValue().toString(), readDouble(tokenizer));
+					case DOUBLE:
+						return new PropertyNode<>(next.getValue().toString(), readDouble(tokenizer));
 
-				if (value.getType() == TextParserToken.Type.LONG)
-					return new PropertyNode(next.getValue().toString(), readLong(tokenizer));
+					case LONG:
+						return new PropertyNode<>(next.getValue().toString(), readLong(tokenizer));
 
-				if (value.getType() == TextParserToken.Type.BOOLEAN)
-					return new PropertyNode(next.getValue().toString(), readBoolean(tokenizer));
+					case BOOLEAN:
+						return new PropertyNode<>(next.getValue().toString(), readBoolean(tokenizer));
 
-				if (value.getType() == TextParserToken.Type.ENUM)
-					return new PropertyNode(next.getValue().toString(), readEnum(tokenizer));
+					case ENUM:
+						return new PropertyNode<>(next.getValue().toString(), readEnum(tokenizer));
 
-				if (value.getType() == TextParserToken.Type.START_OBJECT) {
-					tokenizer.next();
-					return new PropertyNode(next.getValue().toString(), readObjectOrList(tokenizer));
+					case START_OBJECT:
+						tokenizer.next();
+						return new PropertyNode<>(next.getValue().toString(), readObjectOrList(tokenizer));
 				}
 			} else {
-				Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + next.getValue() + " at " + tokenizer.getPosition() + "(" + next.getPosition()[0] + ":" + next.getPosition()[1] + ")");
+				Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + next.getValue() + " at " + tokenizer.getPosition());
 				System.exit(0);
 			}
 		} else {
-			if (next.getType() == TextParserToken.Type.STRING)
-				return new StringNode(next.getValue().toString());
+			switch (next.getType()) {
+				case STRING:
+					return new StringNode(next.getValue().toString());
 
-			if (next.getType() == TextParserToken.Type.INTEGER)
-				return new IntegerNode((int) next.getValue());
+				case INTEGER:
+					return new IntegerNode((int) next.getValue());
 
-			if (next.getType() == TextParserToken.Type.DOUBLE)
-				return new DoubleNode((double) next.getValue());
+				case DOUBLE:
+					return new DoubleNode((double) next.getValue());
 
-			if (next.getType() == TextParserToken.Type.LONG)
-				return new LongNode((long) next.getValue());
+				case LONG:
+					return new LongNode((long) next.getValue());
 
-			if (next.getType() == TextParserToken.Type.BOOLEAN)
-				return new BooleanNode(next.getValue().toString().equalsIgnoreCase("yes"));
+				case BOOLEAN:
+					return new BooleanNode(next.getValue().toString().equalsIgnoreCase("yes"));
 
-			if (next.getType() == TextParserToken.Type.ENUM)
-				return new EnumNode((HOIEnum) next.getValue());
+				case ENUM:
+					return new EnumNode((HOIEnum) next.getValue());
 
-			if (next.getType() == TextParserToken.Type.START_OBJECT) {
-				return readObjectOrList(tokenizer);
+				case START_OBJECT:
+					return readObjectOrList(tokenizer);
 			}
 		}
 
