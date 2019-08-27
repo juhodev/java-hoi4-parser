@@ -115,6 +115,12 @@ public enum CountryTag {
 	KEN,
 	PAK,
 	BOT,
-	MAN
+	MAN,
+	BAH,
+	BAN,
+	BLZ,
+	BRM,
+	CRC,
+	GDL,
 
 }
