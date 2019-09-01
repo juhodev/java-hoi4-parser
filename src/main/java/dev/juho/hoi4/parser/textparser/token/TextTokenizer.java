@@ -1,6 +1,5 @@
 package dev.juho.hoi4.parser.textparser.token;
 
-import dev.juho.hoi4.parser.data.HOIEnum;
 import dev.juho.hoi4.utils.Utils;
 
 
@@ -164,8 +163,6 @@ public class TextTokenizer {
 				return new TextParserToken<>(TextParserToken.Type.DOUBLE, Double.parseDouble(str));
 			} else if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
 				return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
-			} else if (Utils.hasEnum(HOIEnum.values(), str)) {
-				return new TextParserToken<>(TextParserToken.Type.ENUM, HOIEnum.valueOf(str.toUpperCase()));
 			} else {
 				if (str.equalsIgnoreCase("HOI4txt")) return null;
 				return new TextParserToken<>(TextParserToken.Type.STRING, str);
@@ -193,8 +190,6 @@ public class TextTokenizer {
 
 		if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
 			return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
-		} else if (Utils.hasEnum(HOIEnum.values(), str)) {
-			return new TextParserToken<>(TextParserToken.Type.ENUM, HOIEnum.valueOf(str.toUpperCase()));
 		} else {
 			return new TextParserToken<>(TextParserToken.Type.STRING, str.toUpperCase());
 		}

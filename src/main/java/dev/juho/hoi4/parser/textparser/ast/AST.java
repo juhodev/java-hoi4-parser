@@ -1,6 +1,5 @@
 package dev.juho.hoi4.parser.textparser.ast;
 
-import dev.juho.hoi4.parser.data.HOIEnum;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
@@ -70,9 +69,6 @@ public class AST {
 					case BOOLEAN:
 						return new PropertyNode<>(next.getValue().toString(), readBoolean(tokenizer));
 
-					case ENUM:
-						return new PropertyNode<>(next.getValue().toString(), readEnum(tokenizer));
-
 					case START_OBJECT:
 						tokenizer.next();
 						return new PropertyNode<>(next.getValue().toString(), readObjectOrList(tokenizer));
@@ -98,9 +94,6 @@ public class AST {
 				case BOOLEAN:
 					return new BooleanNode(next.getValue().toString().equalsIgnoreCase("yes"));
 
-				case ENUM:
-					return new EnumNode((HOIEnum) next.getValue());
-
 				case START_OBJECT:
 					return readObjectOrList(tokenizer);
 			}
@@ -116,10 +109,6 @@ public class AST {
 
 	private BooleanNode readBoolean(TextTokenizer tokenizer) {
 		return new BooleanNode(tokenizer.next().getValue().toString().equalsIgnoreCase("yes"));
-	}
-
-	private EnumNode readEnum(TextTokenizer tokenizer) {
-		return new EnumNode((HOIEnum) tokenizer.next().getValue());
 	}
 
 	private StringNode readString(TextTokenizer tokenizer) {

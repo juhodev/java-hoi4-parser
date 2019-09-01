@@ -26,7 +26,6 @@ public class TextParserToken<T> {
 		START_OBJECT,
 		END_OBJECT,
 		BOOLEAN,
-		ENUM,
 		KEY,
 		STRING,
 	}

@@ -84,10 +84,6 @@ public class Logger {
 				}
 				break;
 
-			case ENUM:
-				log(level, tabs + ((EnumNode) node).getValue().toString());
-				break;
-
 			case PROPERTY:
 				PropertyNode propertyNode = (PropertyNode) node;
 				log(level, tabs + "Key: " + propertyNode.getKey());
