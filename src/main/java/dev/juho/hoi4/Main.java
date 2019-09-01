@@ -1,21 +1,44 @@
 package dev.juho.hoi4;
 
 import dev.juho.hoi4.parser.Parser;
+import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.TextParser;
+import dev.juho.hoi4.savegame.SaveGame;
 import dev.juho.hoi4.savegame.SaveGameUtils;
 import dev.juho.hoi4.utils.Logger;
+import dev.juho.hoi4.utils.Utils;
 
+import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class Main {
 
+	public static String gameFolder = FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "\\Paradox Interactive\\Hearts of Iron IV";
+	public static String gameName = "";
+
 	public static void main(String[] args) {
 		Logger.getInstance().LOG_LEVEL = Logger.INFO;
+		HashMap<String, String> argsMap = Utils.getArgs(args);
 
-		File realFile = new File("C:\\Users\\Juho\\Documents\\Paradox Interactive\\Hearts of Iron IV\\save games\\SOV_1949_07_19_14.hoi4");
+		if (argsMap.containsKey("-game")) {
+			gameName = argsMap.get("-game");
+		} else {
+			Logger.getInstance().log(Logger.ERROR, "-game [SAVE_FILE] required!");
+			System.exit(1);
+		}
+
+		if (argsMap.containsKey("-folder")) {
+			gameFolder = argsMap.get("-folder");
+		} else {
+			Logger.getInstance().log(Logger.INFO, "Using default HOI4 folder located here: " + gameFolder);
+		}
+
+		File file = new File(gameFolder + "\\save games\\" + gameName);
+//		File realFile = new File("C:\\Users\\Juho\\Documents\\Paradox Interactive\\Hearts of Iron IV\\save games\\SOV_1949_07_19_14.hoi4");
 		File testFile = new File("test.hoi4");
-		Parser parser = new TextParser(realFile);
+		Parser parser = new TextParser(file);
 		try {
 			parser.parse();
 		} catch (IOException e) {
