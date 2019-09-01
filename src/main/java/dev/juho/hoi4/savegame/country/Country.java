@@ -7,6 +7,7 @@ import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
 import dev.juho.hoi4.savegame.country.data.fuel.Fuel;
 import dev.juho.hoi4.savegame.country.data.people.ImportantPerson;
+import dev.juho.hoi4.savegame.country.data.politics.Politics;
 import dev.juho.hoi4.savegame.country.data.production.Production;
 import dev.juho.hoi4.savegame.country.data.resources.Resources;
 import dev.juho.hoi4.savegame.country.data.technology.Research;
@@ -25,6 +26,7 @@ public class Country {
 	private Units units;
 	private List<ImportantPerson> importantPeople;
 	private Fuel fuel;
+	private Politics politics;
 
 	public Country(CountryTag tag) {
 		this.tag = tag;
@@ -34,6 +36,7 @@ public class Country {
 		this.units = new Units();
 		this.importantPeople = new ArrayList<>();
 		this.fuel = new Fuel();
+		this.politics = new Politics();
 	}
 
 	public CountryTag getTag() {
@@ -91,6 +94,11 @@ public class Country {
 		if (countryNode.has("fuel_status")) {
 			ObjectNode fuelStatus = (ObjectNode) countryNode.get("fuel_status");
 			fuel.build(fuelStatus);
+		}
+
+		if (countryNode.has("politics")) {
+			ObjectNode politicsNode = (ObjectNode) countryNode.get("politics");
+			politics.build(politicsNode);
 		}
 	}
 
