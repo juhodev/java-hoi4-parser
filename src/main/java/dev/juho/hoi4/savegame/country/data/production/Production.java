@@ -49,6 +49,49 @@ public class Production {
 		}
 	}
 
+	/**
+	 * @return factory count used military (used for producing tanks and stuff)
+	 */
+	public int getFactoriesUsedByMilitary() {
+		int count = 0;
+		for (MilitaryLine line : militaryLines) {
+			count += line.getActiveFactories();
+		}
+
+		return count;
+	}
+
+	/**
+	 * @return factory count used by the navy (used for producing ships)
+	 */
+	public int getFactoriesUsedByNavy() {
+		int count = 0;
+		for (NavalLine line : navalLines) {
+			count += line.getActiveFactories();
+		}
+
+		return count;
+	}
+
+	/**
+	 * @return factory count used for building/repairing buildings
+	 */
+	public int getFactoriesUedByGeneralLines() {
+		int count = 0;
+		for (GeneralLine line : generalLines) {
+			count += line.getActiveFactories();
+		}
+
+		return count;
+	}
+
+	/**
+	 * @return full active factory count
+	 */
+	public int getTotalUsedFactoryCount() {
+		return getFactoriesUsedByMilitary() + getFactoriesUsedByNavy() + getFactoriesUedByGeneralLines();
+	}
+
 	public List<MilitaryLine> getMilitaryLines() {
 		return militaryLines;
 	}
