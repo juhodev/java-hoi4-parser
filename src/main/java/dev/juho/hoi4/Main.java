@@ -47,10 +47,11 @@ public class Main {
 
 		parser.getSaveGame().build();
 
-		Logger.getInstance().log(Logger.INFO, "Average factories in use: " + SaveGameUtils.getAverageMilitaryFactoriesInUse(parser.getSaveGame()));
+		Logger.getInstance().log(Logger.INFO, "Average military factories in use: " + SaveGameUtils.getAverageMilitaryFactoriesInUse(parser.getSaveGame()));
 		double[] avrgDataThing = SaveGameUtils.getAverageDivisionsAndManpowerCount(parser.getSaveGame());
 
 		Logger.getInstance().log(Logger.INFO, "Average divisions: " + avrgDataThing[0] + ", total manpower: " + String.format("%.0f", avrgDataThing[1]));
+		SaveGameUtils.printCountry(parser.getSaveGame(), CountryTag.GER);
 	}
 
 }

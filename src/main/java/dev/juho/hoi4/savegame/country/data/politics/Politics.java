@@ -28,9 +28,35 @@ public class Politics {
 	public void build(ObjectNode politicsNode) {
 		readParties((ObjectNode) politicsNode.get("parties"));
 		readIdeas((ListNode) politicsNode.get("ideas"));
+		rulingParty = ((StringNode) politicsNode.get("ruling_party")).getValue();
+		lastElection = ((StringNode) politicsNode.get("last_election")).getValue();
 		electionFrequency = ((IntegerNode) politicsNode.get("election_frequency")).getValue();
 		electionsAllowed = ((BooleanNode) politicsNode.get("elections_allowed")).getValue();
 		politicalPower = ((DoubleNode) politicsNode.get("political_power")).getValue();
+	}
+
+	public double getPoliticalPower() {
+		return politicalPower;
+	}
+
+	public int getElectionFrequency() {
+		return electionFrequency;
+	}
+
+	public List<PoliticalParty> getParties() {
+		return parties;
+	}
+
+	public List<String> getIdeas() {
+		return ideas;
+	}
+
+	public String getLastElection() {
+		return lastElection;
+	}
+
+	public String getRulingParty() {
+		return rulingParty;
 	}
 
 	private void readIdeas(ListNode ideaList) {

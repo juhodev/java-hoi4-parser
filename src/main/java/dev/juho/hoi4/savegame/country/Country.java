@@ -102,6 +102,14 @@ public class Country {
 		}
 	}
 
+	public Fuel getFuel() {
+		return fuel;
+	}
+
+	public Politics getPolitics() {
+		return politics;
+	}
+
 	public List<ImportantPerson> getImportantPeople() {
 		return importantPeople;
 	}

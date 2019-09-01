@@ -13,6 +13,24 @@ import java.util.Map;
 
 public class SaveGameUtils {
 
+	public static void printCountry(SaveGame game, CountryTag tag) {
+		Country country = game.getCountries().get(tag);
+
+		Logger.getInstance().log(Logger.INFO, "Country info for " + tag);
+		Logger.getInstance().log(Logger.INFO, "Politics: ");
+		Logger.getInstance().log(Logger.INFO, "\tRuling political party: " + country.getPolitics().getRulingParty());
+		Logger.getInstance().log(Logger.INFO, "\tLast election date: " + country.getPolitics().getLastElection());
+		Logger.getInstance().log(Logger.INFO, "");
+		Logger.getInstance().log(Logger.INFO, "Production: ");
+		Logger.getInstance().log(Logger.INFO, "\tFactories used for buildings: " + country.getProduction().getFactoriesUedByGeneralLines());
+		Logger.getInstance().log(Logger.INFO, "\tFactories used for military stuff: " + country.getProduction().getFactoriesUsedByMilitary());
+		Logger.getInstance().log(Logger.INFO, "\tFactories used for navy stuff: " + country.getProduction().getFactoriesUsedByNavy());
+		Logger.getInstance().log(Logger.INFO, "\tAll active factories: " + country.getProduction().getTotalUsedFactoryCount());
+		Logger.getInstance().log(Logger.INFO, "");
+		Logger.getInstance().log(Logger.INFO, "Divisions: ");
+		Logger.getInstance().log(Logger.INFO, "\tDivision count: " + country.getUnits().getDivisions().size());
+	}
+
 	public static double getAverageMilitaryFactoriesInUse(SaveGame game) {
 		Iterator it = game.getCountries().entrySet().iterator();
 
