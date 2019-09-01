@@ -41,59 +41,54 @@ public class Division {
 	}
 
 	public void build(ObjectNode node) {
-		for (ASTNode child : node.getChildren()) {
-			PropertyNode propNode = (PropertyNode) child;
+		ObjectNode idNode = (ObjectNode) node.get("id");
+		IntegerNode id = (IntegerNode) idNode.get("id");
+		this.id = id.getValue();
 
-			switch (propNode.getKey()) {
-				case "id":
-					readId((ObjectNode) propNode.getValue());
-					break;
+		IntegerNode type = (IntegerNode) idNode.get("type");
+		this.type = type.getValue();
 
-				case "last_combat_date":
-					lastCombatDate = ((StringNode) propNode.getValue()).getValue();
-					break;
+		StringNode lastCombatDate = (StringNode) node.get("last_combat_date");
+		this.lastCombatDate = lastCombatDate.getValue();
 
-				case "movement_progress":
-					movementProgress = ((DoubleNode) propNode.getValue()).getValue();
-					break;
-
-				case "move_priority":
-					movePriority = ((IntegerNode) propNode.getValue()).getValue();
-					break;
-
-				case "location":
-					location = ((IntegerNode) propNode.getValue()).getValue();
-					break;
-
-				case "logical_country":
-					logicalCountry = CountryTag.valueOf(((StringNode) propNode.getValue()).getValue());
-					break;
-
-				case "division_template_id":
-					readDivisionTemplateId((ObjectNode) propNode.getValue());
-					break;
-
-				case "supplies":
-					supplies = ((DoubleNode) propNode.getValue()).getValue();
-					break;
-
-				case "max_supply":
-					maxSupply = ((DoubleNode) propNode.getValue()).getValue();
-					break;
-
-				case "organisation":
-					organisation = ((DoubleNode) propNode.getValue()).getValue();
-					break;
-
-				case "strength":
-					strength = ((DoubleNode) propNode.getValue()).getValue();
-					break;
-
-				case "army_manpower":
-					readManpower((ObjectNode) propNode.getValue());
-					break;
-			}
+		if (node.has("movement_progress")) {
+			DoubleNode movementProgress = (DoubleNode) node.get("movement_progress");
+			this.movementProgress = movementProgress.getValue();
 		}
+
+		if (node.has("move_priority")) {
+			IntegerNode movePriority = (IntegerNode) node.get("move_priority");
+			this.movePriority = movePriority.getValue();
+		}
+
+		IntegerNode location = (IntegerNode) node.get("location");
+		this.location = location.getValue();
+
+		StringNode logicalCountry = (StringNode) node.get("logical_country");
+		this.logicalCountry = CountryTag.valueOf(logicalCountry.getValue());
+
+		if (node.has("division_template_id")) {
+			ObjectNode divisionTemplateId = (ObjectNode) node.get("division_template_id");
+			IntegerNode templateId = (IntegerNode) divisionTemplateId.get("id");
+			this.templateId = templateId.getValue();
+			IntegerNode templateType = (IntegerNode) divisionTemplateId.get("type");
+			this.templateType = templateType.getValue();
+		}
+
+		DoubleNode supplies = (DoubleNode) node.get("supplies");
+		this.supplies = supplies.getValue();
+
+		DoubleNode maxSupply = (DoubleNode) node.get("max_supply");
+		this.maxSupply = maxSupply.getValue();
+
+		DoubleNode organisation = (DoubleNode) node.get("organisation");
+		this.organisation = organisation.getValue();
+
+		DoubleNode strength = (DoubleNode) node.get("strength");
+		this.strength = strength.getValue();
+
+		ObjectNode armyManpower = (ObjectNode) node.get("army_manpower");
+		readManpower(armyManpower);
 	}
 
 	public double getExperience() {
@@ -165,57 +160,17 @@ public class Division {
 	}
 
 	private void readManpower(ObjectNode node) {
-		HashMap<String, Object> children = Utils.getObjectChildren(node);
+		ObjectNode manpowerValue = (ObjectNode) node.get("army_manpower_value");
+		ObjectNode manpowerNeed = (ObjectNode) node.get("army_manpower_need");
 
-		if (children.containsKey("army_manpower_value")) {
-			ObjectNode objNode = (ObjectNode) children.get("army_manpower_value");
-			manpower = readManpowerValue(objNode);
-		}
-
-		if (children.containsKey("army_manpower_need")) {
-			ObjectNode objNode = (ObjectNode) children.get("army_manpower_need");
-			manpowerNeeded = readManpowerValue(objNode);
-		}
+		this.manpower = readManpowerValue(manpowerValue);
+		this.manpowerNeeded = readManpowerValue(manpowerNeed);
 	}
 
 	private int readManpowerValue(ObjectNode node) {
-		HashMap<String, Object> children = Utils.getObjectChildren(node);
-
-		if (children.containsKey("value")) {
-			HashMap<String, Object> childrenOfChildren = Utils.getObjectChildren((ObjectNode) children.get("value"));
-
-			return ((IntegerNode) childrenOfChildren.get("value")).getValue();
-		}
-
-		return -1;
-	}
-
-	private void readDivisionTemplateId(ObjectNode node) {
-		HashMap<String, Object> children = Utils.getObjectChildren(node);
-
-		if (children.containsKey("id")) {
-			IntegerNode idNode = (IntegerNode) children.get("id");
-			templateId = idNode.getValue();
-		}
-
-		if (children.containsKey("type")) {
-			IntegerNode typeNode = (IntegerNode) children.get("type");
-			templateType = typeNode.getValue();
-		}
-	}
-
-	private void readId(ObjectNode node) {
-		HashMap<String, Object> children = Utils.getObjectChildren(node);
-
-		if (children.containsKey("id")) {
-			IntegerNode idNode = (IntegerNode) children.get("id");
-			id = idNode.getValue();
-		}
-
-		if (children.containsKey("type")) {
-			IntegerNode typeNode = (IntegerNode) children.get("type");
-			type = typeNode.getValue();
-		}
+		ObjectNode value = (ObjectNode) node.get("value");
+		IntegerNode intNode = (IntegerNode) value.get("value");
+		return intNode.getValue();
 	}
 
 }

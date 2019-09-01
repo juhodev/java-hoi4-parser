@@ -2,6 +2,7 @@ package dev.juho.hoi4.savegame.country;
 
 import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
+import dev.juho.hoi4.parser.textparser.ast.nodes.ListNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
 import dev.juho.hoi4.savegame.country.data.people.ImportantPerson;
@@ -37,31 +38,51 @@ public class Country {
 	}
 
 	public void build(ObjectNode countryNode) {
-		for (ASTNode node : countryNode.getChildren()) {
-			PropertyNode propNode = (PropertyNode) node;
-			switch (propNode.getKey()) {
-				case "technology":
-					research.build(propNode);
-					break;
+		ObjectNode researchNode = (ObjectNode) countryNode.get("technology");
+		research.build(researchNode);
 
-				case "resources":
-					resources.build(propNode);
-					break;
+		ObjectNode resourceNode = (ObjectNode) countryNode.get("resources");
+		resources.build(resourceNode);
 
-				case "production":
-					production.build(propNode);
-					break;
+		ObjectNode productionNode = (ObjectNode) countryNode.get("production");
+		production.build(productionNode);
 
-				case "corps_commander":
-				case "field_marshal":
-				case "navy_leader":
-					readPerson(propNode);
-					break;
+		ASTNode corpsCommander = (ASTNode) countryNode.get("corps_commander");
+		if (corpsCommander instanceof ObjectNode) {
+			readPerson(ImportantPerson.Type.CORPS_COMMANDER, (ObjectNode) corpsCommander);
+		} else if (corpsCommander instanceof ListNode) {
+			ListNode listNode = (ListNode) corpsCommander;
 
-				case "units":
-					units.build(propNode);
-					break;
+			for (ASTNode child : listNode.getChildren()) {
+				readPerson(ImportantPerson.Type.CORPS_COMMANDER, (ObjectNode) child);
 			}
+		}
+
+		ASTNode fieldMarshal = (ASTNode) countryNode.get("field_marshal");
+		if (fieldMarshal instanceof ObjectNode) {
+			readPerson(ImportantPerson.Type.FIELD_MARSHAL, (ObjectNode) fieldMarshal);
+		} else if (fieldMarshal instanceof ListNode) {
+			ListNode listNode = (ListNode) fieldMarshal;
+
+			for (ASTNode child : listNode.getChildren()) {
+				readPerson(ImportantPerson.Type.FIELD_MARSHAL, (ObjectNode) child);
+			}
+		}
+
+		ASTNode navyLeader = (ASTNode) countryNode.get("navy_leader");
+		if (navyLeader instanceof ObjectNode) {
+			readPerson(ImportantPerson.Type.NAVY_LEADER, (ObjectNode) navyLeader);
+		} else if (navyLeader instanceof ListNode) {
+			ListNode listNode = (ListNode) navyLeader;
+
+			for (ASTNode child : listNode.getChildren()) {
+				readPerson(ImportantPerson.Type.FIELD_MARSHAL, (ObjectNode) child);
+			}
+		}
+
+		if (countryNode.has("units")) {
+			ObjectNode unitsNode = (ObjectNode) countryNode.get("units");
+			units.build(unitsNode);
 		}
 	}
 
@@ -85,9 +106,9 @@ public class Country {
 		return resources;
 	}
 
-	private void readPerson(PropertyNode node) {
+	private void readPerson(ImportantPerson.Type type, ObjectNode node) {
 		ImportantPerson person = new ImportantPerson();
-		person.build(node);
+		person.build(type, node);
 		importantPeople.add(person);
 	}
 

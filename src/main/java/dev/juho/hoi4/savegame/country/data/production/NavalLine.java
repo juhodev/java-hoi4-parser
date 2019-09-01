@@ -23,20 +23,20 @@ public class NavalLine extends ProductionLine {
 
 	@Override
 	public void build(ObjectNode obj) {
-		for (ASTNode node : obj.getChildren()) {
-			PropertyNode propNode = (PropertyNode) node;
-
-			switch (propNode.getKey()) {
-				case "deployment":
-//					readDeployment((ObjectNode) propNode.getValue());
-					break;
-
-				case "names":
-
-				default:
-					break;
-			}
-		}
+//		for (ASTNode node : obj.getChildren()) {
+//			PropertyNode propNode = (PropertyNode) node;
+//
+//			switch (propNode.getKey()) {
+//				case "deployment":
+////					readDeployment((ObjectNode) propNode.getValue());
+//					break;
+//
+//				case "names":
+//
+//				default:
+//					break;
+//			}
+//		}
 
 		super.build(obj);
 	}
@@ -53,9 +53,6 @@ public class NavalLine extends ProductionLine {
 		for (ASTNode child : node.getChildren()) {
 			ObjectNode childObj = (ObjectNode) child;
 
-			HashMap<String, Object> childProperties = Utils.getObjectChildren(childObj);
-
-			int type = ((IntegerNode) childProperties.get("type")).getValue();
 //			TODO: finish making this I can't do this right now
 		}
 	}

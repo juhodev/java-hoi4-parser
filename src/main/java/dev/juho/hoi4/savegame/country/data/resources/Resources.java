@@ -2,11 +2,7 @@ package dev.juho.hoi4.savegame.country.data.resources;
 
 import dev.juho.hoi4.parser.textparser.ast.nodes.DoubleNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
 import dev.juho.hoi4.utils.Logger;
-import dev.juho.hoi4.utils.Utils;
-
-import java.util.HashMap;
 
 public class Resources {
 
@@ -22,44 +18,33 @@ public class Resources {
 		this.consumed = new ResourceData();
 	}
 
-	public void build(PropertyNode resourceNode) {
-		ObjectNode obj = (ObjectNode) resourceNode.getValue();
-
-		HashMap<String, Object> children = Utils.getObjectChildren(obj);
-
-		if (children.containsKey("produced")) {
-			ObjectNode objNode = (ObjectNode) children.get("produced");
-			readResourceData(objNode, produced);
+	public void build(ObjectNode resourceNode) {
+		if (resourceNode.has("produced")) {
+			readResourceData((ObjectNode) resourceNode.get("produced"), produced);
 		}
 
-		if (children.containsKey("imported")) {
-			ObjectNode objNode = (ObjectNode) children.get("imported");
-			readResourceData(objNode, imported);
+		if (resourceNode.has("imported")) {
+			readResourceData((ObjectNode) resourceNode.get("imported"), imported);
 		}
 
-		if (children.containsKey("to_use")) {
-			ObjectNode objNode = (ObjectNode) children.get("to_use");
-			readResourceData(objNode, toUse);
+		if (resourceNode.has("to_use")) {
+			readResourceData((ObjectNode) resourceNode.get("to_use"), toUse);
 		}
 
-		if (children.containsKey("to_export")) {
-			ObjectNode objNode = (ObjectNode) children.get("to_export");
-			readResourceData(objNode, toExport);
+		if (resourceNode.has("to_export")) {
+			readResourceData((ObjectNode) resourceNode.get("to_export"), toExport);
 		}
 
-		if (children.containsKey("base_export")) {
-			ObjectNode objNode = (ObjectNode) children.get("base_export");
-			readResourceData(objNode, baseExport);
+		if (resourceNode.has("base_export")) {
+			readResourceData((ObjectNode) resourceNode.get("base_export"), baseExport);
 		}
 
-		if (children.containsKey("exported")) {
-			ObjectNode objNode = (ObjectNode) children.get("exported");
-			readResourceData(objNode, exported);
+		if (resourceNode.has("exported")) {
+			readResourceData((ObjectNode) resourceNode.get("exported"), exported);
 		}
 
-		if (children.containsKey("consumed")) {
-			ObjectNode objNode = (ObjectNode) children.get("consumed");
-			readResourceData(objNode, consumed);
+		if (resourceNode.has("consumed")) {
+			readResourceData((ObjectNode) resourceNode.get("consumed"), consumed);
 		}
 	}
 
@@ -92,35 +77,33 @@ public class Resources {
 	}
 
 	private void readResourceData(ObjectNode node, ResourceData data) {
-		HashMap<String, Object> children = Utils.getObjectChildren(node);
-
-		if (children.containsKey("oil")) {
-			DoubleNode dNode = (DoubleNode) children.get("oil");
+		if (node.has("oil")) {
+			DoubleNode dNode = (DoubleNode) node.get("oil");
 			data.setOil(dNode.getValue());
 		}
 
-		if (children.containsKey("aluminium")) {
-			DoubleNode dNode = (DoubleNode) children.get("aluminium");
+		if (node.has("aluminium")) {
+			DoubleNode dNode = (DoubleNode) node.get("aluminium");
 			data.setAluminium(dNode.getValue());
 		}
 
-		if (children.containsKey("rubber")) {
-			DoubleNode dNode = (DoubleNode) children.get("rubber");
+		if (node.has("rubber")) {
+			DoubleNode dNode = (DoubleNode) node.get("rubber");
 			data.setRubber(dNode.getValue());
 		}
 
-		if (children.containsKey("tungsten")) {
-			DoubleNode dNode = (DoubleNode) children.get("tungsten");
+		if (node.has("tungsten")) {
+			DoubleNode dNode = (DoubleNode) node.get("tungsten");
 			data.setTungsten(dNode.getValue());
 		}
 
-		if (children.containsKey("steel")) {
-			DoubleNode dNode = (DoubleNode) children.get("steel");
+		if (node.has("steel")) {
+			DoubleNode dNode = (DoubleNode) node.get("steel");
 			data.setSteel(dNode.getValue());
 		}
 
-		if (children.containsKey("chromium")) {
-			DoubleNode dNode = (DoubleNode) children.get("chromium");
+		if (node.has("chromium")) {
+			DoubleNode dNode = (DoubleNode) node.get("chromium");
 			data.setChromium(dNode.getValue());
 		}
 

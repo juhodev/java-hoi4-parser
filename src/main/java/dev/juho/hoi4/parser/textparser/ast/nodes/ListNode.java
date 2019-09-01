@@ -14,6 +14,10 @@ public class ListNode extends ASTNode {
 		this.children = children;
 	}
 
+	public void add(ASTNode child){
+		children.add(child);
+	}
+
 	public List<ASTNode> getChildren() {
 		return children;
 	}

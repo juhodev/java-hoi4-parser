@@ -33,50 +33,59 @@ public class ProductionLine {
 	}
 
 	public void build(ObjectNode obj) {
-		for (ASTNode node : obj.getChildren()) {
-			PropertyNode propNode = (PropertyNode) node;
+		if (obj.has("id")) {
+			ObjectNode idNode = (ObjectNode) obj.get("id");
 
-			switch (propNode.getKey()) {
-				case "id":
-					readId((ObjectNode) propNode.getValue());
-					break;
+			IntegerNode id = (IntegerNode) idNode.get("id");
+			this.id = id.getValue();
 
-				case "produced":
-					produced = ((DoubleNode) propNode.getValue()).getValue();
-					break;
+			IntegerNode type = (IntegerNode) idNode.get("type");
+			this.type = type.getValue();
+		}
 
-				case "active_factories":
-					activeFactories = ((IntegerNode) propNode.getValue()).getValue();
-					break;
+		if (obj.has("produced")) {
+			DoubleNode produced = (DoubleNode) obj.get("produced");
+			this.produced = produced.getValue();
+		}
 
-				case "priority":
-					priority = ((IntegerNode) propNode.getValue()).getValue();
-					break;
+		if (obj.has("active_factories")) {
+			IntegerNode activeFactories = (IntegerNode) obj.get("active_factories");
+			this.activeFactories = activeFactories.getValue();
+		}
 
-				case "amount":
-					amount = ((IntegerNode) propNode.getValue()).getValue();
-					break;
+		if (obj.has("priority")) {
+			IntegerNode priority = (IntegerNode) obj.get("priority");
+			this.priority = priority.getValue();
+		}
 
-				case "speed":
-					speed = ((DoubleNode) propNode.getValue()).getValue();
-					break;
+		if (obj.has("amount")) {
+			IntegerNode amount = (IntegerNode) obj.get("amount");
+			this.amount = amount.getValue();
+		}
 
-				case "cost":
-					cost = ((DoubleNode) propNode.getValue()).getValue();
-					break;
+		if (obj.has("speed")) {
+			DoubleNode speed = (DoubleNode) obj.get("speed");
+			this.speed = speed.getValue();
+		}
 
-				case "requested_factories":
-					requestedFactories = ((IntegerNode) propNode.getValue()).getValue();
-					break;
+		if (obj.has("cost")) {
+			DoubleNode cost = (DoubleNode) obj.get("cost");
+			this.cost = cost.getValue();
+		}
 
-				case "factory_efficiencies":
-					readFactoryEfficiencies((ListNode) propNode.getValue());
-					break;
+		if (obj.has("requested_factories")) {
+			IntegerNode requestedFactories = (IntegerNode) obj.get("requested_factories");
+			this.requestedFactories = requestedFactories.getValue();
+		}
 
-				case "resources":
-					readResources((ObjectNode) propNode.getValue());
-					break;
-			}
+		if (obj.has("factory_efficiencies")) {
+			ListNode factoryEfficiencies = (ListNode) obj.get("factory_efficiencies");
+			readFactoryEfficiencies(factoryEfficiencies);
+		}
+
+		if (obj.has("resources")) {
+			ObjectNode resources = (ObjectNode) obj.get("resources");
+			readResources(resources);
 		}
 	}
 
@@ -124,13 +133,6 @@ public class ProductionLine {
 		return resources;
 	}
 
-	private void readId(ObjectNode obj) {
-		HashMap<String, Object> children = Utils.getObjectChildren(obj);
-
-		id = ((IntegerNode) children.get("id")).getValue();
-		type = ((IntegerNode) children.get("type")).getValue();
-	}
-
 	private void readFactoryEfficiencies(ListNode list) {
 		for (ASTNode node : list.getChildren()) {
 			factoryEfficiencies.add(((DoubleNode) node).getValue());
@@ -138,35 +140,33 @@ public class ProductionLine {
 	}
 
 	private void readResources(ObjectNode node) {
-		HashMap<String, Object> children = Utils.getObjectChildren(node);
-
-		if (children.containsKey("oil")) {
-			DoubleNode dNode = (DoubleNode) children.get("oil");
+		if (node.has("oil")) {
+			DoubleNode dNode = (DoubleNode) node.get("oil");
 			resources.setOil(dNode.getValue());
 		}
 
-		if (children.containsKey("aluminium")) {
-			DoubleNode dNode = (DoubleNode) children.get("aluminium");
+		if (node.has("aluminium")) {
+			DoubleNode dNode = (DoubleNode) node.get("aluminium");
 			resources.setAluminium(dNode.getValue());
 		}
 
-		if (children.containsKey("rubber")) {
-			DoubleNode dNode = (DoubleNode) children.get("rubber");
+		if (node.has("rubber")) {
+			DoubleNode dNode = (DoubleNode) node.get("rubber");
 			resources.setRubber(dNode.getValue());
 		}
 
-		if (children.containsKey("tungsten")) {
-			DoubleNode dNode = (DoubleNode) children.get("tungsten");
+		if (node.has("tungsten")) {
+			DoubleNode dNode = (DoubleNode) node.get("tungsten");
 			resources.setTungsten(dNode.getValue());
 		}
 
-		if (children.containsKey("steel")) {
-			DoubleNode dNode = (DoubleNode) children.get("steel");
+		if (node.has("steel")) {
+			DoubleNode dNode = (DoubleNode) node.get("steel");
 			resources.setSteel(dNode.getValue());
 		}
 
-		if (children.containsKey("chromium")) {
-			DoubleNode dNode = (DoubleNode) children.get("chromium");
+		if (node.has("chromium")) {
+			DoubleNode dNode = (DoubleNode) node.get("chromium");
 			resources.setChromium(dNode.getValue());
 		}
 	}

@@ -9,9 +9,7 @@ import dev.juho.hoi4.savegame.country.Country;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class SaveGame {
 
@@ -59,15 +57,18 @@ public class SaveGame {
 	}
 
 	private void buildCountries(ObjectNode countries) {
-		for (ASTNode node : countries.getChildren()) {
-			PropertyNode propNode = (PropertyNode) node;
-			if (Utils.hasEnum(CountryTag.values(), propNode.getKey())) {
-				CountryTag tag = CountryTag.valueOf(propNode.getKey());
+		Iterator it = countries.getChildren().entrySet().iterator();
+
+		while (it.hasNext()) {
+			Map.Entry<String, Object> pair = (Map.Entry<String, Object>) it.next();
+
+			if (Utils.hasEnum(CountryTag.values(), pair.getKey())) {
+				CountryTag tag = CountryTag.valueOf(pair.getKey());
 				Country country = new Country(tag);
-				country.build((ObjectNode) propNode.getValue());
+				country.build((ObjectNode) pair.getValue());
 				this.countries.put(tag, country);
 			} else {
-				Logger.getInstance().log(Logger.WARNING, "Couldn't find country tag " + propNode.getKey());
+				Logger.getInstance().log(Logger.WARNING, "Couldn't find country tag " + pair.getKey());
 			}
 		}
 	}

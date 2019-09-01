@@ -1,17 +1,12 @@
 package dev.juho.hoi4.savegame.country.data.technology;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.DoubleNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.IntegerNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
+import dev.juho.hoi4.parser.textparser.ast.nodes.*;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
 import java.io.ObjectOutput;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Research {
 
@@ -23,54 +18,62 @@ public class Research {
 		this.slots = new ArrayList<>();
 	}
 
-	public void build(PropertyNode technologyNode) {
-		ObjectNode techValues = (ObjectNode) technologyNode.getValue();
+	public void build(ObjectNode technologyNode) {
+		ObjectNode technologies = (ObjectNode) technologyNode.get("technologies");
 
-		PropertyNode technologies = (PropertyNode) techValues.getChildren().get(0);
-		PropertyNode slots = (PropertyNode) techValues.getChildren().get(1);
-
-		readTechnologies(((ObjectNode) technologies.getValue()).getChildren());
-		readResearchSlots(((ObjectNode) slots.getValue()).getChildren());
+		if (technologies.has("technologies"))
+			readTechnologies((ObjectNode) technologies.get("technologies"));
+		if (technologies.has("slots"))
+			readResearchSlots((ObjectNode) technologies.get("slots"));
 	}
 
-	private void readTechnologies(List<ASTNode> techChildren) {
-		for (ASTNode child : techChildren) {
-			PropertyNode childProp = (PropertyNode) child;
+	private void readTechnologies(ObjectNode technologiesNode) {
+		Iterator it = technologiesNode.getChildren().entrySet().iterator();
 
-			String techName = childProp.getKey();
+		while (it.hasNext()) {
+			Map.Entry<String, Object> pair = (Map.Entry<String, Object>) it.next();
 
-			HashMap<String, Object> children = Utils.getObjectChildren((ObjectNode) childProp.getValue());
-
-			int level = -1;
-			if (children.containsKey("level")) level = ((IntegerNode) children.get("level")).getValue();
-			double researchPoints = -1;
-			if (children.containsKey("research_points"))
-				researchPoints = ((DoubleNode) children.get("research_points")).getValue();
-
-			Logger.getInstance().log(Logger.DEBUG, "adding research: " + techName + ", level: " + level + ", research points: " + researchPoints);
-			technology.add(new Technology(techName, level, researchPoints));
-		}
-	}
-
-	private void readResearchSlots(List<ASTNode> slotsChildren) {
-		for (ASTNode child : slotsChildren) {
-			PropertyNode childProp = (PropertyNode) child;
-
-			String current = childProp.getKey();
-//			TODO: You might want to clean this up
-			ObjectNode objNode = (ObjectNode) childProp.getValue();
-			double points = -1;
-			if (objNode.getChildren().size() > 0) {
-				PropertyNode pointsProp = (PropertyNode) objNode.getChildren().get(0);
-				DoubleNode doubleNode = (DoubleNode) pointsProp.getValue();
-				points = doubleNode.getValue();
+			if (pair.getValue() instanceof ObjectNode) {
+				ObjectNode childNode = (ObjectNode) pair.getValue();
+				readTechObject(pair.getKey(), childNode);
+			} else if (pair.getValue() instanceof ListNode) {
+				ListNode listNode = (ListNode) pair.getValue();
+				for (ASTNode node : listNode.getChildren()) {
+					ObjectNode childNode = (ObjectNode) node;
+					readTechObject(pair.getKey(), childNode);
+				}
 			}
-
-
-			ResearchSlot slot = new ResearchSlot(current, points);
-			Logger.getInstance().log(Logger.DEBUG, "adding research slot: " + slot.getCurrent() + ", points: " + slot.getPoints());
-			slots.add(slot);
 		}
+	}
+
+	private void readResearchSlots(ObjectNode slots) {
+		Iterator it = slots.getChildren().entrySet().iterator();
+
+		while (it.hasNext()) {
+			Map.Entry<String, Object> pair = (Map.Entry<String, Object>) it.next();
+
+			if (pair.getValue() instanceof ObjectNode) {
+				readSlotObject(pair.getKey(), (ObjectNode) pair.getValue());
+			} else if (pair.getValue() instanceof ListNode) {
+				ListNode listNode = (ListNode) pair.getValue();
+
+				for (ASTNode childNode : listNode.getChildren()) {
+					readSlotObject(pair.getKey(), (ObjectNode) childNode);
+				}
+			}
+		}
+	}
+
+	private void readSlotObject(String slot, ObjectNode objectNode) {
+		DoubleNode points = (DoubleNode) objectNode.get("points");
+		slots.add(new ResearchSlot(slot, points.getValue()));
+	}
+
+	private void readTechObject(String techName, ObjectNode objectNode) {
+		IntegerNode level = (IntegerNode) objectNode.get("level");
+		DoubleNode researchPoints = (DoubleNode) objectNode.get("research_points");
+
+		technology.add(new Technology(techName, level.getValue(), researchPoints.getValue()));
 	}
 
 }

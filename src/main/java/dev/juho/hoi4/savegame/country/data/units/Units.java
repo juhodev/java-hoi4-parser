@@ -1,6 +1,7 @@
 package dev.juho.hoi4.savegame.country.data.units;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
+import dev.juho.hoi4.parser.textparser.ast.nodes.ListNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
 
@@ -15,16 +16,16 @@ public class Units {
 		this.divisions = new ArrayList<>();
 	}
 
-	public void build(PropertyNode unitsNode) {
-		ObjectNode obj = (ObjectNode) unitsNode.getValue();
+	public void build(ObjectNode node) {
+		ASTNode divisionNode = (ASTNode) node.get("division");
 
-		for (ASTNode child : obj.getChildren()) {
-			PropertyNode propNode = (PropertyNode) child;
+		if (divisionNode instanceof ObjectNode) {
+			readDivision((ObjectNode) divisionNode);
+		} else if (divisionNode instanceof ListNode) {
+			ListNode listNode = (ListNode) divisionNode;
 
-			switch (propNode.getKey()) {
-				case "division":
-					readDivision((ObjectNode) propNode.getValue());
-					break;
+			for (ASTNode child : listNode.getChildren()) {
+				readDivision((ObjectNode) child);
 			}
 		}
 	}

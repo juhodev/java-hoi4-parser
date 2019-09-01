@@ -33,61 +33,52 @@ public class ImportantPerson {
 		this.traits = new ArrayList<>();
 	}
 
-	public void build(PropertyNode personNode) {
-		ObjectNode node = (ObjectNode) personNode.getValue();
+	public void build(Type personType, ObjectNode personNode) {
+		this.personType = personType;
 
-		if (personNode.getKey().equalsIgnoreCase("corps_commander")) {
-			personType = Type.CORPS_COMMANDER;
-		} else if (personNode.getKey().equalsIgnoreCase("field_marshal")) {
-			personType = Type.FIELD_MARSHAL;
-		} else if (personNode.getKey().equalsIgnoreCase("navy_leader")) {
-			personType = Type.NAVY_LEADER;
+		if (personNode.has("id")) {
+			ObjectNode idNode = (ObjectNode) personNode.get("id");
+			IntegerNode id = (IntegerNode) idNode.get("id");
+			this.id = id.getValue();
+			IntegerNode type = (IntegerNode) idNode.get("type");
+			this.type = type.getValue();
 		}
 
-		for (ASTNode child : node.getChildren()) {
-			PropertyNode propNode = (PropertyNode) child;
-
-			switch (propNode.getKey()) {
-				case "id":
-					readId((ObjectNode) propNode.getValue());
-					break;
-
-				case "name":
-					name = ((StringNode) propNode.getValue()).getValue();
-					break;
-
-				case "picture":
-					picture = ((StringNode) propNode.getValue()).getValue();
-					break;
-
-				case "skill":
-					skill = ((IntegerNode) propNode.getValue()).getValue();
-					break;
-
-				case "experience":
-					experience = ((DoubleNode) propNode.getValue()).getValue();
-					break;
-
-				case "attack_skill":
-					attackSkill = ((IntegerNode) propNode.getValue()).getValue();
-					break;
-
-				case "defense_skill":
-					defenseSkill = ((IntegerNode) propNode.getValue()).getValue();
-					break;
-
-				case "planning_skill":
-					planningSkill = ((IntegerNode) propNode.getValue()).getValue();
-					break;
-
-				case "logistics_skill":
-					logisticsSkill = ((IntegerNode) propNode.getValue()).getValue();
-					break;
-
-				case "traits":
-					readTraits((ListNode) propNode.getValue());
-					break;
-			}
+		if (personNode.has("name")) {
+			StringNode name = (StringNode) personNode.get("name");
+			this.name = name.getValue();
+		}
+		if (personNode.has("picture")) {
+			StringNode picture = (StringNode) personNode.get("picture");
+			this.picture = picture.getValue();
+		}
+		if (personNode.has("skill")) {
+			IntegerNode skill = (IntegerNode) personNode.get("skill");
+			this.skill = skill.getValue();
+		}
+		if (personNode.has("experience")) {
+			DoubleNode experience = (DoubleNode) personNode.get("experience");
+			this.experience = experience.getValue();
+		}
+		if (personNode.has("attack_skill")) {
+			IntegerNode attackSkill = (IntegerNode) personNode.get("attack_skill");
+			this.attackSkill = attackSkill.getValue();
+		}
+		if (personNode.has("defense_skill")) {
+			IntegerNode defenseSkill = (IntegerNode) personNode.get("defense_skill");
+			this.defenseSkill = defenseSkill.getValue();
+		}
+		if (personNode.has("planning_skill")) {
+			IntegerNode planningSkill = (IntegerNode) personNode.get("planning_skill");
+			this.planningSkill = planningSkill.getValue();
+		}
+		if (personNode.has("logistics_skill")) {
+			IntegerNode logisticsSkill = (IntegerNode) personNode.get("logistics_skill");
+			this.logisticsSkill = logisticsSkill.getValue();
+		}
+		if (personNode.has("traits")) {
+			ListNode traitsList = (ListNode) personNode.get("traits");
+			readTraits(traitsList);
 		}
 	}
 
@@ -139,20 +130,6 @@ public class ImportantPerson {
 		return picture;
 	}
 
-	private void readId(ObjectNode node) {
-		HashMap<String, Object> children = Utils.getObjectChildren(node);
-
-		if (children.containsKey("id")) {
-			IntegerNode idNode = (IntegerNode) children.get("id");
-			id = idNode.getValue();
-		}
-
-		if (children.containsKey("type")) {
-			IntegerNode typeNode = (IntegerNode) children.get("type");
-			type = typeNode.getValue();
-		}
-	}
-
 	private void readTraits(ListNode node) {
 		for (ASTNode child : node.getChildren()) {
 			String trait = ((StringNode) child).getValue();
@@ -160,7 +137,7 @@ public class ImportantPerson {
 		}
 	}
 
-	private enum Type {
+	public enum Type {
 		CORPS_COMMANDER,
 		FIELD_MARSHAL,
 		NAVY_LEADER,

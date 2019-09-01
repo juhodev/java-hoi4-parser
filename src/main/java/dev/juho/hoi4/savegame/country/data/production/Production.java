@@ -1,16 +1,12 @@
 package dev.juho.hoi4.savegame.country.data.production;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.DoubleNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.IntegerNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
+import dev.juho.hoi4.parser.textparser.ast.nodes.*;
 import dev.juho.hoi4.savegame.country.data.misc.Equipment;
+import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Production {
 
@@ -26,28 +22,29 @@ public class Production {
 		this.equipment = new ArrayList<>();
 	}
 
-	public void build(PropertyNode productionNode) {
-		ObjectNode obj = (ObjectNode) productionNode.getValue();
+	public void build(ObjectNode productionNode) {
+		Iterator it = productionNode.getChildren().entrySet().iterator();
 
-		for (ASTNode node : obj.getChildren()) {
-			PropertyNode propNode = (PropertyNode) node;
+		while (it.hasNext()) {
+			Map.Entry<String, Object> pair = (Map.Entry<String, Object>) it.next();
+			if (pair.getValue() instanceof ObjectNode || pair.getValue() instanceof ListNode) {
+				switch (pair.getKey()) {
+					case "military_lines":
+						readMilitaryLine((ASTNode) pair.getValue());
+						break;
 
-			switch (propNode.getKey()) {
-				case "military_lines":
-					readMilitaryLine((ObjectNode) propNode.getValue());
-					break;
+					case "naval_lines":
+						readNavalLine((ASTNode) pair.getValue());
+						break;
 
-				case "naval_lines":
-					readNavalLine((ObjectNode) propNode.getValue());
-					break;
+					case "general_lines":
+						readGeneralLines((ObjectNode) pair.getValue());
+						break;
 
-				case "general_lines":
-					readGeneralLines((ObjectNode) propNode.getValue());
-					break;
-
-				case "equipments":
-					readEquipments((ObjectNode) propNode.getValue());
-					break;
+					case "equipments":
+						readEquipments((ObjectNode) pair.getValue());
+						break;
+				}
 			}
 		}
 	}
@@ -68,21 +65,52 @@ public class Production {
 		return navalLines;
 	}
 
-	private void readMilitaryLine(ObjectNode node) {
+	private void readMilitaryLine(ASTNode node) {
 		MilitaryLine line = new MilitaryLine();
-		line.build(node);
-		militaryLines.add(line);
+
+		if (node instanceof ObjectNode) {
+			ObjectNode objNode = (ObjectNode) node;
+			line.build(objNode);
+			militaryLines.add(line);
+		} else if (node instanceof ListNode) {
+			ListNode listNode = (ListNode) node;
+
+			for (ASTNode childNode : listNode.getChildren()) {
+				ObjectNode objNode = (ObjectNode) childNode;
+				line.build(objNode);
+				militaryLines.add(line);
+			}
+		}
 	}
 
-	private void readNavalLine(ObjectNode node) {
+	private void readNavalLine(ASTNode node) {
 		NavalLine line = new NavalLine();
-		line.build(node);
-		navalLines.add(line);
+
+		if (node instanceof ObjectNode) {
+			ObjectNode objNode = (ObjectNode) node;
+			line.build(objNode);
+			navalLines.add(line);
+		} else if (node instanceof ListNode) {
+			ListNode listNode = (ListNode) node;
+
+			for (ASTNode childNode : listNode.getChildren()) {
+				ObjectNode objNode = (ObjectNode) childNode;
+				line.build(objNode);
+				navalLines.add(line);
+			}
+		}
 	}
 
 	private void readGeneralLines(ObjectNode node) {
-		for (ASTNode child : node.getChildren()) {
-			readGeneralLine((ObjectNode) ((PropertyNode) child).getValue());
+		ASTNode astNode = (ASTNode) node.get("line");
+
+		if (astNode instanceof ObjectNode) {
+			readGeneralLine((ObjectNode) astNode);
+		} else if (astNode instanceof ListNode) {
+			ListNode lineList = (ListNode) astNode;
+			for (ASTNode child : lineList.getChildren()) {
+				readGeneralLine((ObjectNode) child);
+			}
 		}
 	}
 
@@ -93,29 +121,28 @@ public class Production {
 	}
 
 	private void readEquipments(ObjectNode node) {
-		for (ASTNode child : node.getChildren()) {
-			readEquipment((ObjectNode) ((PropertyNode) child).getValue());
+		ASTNode childNode = (ASTNode) node.get("equipments");
+
+		if (childNode instanceof ObjectNode) {
+			ObjectNode objNode = (ObjectNode) childNode;
+			readEquipment(objNode);
+		} else if (childNode instanceof ListNode) {
+			ListNode listNode = (ListNode) childNode;
+
+			for (ASTNode listChild : listNode.getChildren()) {
+				ObjectNode objNode = (ObjectNode) listChild;
+				readEquipment(objNode);
+			}
 		}
 	}
 
 	private void readEquipment(ObjectNode node) {
-		HashMap<String, Object> nodeChildren = Utils.getObjectChildren(node);
+		ObjectNode idNode = (ObjectNode) node.get("id");
 
-		int id = -1;
-		int type = -1;
-		double amount = -1;
+		IntegerNode id = (IntegerNode) idNode.get("id");
+		IntegerNode type = (IntegerNode) idNode.get("type");
+		DoubleNode amount = (DoubleNode) node.get("amount");
 
-		if (nodeChildren.containsKey("id")) {
-			HashMap<String, Object> propChildren = Utils.getObjectChildren((ObjectNode) nodeChildren.get("id"));
-
-			id = ((IntegerNode) propChildren.get("id")).getValue();
-			type = ((IntegerNode) propChildren.get("type")).getValue();
-		}
-
-		if (nodeChildren.containsKey("amount")) {
-			amount = ((DoubleNode) nodeChildren.get("amount")).getValue();
-		}
-
-		equipment.add(new Equipment(id, type, amount));
+		equipment.add(new Equipment(id.getValue(), type.getValue(), amount.getValue()));
 	}
 }

@@ -1,7 +1,5 @@
 package dev.juho.hoi4.utils;
 
-import dev.juho.hoi4.parser.SaveGame;
-import dev.juho.hoi4.parser.data.HOIEnum;
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
@@ -70,8 +68,12 @@ public class Logger {
 
 			case OBJECT:
 				ObjectNode objectNode = (ObjectNode) node;
-				for (ASTNode objectChild : objectNode.getChildren()) {
-					log(level, objectChild, tabs + "\t");
+
+				Iterator it = objectNode.getChildren().entrySet().iterator();
+
+				while (it.hasNext()) {
+					Map.Entry<String, Object> pair = (Map.Entry<String, Object>) it.next();
+					log(level, (ASTNode) pair.getValue(), tabs + "\t");
 				}
 				break;
 
@@ -90,17 +92,6 @@ public class Logger {
 				PropertyNode propertyNode = (PropertyNode) node;
 				log(level, tabs + "Key: " + propertyNode.getKey());
 				log(level, (ASTNode) propertyNode.getValue(), tabs + "\t");
-		}
-	}
-
-	public void log(int level, SaveGame game) {
-		Iterator it = game.save.entrySet().iterator();
-		log(level, "Save game: ");
-
-		while (it.hasNext()) {
-			Map.Entry pair = (Map.Entry) it.next();
-
-			log(level, pair.getKey() + ": " + pair.getValue());
 		}
 	}
 

@@ -1,5 +1,7 @@
 package dev.juho.hoi4.parser;
 
+import dev.juho.hoi4.savegame.SaveGame;
+
 import java.io.File;
 import java.io.IOException;
 

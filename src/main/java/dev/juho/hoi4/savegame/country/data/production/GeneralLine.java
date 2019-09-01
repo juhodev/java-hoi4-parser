@@ -27,34 +27,37 @@ public class GeneralLine {
 	}
 
 	public void build(ObjectNode node) {
-		HashMap<String, Object> children = Utils.getObjectChildren(node);
-
-		if (children.containsKey("id")) {
-			readId((ObjectNode) children.get("id"));
+		if (node.has("id")) {
+			ObjectNode idNode = (ObjectNode) node.get("id");
+			IntegerNode id = (IntegerNode) idNode.get("id");
+			this.id = id.getValue();
+			IntegerNode type = (IntegerNode) idNode.get("type");
+			this.type = type.getValue();
 		}
 
-		if (children.containsKey("active_factories")) {
-			activeFactories = ((IntegerNode) children.get("active_factories")).getValue();
+		if (node.has("active_factories")) {
+			IntegerNode activeFactories = (IntegerNode) node.get("active_factories");
+			this.activeFactories = activeFactories.getValue();
 		}
-
-		if (children.containsKey("priority")) {
-			priority = ((IntegerNode) children.get("priority")).getValue();
+		if (node.has("priority")) {
+			IntegerNode priority = (IntegerNode) node.get("priority");
+			this.priority = priority.getValue();
 		}
-
-		if (children.containsKey("amount")) {
-			amount = ((IntegerNode) children.get("amount")).getValue();
+		if (node.has("amount")) {
+			IntegerNode amount = (IntegerNode) node.get("amount");
+			this.amount = amount.getValue();
 		}
-
-		if (children.containsKey("speed")) {
-			speed = ((DoubleNode) children.get("speed")).getValue();
+		if (node.has("speed")) {
+			DoubleNode speed = (DoubleNode) node.get("speed");
+			this.speed = speed.getValue();
 		}
-
-		if (children.containsKey("cost")) {
-			cost = ((DoubleNode) children.get("cost")).getValue();
+		if (node.has("cost")) {
+			DoubleNode cost = (DoubleNode) node.get("cost");
+			this.cost = cost.getValue();
 		}
-
-		if (children.containsKey("building")) {
-			readBuilding((ObjectNode) children.get("building"));
+		if (node.has("building")) {
+			ObjectNode building = (ObjectNode) node.get("building");
+			readBuilding(building);
 		}
 	}
 
@@ -94,25 +97,15 @@ public class GeneralLine {
 		return toRepair;
 	}
 
-	private void readId(ObjectNode obj) {
-		HashMap<String, Object> idChildren = Utils.getObjectChildren(obj);
-		IntegerNode id = (IntegerNode) idChildren.get("id");
-		IntegerNode type = (IntegerNode) idChildren.get("type");
-
-		this.id = id.getValue();
-		this.type = type.getValue();
-	}
-
 	private void readBuilding(ObjectNode obj) {
-		HashMap<String, Object> children = Utils.getObjectChildren(obj);
-		if (children.containsKey("type")) {
-			StringNode typeNode = (StringNode) children.get("type");
-			building.setType(typeNode.getValue());
+		if (obj.has("type")) {
+			StringNode type = (StringNode) obj.get("type");
+			building.setType(type.getValue());
 		}
 
-		if (children.containsKey("state")) {
-			IntegerNode stateNode = (IntegerNode) children.get("state");
-			building.setState(stateNode.getValue());
+		if (obj.has("state")) {
+			IntegerNode state = (IntegerNode) obj.get("state");
+			building.setState(state.getValue());
 		}
 	}
 

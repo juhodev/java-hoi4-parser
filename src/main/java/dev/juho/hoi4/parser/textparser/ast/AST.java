@@ -7,6 +7,7 @@ import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.utils.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class AST {
@@ -134,25 +135,51 @@ public class AST {
 	}
 
 	private ASTNode readObjectOrList(TextTokenizer tokenizer) {
-		List<ASTNode> children = new ArrayList<>();
+		HashMap<String, Object> children = new HashMap<>();
+
+		String key = "";
+		List<ASTNode> childrenList = new ArrayList<>();
 //		tokenizer.next();
 		ASTNode.Type type = ASTNode.Type.OBJECT;
 
 		TextParserToken token = tokenizer.peek();
 		while (token.getType() != TextParserToken.Type.END_OBJECT) {
 			ASTNode property = readProperty(tokenizer);
+
 			if (property.getType() != ASTNode.Type.PROPERTY) {
 				type = ASTNode.Type.LIST;
+				childrenList.add(property);
+			} else {
+				PropertyNode propNode = (PropertyNode) property;
+
+				if (children.containsKey(propNode.getKey())) {
+					if (children.get(propNode.getKey()) instanceof ListNode) {
+						ListNode listNode = (ListNode) children.get(propNode.getKey());
+						listNode.add((ASTNode) propNode.getValue());
+						children.put(propNode.getKey(), listNode);
+					} else {
+						key = propNode.getKey();
+						List<ASTNode> listNodes = new ArrayList<>();
+						listNodes.add((ASTNode) children.get(propNode.getKey()));
+						listNodes.add((ASTNode) propNode.getValue());
+						ListNode listNode = new ListNode(listNodes);
+						children.put(propNode.getKey(), listNode);
+					}
+				} else {
+					children.put(propNode.getKey(), propNode.getValue());
+				}
 			}
-			children.add(property);
 			token = tokenizer.peek();
 		}
 
 		tokenizer.next();
 		if (type == ASTNode.Type.OBJECT) {
 			return new ObjectNode(children);
+		} else if (key.isEmpty()) {
+			return new ListNode(childrenList);
 		} else {
-			return new ListNode(children);
+			ListNode listNode = new ListNode(childrenList);
+			return new PropertyNode<>(key, listNode);
 		}
 	}
 

@@ -18,18 +18,4 @@ public class Utils {
 
 		return false;
 	}
-
-	public static HashMap<String, Object> getObjectChildren(ObjectNode node) {
-		HashMap<String, Object> hashMap = new HashMap<>();
-
-		// TODO: Check if this should be changed to HashMap<String, Integer> because I'm not if the HashMap stores all
-		// child values as well, if that's the case we def want to just save the index
-
-		for (ASTNode child : node.getChildren()) {
-			PropertyNode childProp = (PropertyNode) child;
-			hashMap.put(childProp.getKey(), childProp.getValue());
-		}
-
-		return hashMap;
-	}
 }
