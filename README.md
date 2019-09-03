@@ -10,3 +10,8 @@ DEBUG MODE 4.2s
 ### Second version
 Stopped creating all tokens at once.
 parsing ~1.2s
+
+### "Third" version
+Create a HashMap for every ObjectNode for better experience
+parsing ~1.3s
+save game build ~40ms (don't really know if this matters since it's going to change in the future when I add more data)
