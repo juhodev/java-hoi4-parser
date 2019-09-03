@@ -30,6 +30,16 @@ public class Units {
 		}
 	}
 
+	public double getDivisionAverageStrength() {
+		double totalStrength = 0;
+
+		for (Division division : divisions) {
+			totalStrength += division.getStrength();
+		}
+
+		return totalStrength / divisions.size();
+	}
+
 	public List<Division> getDivisions() {
 		return divisions;
 	}

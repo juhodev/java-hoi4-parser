@@ -29,6 +29,7 @@ public class SaveGameUtils {
 		Logger.getInstance().log(Logger.INFO, "");
 		Logger.getInstance().log(Logger.INFO, "Divisions: ");
 		Logger.getInstance().log(Logger.INFO, "\tDivision count: " + country.getUnits().getDivisions().size());
+		Logger.getInstance().log(Logger.INFO, "\tDivision average strength: " + Math.round(country.getUnits().getDivisionAverageStrength()));
 	}
 
 	public static double getAverageMilitaryFactoriesInUse(SaveGame game) {
