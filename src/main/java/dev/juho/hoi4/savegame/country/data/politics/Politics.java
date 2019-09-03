@@ -39,6 +39,10 @@ public class Politics {
 		return politicalPower;
 	}
 
+	public boolean isElectionsAllowed() {
+		return electionsAllowed;
+	}
+
 	public int getElectionFrequency() {
 		return electionFrequency;
 	}
