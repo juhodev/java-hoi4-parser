@@ -29,6 +29,8 @@ public class TextTokenizer {
 	private StringBuilder strBuilder;
 	private TextParserInputStream in;
 
+	private boolean hasSeenFileIdentifier;
+
 	public TextTokenizer(TextParserInputStream in, int capacity) {
 		this.in = in;
 		this.isKey = true;
@@ -37,6 +39,7 @@ public class TextTokenizer {
 		this.tokensSize = 0;
 		this.position = 0;
 		this.strBuilder = new StringBuilder();
+		this.hasSeenFileIdentifier = false;
 	}
 
 	private void createNewTokens() {
@@ -152,7 +155,13 @@ public class TextTokenizer {
 			} else if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
 				return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
 			} else {
-				if (str.equalsIgnoreCase("HOI4txt")) return null;
+				if (!hasSeenFileIdentifier) {
+					if (str.equalsIgnoreCase("HOI4txt")) {
+						hasSeenFileIdentifier = true;
+						return null;
+					}
+				}
+
 				return new TextParserToken<>(TextParserToken.Type.STRING, str);
 			}
 		}
