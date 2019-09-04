@@ -5,6 +5,7 @@ import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.TextParser;
 import dev.juho.hoi4.savegame.SaveGame;
 import dev.juho.hoi4.savegame.SaveGameUtils;
+import dev.juho.hoi4.utils.ArgsParser;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
@@ -20,14 +21,10 @@ public class Main {
 
 	public static void main(String[] args) {
 		Logger.getInstance().LOG_LEVEL = Logger.INFO;
-		HashMap<String, String> argsMap = Utils.getArgs(args);
 
-		if (argsMap.containsKey("-game")) {
-			gameName = argsMap.get("-game");
-		} else {
-			Logger.getInstance().log(Logger.ERROR, "-game [SAVE_FILE] required!");
-			System.exit(1);
-		}
+		ArgsParser argsParser = new ArgsParser(new String[]{"-game"});
+		HashMap<String, String> argsMap = argsParser.parse(args);
+		gameName = argsMap.get("-game");
 
 		if (argsMap.containsKey("-folder")) {
 			gameFolder = argsMap.get("-folder");
