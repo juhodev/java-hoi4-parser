@@ -35,6 +35,11 @@ public class Main {
 			Logger.getInstance().log(Logger.INFO, "Using default HOI4 folder located here: " + gameFolder);
 		}
 
+		if (argsMap.containsKey("-debug")) {
+			Logger.getInstance().LOG_LEVEL = Logger.DEBUG;
+			Logger.getInstance().log(Logger.DEBUG, "DEBUG MODE ENABLED");
+		}
+
 		File file = new File(gameFolder + "\\save games\\" + gameName);
 //		File realFile = new File("C:\\Users\\Juho\\Documents\\Paradox Interactive\\Hearts of Iron IV\\save games\\SOV_1949_07_19_14.hoi4");
 		File testFile = new File("test.hoi4");
