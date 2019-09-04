@@ -15,28 +15,14 @@ public class TextParserInputStream {
 	private byte[] buffer;
 
 	private int currentPos;
-	private int offset;
 	private int read;
-
-	private int line;
-	private int col;
 
 	public TextParserInputStream(InputStream is) {
 		this.is = is;
 		this.currentPos = 0;
 		this.buffer = new byte[4096 * 2];
-		this.line = 0;
-		this.col = 0;
 
 		readToBuffer();
-	}
-
-	public int getLine() {
-		return line;
-	}
-
-	public int getCol() {
-		return col;
 	}
 
 	public char next() {
@@ -45,14 +31,6 @@ public class TextParserInputStream {
 		}
 
 		char next = (char) buffer[currentPos++];
-
-		if (next == '\n') {
-			line++;
-			col = 0;
-		} else {
-			col++;
-		}
-
 		return next;
 	}
 
@@ -71,7 +49,7 @@ public class TextParserInputStream {
 
 	private void readToBuffer() {
 		try {
-			read = is.read(buffer, offset, buffer.length);
+			read = is.read(buffer, 0, buffer.length);
 			currentPos = 0;
 		} catch (IOException e) {
 			e.printStackTrace();
