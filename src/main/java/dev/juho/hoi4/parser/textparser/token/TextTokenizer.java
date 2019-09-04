@@ -36,21 +36,6 @@ public class TextTokenizer {
 		this.strBuilder = new StringBuilder();
 	}
 
-	private void createTokens(TextParserInputStream in) {
-		while (!in.eof()) {
-			TextParserToken token = read();
-
-			if (token != null) {
-				tokens[tokensSize++] = token;
-//				Logger.getInstance().log(Logger.DEBUG, token.getType() + " - " + token.getValue().toString());
-			}
-
-//			if (tokens.size() % 1000000 == 0) {
-//				Logger.getInstance().log(Logger.DEBUG, tokens.size() + " tokens");
-//			}
-		}
-	}
-
 	private void createNewTokens() {
 		tokensSize = 0;
 		position = 0;
