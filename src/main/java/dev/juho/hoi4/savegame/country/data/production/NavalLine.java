@@ -5,13 +5,14 @@ import dev.juho.hoi4.parser.textparser.ast.nodes.IntegerNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ListNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 import dev.juho.hoi4.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class NavalLine extends ProductionLine {
+public class NavalLine extends ProductionLine implements HOIData {
 
 	private int deploymentBase;
 	private List<Name> names;
@@ -55,6 +56,13 @@ public class NavalLine extends ProductionLine {
 
 //			TODO: finish making this I can't do this right now
 		}
+	}
+
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"navalLine\", \"id\": " + getId() + ", \"type\": " + getType() + ", \"activeFactories\": " + getActiveFactories() + ", \"priority\": " + getPriority() +
+				", \"amount\": " + getAmount() + ", \"requestedFactories\": " + getRequestedFactories() + ", \"produced\": " + getProduced() + ", \"speed\": " + getSpeed() + ", \"cost\": " + getCost() +
+				", \"factoryEfficiencies\": [], \"resources\": " + getResources().asJSON() + "}";
 	}
 
 	private class Name {

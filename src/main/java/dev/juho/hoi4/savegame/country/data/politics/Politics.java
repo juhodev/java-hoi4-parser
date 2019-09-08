@@ -2,13 +2,14 @@ package dev.juho.hoi4.savegame.country.data.politics;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Politics {
+public class Politics implements HOIData {
 
 	private String rulingParty, lastElection;
 	private int electionFrequency;
@@ -82,4 +83,37 @@ public class Politics {
 		}
 	}
 
+	private String partiesAsJSON() {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("[ ");
+
+		for (PoliticalParty party : parties) {
+			builder.append(party.asJSON()).append(",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("]");
+		return builder.toString();
+	}
+
+	private String ideasAsJSON() {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("[ ");
+
+		for (String s : ideas) {
+			builder.append("\"").append(s).append("\",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("]");
+		return builder.toString();
+	}
+
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"politics\", \"rulingParty\": \"" + rulingParty + "\", \"lastElection\": \"" + lastElection + "\", \"electionFrequency\": " + electionFrequency +
+				", \"politicalPower\": " + politicalPower + ", \"electionsAllowed\": " + electionsAllowed + ", \"parties\": " + partiesAsJSON() + ", \"ideas\": " + ideasAsJSON() + "}";
+	}
 }

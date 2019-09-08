@@ -2,11 +2,12 @@ package dev.juho.hoi4.savegame.country.data.politics;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PoliticalParty {
+public class PoliticalParty implements HOIData {
 
 	private String type, name, longName;
 	private double popularity;
@@ -90,7 +91,12 @@ public class PoliticalParty {
 		this.countryLeader.setExpire(expire.getValue());
 	}
 
-	private class CountryLeader {
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"politicalParty\", \"type\": \"" + type + "\", \"name\": \"" + name + "\", \"longName\": \"" + longName + "\", \"popularity\": " + popularity + ", \"countryLeader\": " + countryLeader.asJSON() + "}";
+	}
+
+	private class CountryLeader implements HOIData {
 
 		private int id, type;
 		private String name, desc, picture, ideology, expire;
@@ -169,6 +175,25 @@ public class PoliticalParty {
 
 		public void setTraits(List<String> traits) {
 			this.traits = traits;
+		}
+
+		private String traitsAsJSON() {
+			StringBuilder builder = new StringBuilder();
+
+			builder.append("[ ");
+
+			for (String s : traits) {
+				builder.append(s).append(",");
+			}
+
+			builder.delete(builder.length() - 1, builder.length());
+			builder.append("]");
+			return builder.toString();
+		}
+
+		@Override
+		public String asJSON() {
+			return "{\"_type\": \"countryLeader\", \"id\": " + id + ", \"type\": " + type + ", \"name\": \"" + name + "\", \"desc\": \"" + desc + "\", \"picture\": \"" + picture + "\", \"ideology\": \"" + ideology + "\", \"expire\": \"" + expire + "\", \"traits\": " + traitsAsJSON() + "}";
 		}
 	}
 

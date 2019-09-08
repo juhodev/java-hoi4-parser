@@ -4,11 +4,12 @@ import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.DoubleNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ListNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Fuel {
+public class Fuel implements HOIData {
 
 	private double fuel, maxFuel, fuelGain, fuelGainPerOil, fuelGainFromStates;
 	private List<FuelConsumerData> fuelConsumerDataList;
@@ -78,4 +79,23 @@ public class Fuel {
 		}
 	}
 
+	private String fuelConsumersAsJSON() {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("[ ");
+
+		for (FuelConsumerData consumerData : fuelConsumerDataList) {
+			builder.append(consumerData.asJSON()).append(",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("]");
+
+		return builder.toString();
+	}
+
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"fuel\", \"fuel\": " + fuel + ", \"maxFuel\": " + maxFuel + ", \"fuelGain\": " + fuelGain + ", \"fuelGainPerOil\": " + fuelGainPerOil + ", \"fuelGainFromStates\": " + fuelGainFromStates + ", \"fuelConsumerList\": " + fuelConsumersAsJSON() + "}";
+	}
 }

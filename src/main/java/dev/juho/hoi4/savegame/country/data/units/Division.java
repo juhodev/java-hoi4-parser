@@ -3,6 +3,7 @@ package dev.juho.hoi4.savegame.country.data.units;
 import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 import dev.juho.hoi4.savegame.country.data.misc.Equipment;
 import dev.juho.hoi4.utils.Utils;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Division {
+public class Division implements HOIData {
 
 	private int id, type, movePriority, location, templateId, templateType, manpower, manpowerNeeded;
 	private double movementProgress, supplies, maxSupply, organisation, strength, experience;
@@ -173,4 +174,10 @@ public class Division {
 		return intNode.getValue();
 	}
 
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"division\", \"id\": " + id + ", \"type\": " + type + ", \"movePriority\": " + movePriority + ", \"location\": " + location + ", \"templateId\": " + templateId + ", \"templateType\": " + templateType + ", \"manpower\": " + manpower + ", \"manpowerNeeded\": " + manpowerNeeded +
+				", \"movementProgress\": " + movementProgress + ", \"supplies\": " + supplies + ", \"maxSupply\": " + maxSupply + ", \"organisation\": " + organisation + ", \"strength\": " + strength + ", \"experience\": " + experience + ", \"lastCombatDate\": \"" + lastCombatDate +
+				"\", \"logicalCountry\": \"" + logicalCountry + "\", \"equipment\": []}";
+	}
 }

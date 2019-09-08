@@ -2,13 +2,14 @@ package dev.juho.hoi4.savegame.country.data.technology;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
 import java.io.ObjectOutput;
 import java.util.*;
 
-public class Research {
+public class Research implements HOIData {
 
 	private List<Technology> technology;
 	private List<ResearchSlot> slots;
@@ -76,4 +77,26 @@ public class Research {
 		technology.add(new Technology(techName, level.getValue(), researchPoints.getValue()));
 	}
 
+	@Override
+	public String asJSON() {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("{\"_type\": \"research\", \"technology\": [ ");
+
+		for (Technology tech : technology) {
+			builder.append(tech.asJSON()).append(",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("], \"slots\": [ ");
+
+		for (ResearchSlot slot : slots) {
+			builder.append(slot.asJSON()).append(",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("]}");
+
+		return builder.toString();
+	}
 }

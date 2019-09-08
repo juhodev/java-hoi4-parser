@@ -1,6 +1,8 @@
 package dev.juho.hoi4.savegame.country.data.technology;
 
-public class ResearchSlot {
+import dev.juho.hoi4.savegame.country.data.HOIData;
+
+public class ResearchSlot implements HOIData {
 
 	private String current;
 	private double points;
@@ -16,5 +18,10 @@ public class ResearchSlot {
 
 	public String getCurrent() {
 		return current;
+	}
+
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"researchSlot\", \"current\": \"" + current + "\", \"points\": " + points + "}";
 	}
 }

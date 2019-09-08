@@ -2,9 +2,10 @@ package dev.juho.hoi4.savegame.country.data.resources;
 
 import dev.juho.hoi4.parser.textparser.ast.nodes.DoubleNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 import dev.juho.hoi4.utils.Logger;
 
-public class Resources {
+public class Resources implements HOIData {
 
 	private ResourceData produced, imported, toUse, toExport, baseExport, exported, consumed;
 
@@ -110,4 +111,8 @@ public class Resources {
 		Logger.getInstance().log(Logger.DEBUG, "resources: oil: " + data.getOil() + ", aluminium: " + data.getAluminium() + ", rubber: " + data.getRubber() + ", tungsten: " + data.getTungsten() + ", steel: " + data.getSteel() + ", chromium: " + data.getChromium());
 	}
 
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"resources\", \"produced\": " + produced.asJSON() + ", \"imported\": " + imported.asJSON() + ", \"toUse\": " + toUse.asJSON() + ", \"toExport\": " + toExport.asJSON() + ", \"baseExport\": " + baseExport.asJSON() + ", \"exported\": " + exported.asJSON() + ", \"consumed\": " + consumed.asJSON() + "}";
+	}
 }

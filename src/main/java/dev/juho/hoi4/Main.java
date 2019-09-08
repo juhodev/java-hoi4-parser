@@ -22,7 +22,18 @@ public class Main {
 	public static void main(String[] args) {
 		Logger.getInstance().LOG_LEVEL = Logger.INFO;
 
-		ArgsParser argsParser = new ArgsParser(new String[]{"-game"});
+		ArgsParser argsParser = new ArgsParser(
+				new String[]{"-game"},
+				new String[]{
+						"-debug",
+						"-folder",
+						"-help",
+						"-out",
+						"-outfile",
+						"-ext",
+				}
+		);
+
 		HashMap<String, String> argsMap = argsParser.parse(args);
 		gameName = argsMap.get("-game");
 
@@ -49,6 +60,21 @@ public class Main {
 
 		parser.getSaveGame().build();
 
+		if (argsMap.containsKey("-out") && !argsMap.containsKey("-outfile")) {
+			try {
+				SaveGameUtils.saveToFile(parser.getSaveGame(), CountryTag.GER);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (argsMap.containsKey("-out") && argsMap.containsKey("-outfile")) {
+			try {
+				SaveGameUtils.saveToFile(parser.getSaveGame(), CountryTag.GER, argsMap.get("-outfile"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		Logger.getInstance().log(Logger.INFO, "Average military factories in use: " + SaveGameUtils.getAverageMilitaryFactoriesInUse(parser.getSaveGame()));
 		double[] avrgDataThing = SaveGameUtils.getAverageDivisionsAndManpowerCount(parser.getSaveGame());
 

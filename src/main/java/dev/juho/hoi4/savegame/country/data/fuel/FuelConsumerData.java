@@ -5,8 +5,9 @@ import dev.juho.hoi4.parser.textparser.ast.nodes.DoubleNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.IntegerNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ListNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 
-public class FuelConsumerData {
+public class FuelConsumerData implements HOIData {
 
 	private int index, priority;
 	private double received, requested;
@@ -48,5 +49,10 @@ public class FuelConsumerData {
 		this.priority = priority.getValue();
 		this.received = received.getValue();
 		this.requested = requested.getValue();
+	}
+
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"fuelConsumerData\", \"index\": " + index + ", \"priority\": " + priority + ", \"received\": " + received + ", \"requested\": " + requested + "}";
 	}
 }

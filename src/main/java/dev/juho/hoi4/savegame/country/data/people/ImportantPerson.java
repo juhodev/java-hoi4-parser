@@ -2,13 +2,14 @@ package dev.juho.hoi4.savegame.country.data.people;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 import dev.juho.hoi4.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ImportantPerson {
+public class ImportantPerson implements HOIData {
 
 	private Type personType;
 	private int id, type, skill, attackSkill, defenseSkill, planningSkill, logisticsSkill;
@@ -135,6 +136,12 @@ public class ImportantPerson {
 			String trait = ((StringNode) child).getValue();
 			traits.add(trait);
 		}
+	}
+
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"importantPerson\", \"personType\": \"" + personType + "\", \"id\": " + id + ", \"type\": " + type + ", \"skill\": " + skill + ", \"attackSkill\": " + attackSkill + ", \"defenseSkill\": " + defenseSkill + ", \"planningSkill\": " + planningSkill +
+				", \"logisticsSkill\": " + logisticsSkill + ", \"name\": \"" + name + "\", \"picture\": \"" + picture + "\", \"experience\": " + experience + ", \"traits\": []}";
 	}
 
 	public enum Type {

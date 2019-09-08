@@ -4,11 +4,12 @@ import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ListNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Units {
+public class Units implements HOIData {
 
 	private List<Division> divisions;
 
@@ -50,4 +51,19 @@ public class Units {
 		divisions.add(div);
 	}
 
+	@Override
+	public String asJSON() {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("{\"_type\": \"units\", \"divisions\": [ ");
+
+		for (Division division : divisions) {
+			builder.append(division.asJSON()).append(",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("]}");
+
+		return builder.toString();
+	}
 }

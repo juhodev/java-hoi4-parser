@@ -5,9 +5,11 @@ import java.util.HashMap;
 public class ArgsParser {
 
 	private String[] required;
+	private String[] optional;
 
-	public ArgsParser(String[] required) {
+	public ArgsParser(String[] required, String[] optional) {
 		this.required = required;
+		this.optional = optional;
 	}
 
 	public HashMap<String, String> parse(String[] args) {
@@ -18,6 +20,22 @@ public class ArgsParser {
 				Logger.getInstance().log(Logger.ERROR, s + " is required!");
 				System.exit(1);
 			}
+		}
+
+		if (argMap.containsKey("-help")) {
+			StringBuilder builder = new StringBuilder();
+			for (String s : required) {
+				builder.append(s).append(" ");
+			}
+			Logger.getInstance().log(Logger.INFO, "Required args: " + builder.toString());
+
+			builder.delete(0, builder.length());
+
+			for (String s : optional) {
+				builder.append(s).append(" ");
+			}
+
+			Logger.getInstance().log(Logger.INFO, "Optional args: " + builder.toString());
 		}
 
 		return argMap;

@@ -4,7 +4,7 @@ import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ListNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 import dev.juho.hoi4.savegame.country.data.fuel.Fuel;
 import dev.juho.hoi4.savegame.country.data.people.ImportantPerson;
 import dev.juho.hoi4.savegame.country.data.politics.Politics;
@@ -16,7 +16,7 @@ import dev.juho.hoi4.savegame.country.data.units.Units;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Country {
+public class Country implements HOIData {
 
 	private CountryTag tag;
 
@@ -136,4 +136,23 @@ public class Country {
 		importantPeople.add(person);
 	}
 
+	private String importantPeopleAsJSON() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("{\"_type\": \"importantPeople\", \"people\": [ ");
+
+		for (ImportantPerson person : importantPeople) {
+			builder.append(person.asJSON()).append(",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("]}");
+
+		return builder.toString();
+	}
+
+	@Override
+	public String asJSON() {
+		return "{\"" + tag + "\": {\"research\": " + research.asJSON() + ", \"resources\": " + resources.asJSON() + ", \"production\": " + production.asJSON() + ", \"units\": " + units.asJSON() + ", \"importantPeople\": " + importantPeopleAsJSON() + ", \"fuel\": " + fuel.asJSON() +
+				", \"politics\": " + politics.asJSON() + "}}";
+	}
 }

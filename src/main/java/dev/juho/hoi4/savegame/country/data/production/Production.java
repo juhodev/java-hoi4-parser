@@ -2,13 +2,14 @@ package dev.juho.hoi4.savegame.country.data.production;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 import dev.juho.hoi4.savegame.country.data.misc.Equipment;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
 import java.util.*;
 
-public class Production {
+public class Production implements HOIData {
 
 	private List<MilitaryLine> militaryLines;
 	private List<NavalLine> navalLines;
@@ -187,5 +188,42 @@ public class Production {
 		DoubleNode amount = (DoubleNode) node.get("amount");
 
 		equipment.add(new Equipment(id.getValue(), type.getValue(), amount.getValue()));
+	}
+
+	@Override
+	public String asJSON() {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("{\"_type\": \"production\", \"navalLines\": [ ");
+
+		for (NavalLine line : navalLines) {
+			builder.append(line.asJSON()).append(",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("], \"militaryLines\": [ ");
+
+		for (MilitaryLine line : militaryLines) {
+			builder.append(line.asJSON()).append(",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("], \"generalLines\": [ ");
+
+		for (GeneralLine line : generalLines) {
+			builder.append(line.asJSON()).append(",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("], \"equipment\": [ ");
+
+		for (Equipment e : equipment) {
+			builder.append(e.asJSON()).append(",");
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("]}");
+
+		return builder.toString();
 	}
 }

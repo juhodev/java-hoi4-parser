@@ -1,6 +1,8 @@
 package dev.juho.hoi4.savegame.country.data.resources;
 
-public class ResourceData {
+import dev.juho.hoi4.savegame.country.data.HOIData;
+
+public class ResourceData implements HOIData {
 
 	private double oil, aluminium, rubber, tungsten, steel, chromium;
 
@@ -68,5 +70,10 @@ public class ResourceData {
 
 	public double getTungsten() {
 		return tungsten;
+	}
+
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"resourceData\", \"oil\": " + oil + ", \"aluminium\": " + aluminium + ", \"rubber\": " + rubber + ", \"tungsten\": " + tungsten + ", \"steel\": " + steel + ", \"chromium\": " + chromium + "}";
 	}
 }

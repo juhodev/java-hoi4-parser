@@ -1,6 +1,8 @@
 package dev.juho.hoi4.savegame.country.data.technology;
 
-public class Technology {
+import dev.juho.hoi4.savegame.country.data.HOIData;
+
+public class Technology implements HOIData {
 
 	private String name;
 	private int level;
@@ -22,5 +24,10 @@ public class Technology {
 
 	public int getLevel() {
 		return level;
+	}
+
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"technology\", \"name\": \"" + name + "\", \"level\": " + level + ", \"researchPoints\": " + researchPoints + "}";
 	}
 }

@@ -2,11 +2,12 @@ package dev.juho.hoi4.savegame.country.data.production;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
+import dev.juho.hoi4.savegame.country.data.HOIData;
 import dev.juho.hoi4.utils.Utils;
 
 import java.util.HashMap;
 
-public class GeneralLine {
+public class GeneralLine implements HOIData {
 
 	private int id, type, activeFactories, priority, amount, toRepair;
 	private double speed, cost;
@@ -109,7 +110,12 @@ public class GeneralLine {
 		}
 	}
 
-	private class Building {
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"generalLine\", \"id\": " + id + ", \"type\": \"" + type + "\", \"activeFactories\": " + activeFactories + ", \"priority\": " + priority + ", \"amount\": " + amount + ", \"toRepair\": " + toRepair + ", \"speed\": " + speed + ", \"cost\": " + cost + ", \"building\": " + building.asJSON() + "}";
+	}
+
+	private class Building implements HOIData {
 
 		private String type;
 		private int state;
@@ -133,6 +139,12 @@ public class GeneralLine {
 
 		public String getType() {
 			return type;
+		}
+
+
+		@Override
+		public String asJSON() {
+			return "{\"_type\": \"building\", \"type\": \"" + type + "\", \"state\": " + state + "}";
 		}
 	}
 

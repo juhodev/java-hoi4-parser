@@ -8,10 +8,28 @@ import dev.juho.hoi4.savegame.country.data.production.NavalLine;
 import dev.juho.hoi4.savegame.country.data.units.Division;
 import dev.juho.hoi4.utils.Logger;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Map;
 
 public class SaveGameUtils {
+
+	public static void saveToFile(SaveGame game, CountryTag tag) throws IOException {
+		saveToFile(game, tag, tag + "-save-game.json");
+	}
+
+	public static void saveToFile(SaveGame game, CountryTag tag, String fileName) throws IOException {
+		Logger.getInstance().log(Logger.INFO, "Saving " + tag + " to " + fileName);
+		Country country = game.getCountries().get(tag);
+
+		PrintWriter writer = new PrintWriter(new FileWriter(new File(fileName)));
+		writer.write(country.asJSON());
+		writer.flush();
+		writer.close();
+	}
 
 	public static void printCountry(SaveGame game, CountryTag tag) {
 		Country country = game.getCountries().get(tag);

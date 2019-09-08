@@ -1,6 +1,8 @@
 package dev.juho.hoi4.savegame.country.data.misc;
 
-public class Equipment {
+import dev.juho.hoi4.savegame.country.data.HOIData;
+
+public class Equipment implements HOIData {
 
 	private int id, type;
 	private double amount;
@@ -23,4 +25,8 @@ public class Equipment {
 		return amount;
 	}
 
+	@Override
+	public String asJSON() {
+		return "{\"_type\": \"Equipment\", \"id\": " + id + ", \"type\": " + type + ", \"amount\": " + amount + "}";
+	}
 }
