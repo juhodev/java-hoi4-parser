@@ -23,7 +23,10 @@ public class Main {
 		Logger.getInstance().LOG_LEVEL = Logger.INFO;
 
 		ArgsParser argsParser = new ArgsParser(
-				new String[]{"-game"},
+				new String[]{
+						"-game",
+						"-country"
+				},
 				new String[]{
 						"-debug",
 						"-folder",
@@ -36,6 +39,15 @@ public class Main {
 
 		HashMap<String, String> argsMap = argsParser.parse(args);
 		gameName = argsMap.get("-game");
+
+		CountryTag countryTag = null;
+
+		if (Utils.hasEnum(CountryTag.values(), argsMap.get("country"))) {
+			countryTag = CountryTag.valueOf(argsMap.get("country"));
+		} else {
+			Logger.getInstance().log(Logger.ERROR, "Couldn't find a country " + argsMap.get("country"));
+			System.exit(1);
+		}
 
 		if (argsMap.containsKey("-folder")) {
 			gameFolder = argsMap.get("-folder");
@@ -60,21 +72,22 @@ public class Main {
 
 		parser.getSaveGame().build();
 
-		if (argsMap.containsKey("-out") && !argsMap.containsKey("-outfile")) {
-			try {
-				SaveGameUtils.saveToFile(parser.getSaveGame(), CountryTag.GER);
-			} catch (IOException e) {
-				e.printStackTrace();
+		if (argsMap.containsKey("-out")) {
+			if (!argsMap.containsKey("-outfile")) {
+				try {
+					SaveGameUtils.saveToFile(parser.getSaveGame(), countryTag);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					SaveGameUtils.saveToFile(parser.getSaveGame(), countryTag, argsMap.get("-outfile"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
-		if (argsMap.containsKey("-out") && argsMap.containsKey("-outfile")) {
-			try {
-				SaveGameUtils.saveToFile(parser.getSaveGame(), CountryTag.GER, argsMap.get("-outfile"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 		Logger.getInstance().log(Logger.INFO, "Average military factories in use: " + SaveGameUtils.getAverageMilitaryFactoriesInUse(parser.getSaveGame()));
 		double[] avrgDataThing = SaveGameUtils.getAverageDivisionsAndManpowerCount(parser.getSaveGame());
 
