@@ -17,10 +17,13 @@ public class TextParserInputStream {
 	private int currentPos;
 	private int read;
 
-	public TextParserInputStream(InputStream is) {
+	private int capacity;
+
+	public TextParserInputStream(InputStream is, int capacity) {
 		this.is = is;
 		this.currentPos = 0;
-		this.buffer = new byte[4096 * 2];
+		this.capacity = capacity;
+		this.buffer = new byte[capacity];
 
 		readToBuffer();
 	}
@@ -44,12 +47,12 @@ public class TextParserInputStream {
 	}
 
 	public boolean eof() {
-		return read < buffer.length && currentPos == read;
+		return read < capacity && currentPos == read;
 	}
 
 	private void readToBuffer() {
 		try {
-			read = is.read(buffer, 0, buffer.length);
+			read = is.read(buffer, 0, capacity);
 			currentPos = 0;
 		} catch (IOException e) {
 			e.printStackTrace();
