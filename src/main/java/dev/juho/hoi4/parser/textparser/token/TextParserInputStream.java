@@ -1,17 +1,12 @@
 package dev.juho.hoi4.parser.textparser.token;
 
-import dev.juho.hoi4.Main;
-import dev.juho.hoi4.parser.textparser.TextParser;
-import dev.juho.hoi4.utils.Logger;
-
-import javax.crypto.spec.DESedeKeySpec;
-import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class TextParserInputStream {
 
-	private InputStream is;
+	private BufferedInputStream is;
 	private byte[] buffer;
 
 	private int currentPos;
@@ -20,7 +15,7 @@ public class TextParserInputStream {
 	private int capacity;
 
 	public TextParserInputStream(InputStream is, int capacity) {
-		this.is = is;
+		this.is = new BufferedInputStream(is);
 		this.currentPos = 0;
 		this.capacity = capacity;
 		this.buffer = new byte[capacity];
