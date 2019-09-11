@@ -152,8 +152,10 @@ public class TextTokenizer {
 				}
 			} else if (doubleRegex.matcher(str).matches()) {
 				return new TextParserToken<>(TextParserToken.Type.DOUBLE, Double.parseDouble(str));
-			} else if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
-				return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
+			} else if (str.length() == 2 || str.length() == 3) {
+				if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
+					return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
+				}
 			} else {
 				if (!hasSeenFileIdentifier) {
 					if (str.equalsIgnoreCase("HOI4txt")) {
