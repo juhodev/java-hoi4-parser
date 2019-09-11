@@ -36,6 +36,7 @@ public class ArgsParser {
 			}
 
 			Logger.getInstance().log(Logger.INFO, "Optional args: " + builder.toString());
+			System.exit(0);
 		}
 
 		return argMap;
