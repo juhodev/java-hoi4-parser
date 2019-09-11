@@ -42,10 +42,10 @@ public class Main {
 
 		CountryTag countryTag = null;
 
-		if (Utils.hasEnum(CountryTag.values(), argsMap.get("country"))) {
-			countryTag = CountryTag.valueOf(argsMap.get("country"));
+		if (Utils.hasEnum(CountryTag.values(), argsMap.get("-country"))) {
+			countryTag = CountryTag.valueOf(argsMap.get("-country"));
 		} else {
-			Logger.getInstance().log(Logger.ERROR, "Couldn't find a country " + argsMap.get("country"));
+			Logger.getInstance().log(Logger.ERROR, "Couldn't find a country " + argsMap.get("-country"));
 			System.exit(1);
 		}
 
