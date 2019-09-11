@@ -22,9 +22,9 @@ public class TextParser extends Parser {
 	public void parse() throws IOException {
 		Logger.getInstance().time("Parsing " + getFile().getName());
 
-		TextParserInputStream in = new TextParserInputStream(new FileInputStream(getFile()), 4096 * 2);
+		TextParserInputStream in = new TextParserInputStream(new FileInputStream(getFile()), 4096 * 8);
 
-		TextTokenizer tokenizer = new TextTokenizer(in, 4096 * 2);
+		TextTokenizer tokenizer = new TextTokenizer(in, 4096 * 8);
 		AST ast = new AST();
 
 		ast.build(tokenizer);
