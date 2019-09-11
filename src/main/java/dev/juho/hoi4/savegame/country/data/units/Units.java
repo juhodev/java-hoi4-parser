@@ -31,7 +31,7 @@ public class Units implements HOIData {
 		}
 	}
 
-	public double getDivisionAverageStrength() {
+	public double getAverageStrength() {
 		double totalStrength = 0;
 
 		for (Division division : divisions) {
@@ -39,6 +39,16 @@ public class Units implements HOIData {
 		}
 
 		return totalStrength / divisions.size();
+	}
+
+	public double getAverageOrganisation() {
+		double totalOrganisation = 0;
+
+		for (Division division : divisions) {
+			totalOrganisation += division.getOrganisation();
+		}
+
+		return totalOrganisation / divisions.size();
 	}
 
 	public List<Division> getDivisions() {
