@@ -12,13 +12,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
 public class SaveGameUtils {
 
 	public static void saveToFile(SaveGame game, CountryTag tag) throws IOException {
-		saveToFile(game, tag, tag + "-save-game.json");
+		saveToFile(game, tag, tag + "-" + new Date().getTime() + "-save-game.json");
 	}
 
 	public static void saveToFile(SaveGame game, CountryTag tag, String fileName) throws IOException {
