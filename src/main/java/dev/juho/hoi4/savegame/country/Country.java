@@ -11,6 +11,7 @@ import dev.juho.hoi4.savegame.country.data.politics.Politics;
 import dev.juho.hoi4.savegame.country.data.production.Production;
 import dev.juho.hoi4.savegame.country.data.resources.Resources;
 import dev.juho.hoi4.savegame.country.data.technology.Research;
+import dev.juho.hoi4.savegame.country.data.theatre.Theatre;
 import dev.juho.hoi4.savegame.country.data.units.Units;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class Country implements HOIData {
 	private List<ImportantPerson> importantPeople;
 	private Fuel fuel;
 	private Politics politics;
+	private List<Theatre> theatres;
 
 	public Country(CountryTag tag) {
 		this.tag = tag;
@@ -37,6 +39,7 @@ public class Country implements HOIData {
 		this.importantPeople = new ArrayList<>();
 		this.fuel = new Fuel();
 		this.politics = new Politics();
+		this.theatres = new ArrayList<>();
 	}
 
 	public CountryTag getTag() {
@@ -100,6 +103,27 @@ public class Country implements HOIData {
 			ObjectNode politicsNode = (ObjectNode) countryNode.get("politics");
 			politics.build(politicsNode);
 		}
+
+		if (countryNode.has("theatres")) {
+			ObjectNode theatresObject = (ObjectNode) countryNode.get("theatres");
+			if (theatresObject.has("theatre")) {
+				ASTNode theatreNode = (ASTNode) theatresObject.get("theatre");
+
+				if (theatreNode instanceof ObjectNode) {
+					Theatre theatre = new Theatre();
+					theatre.build((ObjectNode) theatreNode);
+					theatres.add(theatre);
+				} else if (theatreNode instanceof ListNode) {
+					ListNode listNode = (ListNode) theatreNode;
+
+					for (ASTNode child : listNode.getChildren()) {
+						Theatre theatre = new Theatre();
+						theatre.build((ObjectNode) child);
+						theatres.add(theatre);
+					}
+				}
+			}
+		}
 	}
 
 	public Fuel getFuel() {
@@ -128,6 +152,10 @@ public class Country implements HOIData {
 
 	public Resources getResources() {
 		return resources;
+	}
+
+	public List<Theatre> getTheatres() {
+		return theatres;
 	}
 
 	private void readPerson(ImportantPerson.Type type, ObjectNode node) {
