@@ -152,10 +152,8 @@ public class TextTokenizer {
 				}
 			} else if (doubleRegex.matcher(str).matches()) {
 				return new TextParserToken<>(TextParserToken.Type.DOUBLE, Double.parseDouble(str));
-			} else if (str.length() == 2 || str.length() == 3) {
-				if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
-					return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
-				}
+			} else if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
+				return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
 			} else {
 				if (!hasSeenFileIdentifier) {
 					if (str.equalsIgnoreCase("HOI4txt")) {
@@ -187,11 +185,13 @@ public class TextTokenizer {
 		String str = strBuilder.toString();
 		strBuilder.delete(0, strBuilder.length());
 
-		if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
-			return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
-		} else {
-			return new TextParserToken<>(TextParserToken.Type.STRING, str.toUpperCase());
+		if (str.length() == 2 || str.length() == 3) {
+			if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
+				return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
+			}
 		}
+
+		return new TextParserToken<>(TextParserToken.Type.STRING, str.toUpperCase());
 	}
 
 	private TextParserToken ignoreUntilSomethingNotStupid() {
