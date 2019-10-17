@@ -11,7 +11,6 @@ import java.io.*;
 
 public class TextParser extends Parser {
 
-	private HOIType types;
 	private SaveGame saveGame;
 
 	public TextParser(File file) {
