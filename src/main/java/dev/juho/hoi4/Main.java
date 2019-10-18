@@ -20,43 +20,38 @@ public class Main {
 	public static String gameName = "";
 
 	public static void main(String[] args) {
-		Logger.getInstance().LOG_LEVEL = Logger.INFO;
+		Logger.LOG_LEVEL = Logger.INFO;
 
-		ArgsParser argsParser = new ArgsParser(
-				new String[]{
-						"-game",
-						"-country"
-				},
-				new String[]{
-						"-debug",
-						"-folder",
-						"-help",
-						"-out",
-						"-outfile",
-						"-ext",
-				}
-		);
+		ArgsParser.getInstance().add(ArgsParser.Argument.GAME, ArgsParser.Type.STRING, true, "-game");
+		ArgsParser.getInstance().add(ArgsParser.Argument.COUNTRY, ArgsParser.Type.LIST, true, "-country");
 
-		HashMap<String, String> argsMap = argsParser.parse(args);
-		gameName = argsMap.get("-game");
+		ArgsParser.getInstance().add(ArgsParser.Argument.FOLDER, ArgsParser.Type.STRING, false, "-folder", "-hoi4_folder");
+		ArgsParser.getInstance().add(ArgsParser.Argument.OUTFILE, ArgsParser.Type.STRING, false, "-outFile");
+		ArgsParser.getInstance().add(ArgsParser.Argument.OUT, ArgsParser.Type.NONE, false, "-out");
+		ArgsParser.getInstance().add(ArgsParser.Argument.DEBUG, ArgsParser.Type.NONE, false, "-debug");
+
+		ArgsParser.getInstance().parse(args);
+
+		gameName = ArgsParser.getInstance().getString(ArgsParser.Argument.GAME);
 
 		CountryTag countryTag = null;
 
-		if (Utils.hasEnum(CountryTag.values(), argsMap.get("-country"))) {
-			countryTag = CountryTag.valueOf(argsMap.get("-country"));
+		String country = ArgsParser.getInstance().getString(ArgsParser.Argument.COUNTRY);
+		if (Utils.hasEnum(CountryTag.values(), country)) {
+			countryTag = CountryTag.valueOf(country);
 		} else {
-			Logger.getInstance().log(Logger.ERROR, "Couldn't find a country " + argsMap.get("-country"));
+			Logger.getInstance().log(Logger.ERROR, "Couldn't find a country " + country);
 			System.exit(1);
 		}
 
-		if (argsMap.containsKey("-folder")) {
-			gameFolder = argsMap.get("-folder");
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.FOLDER)) {
+			gameFolder = ArgsParser.getInstance().getString(ArgsParser.Argument.FOLDER);
 		} else {
 			Logger.getInstance().log(Logger.INFO, "Using default HOI4 folder located here: " + gameFolder);
 		}
 
-		if (argsMap.containsKey("-debug")) {
-			Logger.getInstance().LOG_LEVEL = Logger.DEBUG;
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.DEBUG)) {
+			Logger.LOG_LEVEL = Logger.DEBUG;
 			Logger.getInstance().log(Logger.DEBUG, "DEBUG MODE ENABLED");
 		}
 
@@ -72,8 +67,8 @@ public class Main {
 
 		parser.getSaveGame().build();
 
-		if (argsMap.containsKey("-out")) {
-			if (!argsMap.containsKey("-outfile")) {
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.OUT)) {
+			if (!ArgsParser.getInstance().has(ArgsParser.Argument.OUTFILE)) {
 				try {
 					SaveGameUtils.saveToFile(parser.getSaveGame(), countryTag);
 				} catch (IOException e) {
@@ -81,7 +76,7 @@ public class Main {
 				}
 			} else {
 				try {
-					SaveGameUtils.saveToFile(parser.getSaveGame(), countryTag, argsMap.get("-outfile"));
+					SaveGameUtils.saveToFile(parser.getSaveGame(), countryTag, ArgsParser.getInstance().getString(ArgsParser.Argument.OUTFILE));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
