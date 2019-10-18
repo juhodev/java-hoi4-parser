@@ -60,8 +60,6 @@ public class Main {
 		}
 
 		File file = new File(gameFolder + "/save games/" + gameName);
-//		File realFile = new File("C:\\Users\\Juho\\Documents\\Paradox Interactive\\Hearts of Iron IV\\save games\\SOV_1949_07_19_14.hoi4");
-		File testFile = new File("test.hoi4");
 		Parser parser = new TextParser(file);
 		try {
 			parser.parse();
@@ -87,10 +85,6 @@ public class Main {
 			}
 		}
 
-		Logger.getInstance().log(Logger.INFO, "Average military factories in use: " + SaveGameUtils.getAverageMilitaryFactoriesInUse(parser.getSaveGame()));
-		double[] avrgDataThing = SaveGameUtils.getAverageDivisionsAndManpowerCount(parser.getSaveGame());
-
-		Logger.getInstance().log(Logger.INFO, "Average divisions: " + avrgDataThing[0] + ", total manpower: " + String.format("%.0f", avrgDataThing[1]));
 		SaveGameUtils.printCountry(parser.getSaveGame(), CountryTag.GER);
 	}
 
