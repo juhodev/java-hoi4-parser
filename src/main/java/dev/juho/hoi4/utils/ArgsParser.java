@@ -74,6 +74,7 @@ public class ArgsParser {
 		for (Argument required : requiredArgs) {
 			if (!parsedArgs.containsKey(required)) {
 				allFound = false;
+				break;
 			}
 		}
 

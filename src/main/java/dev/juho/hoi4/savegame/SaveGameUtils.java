@@ -14,22 +14,25 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class SaveGameUtils {
 
-	public static void saveToFile(SaveGame game, CountryTag tag) throws IOException {
+	public static void saveToFile(SaveGame game, List<CountryTag> tag) throws IOException {
 		saveToFile(game, tag, tag + "-" + new Date().getTime() + "-save-game.json");
 	}
 
-	public static void saveToFile(SaveGame game, CountryTag tag, String fileName) throws IOException {
-		Logger.getInstance().log(Logger.INFO, "Saving " + tag + " to " + fileName);
-		Country country = game.getCountries().get(tag);
+	public static void saveToFile(SaveGame game, List<CountryTag> tags, String fileName) throws IOException {
+		for (CountryTag tag : tags) {
+			Logger.getInstance().log(Logger.INFO, "Saving " + tag + " to " + fileName);
+			Country country = game.getCountries().get(tag);
 
-		PrintWriter writer = new PrintWriter(new FileWriter(new File(fileName)));
-		writer.write(country.asJSON());
-		writer.flush();
-		writer.close();
+			PrintWriter writer = new PrintWriter(new FileWriter(new File(tag + "-" + fileName)));
+			writer.write(country.asJSON());
+			writer.flush();
+			writer.close();
+		}
 	}
 
 	public static void printCountry(SaveGame game, CountryTag tag) {
