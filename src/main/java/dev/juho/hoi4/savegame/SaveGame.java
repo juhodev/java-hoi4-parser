@@ -6,6 +6,8 @@ import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.StringNode;
 import dev.juho.hoi4.savegame.country.Country;
+import dev.juho.hoi4.savegame.country.data.combat.CombatDataEntry;
+import dev.juho.hoi4.savegame.country.data.combat.CombatHistory;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
@@ -17,10 +19,12 @@ public class SaveGame {
 
 	private List<ASTNode> nodes;
 	private HashMap<CountryTag, Country> countries;
+	private CombatHistory combatHistory;
 
 	public SaveGame(List<ASTNode> nodes) {
 		this.nodes = nodes;
 		this.countries = new HashMap<>();
+		this.combatHistory = new CombatHistory();
 	}
 
 	public void build() {
@@ -44,6 +48,10 @@ public class SaveGame {
 		return countries;
 	}
 
+	public CombatHistory getCombatHistory() {
+		return combatHistory;
+	}
+
 	private void readProperty(PropertyNode propertyNode) {
 		switch (propertyNode.getKey()) {
 			case "start_date":
@@ -52,6 +60,10 @@ public class SaveGame {
 
 			case "countries":
 				buildCountries((ObjectNode) propertyNode.getValue());
+				break;
+
+			case "combat_data_entry":
+				buildCombatDataEntry((ObjectNode) propertyNode.getValue());
 				break;
 		}
 	}
@@ -71,6 +83,12 @@ public class SaveGame {
 				Logger.getInstance().log(Logger.WARNING, "Couldn't find country tag " + pair.getKey());
 			}
 		}
+	}
+
+	private void buildCombatDataEntry(ObjectNode combatDataEntry) {
+		CombatDataEntry entry = new CombatDataEntry();
+		entry.build(combatDataEntry);
+		combatHistory.add(entry);
 	}
 
 }

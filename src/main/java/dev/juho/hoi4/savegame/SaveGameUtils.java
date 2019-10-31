@@ -2,6 +2,9 @@ package dev.juho.hoi4.savegame;
 
 import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.savegame.country.Country;
+import dev.juho.hoi4.savegame.country.data.combat.CombatData;
+import dev.juho.hoi4.savegame.country.data.combat.CombatDataEntry;
+import dev.juho.hoi4.savegame.country.data.combat.CombatHistory;
 import dev.juho.hoi4.savegame.country.data.production.GeneralLine;
 import dev.juho.hoi4.savegame.country.data.production.MilitaryLine;
 import dev.juho.hoi4.savegame.country.data.production.NavalLine;
@@ -37,6 +40,7 @@ public class SaveGameUtils {
 
 	public static void printCountry(SaveGame game, CountryTag tag) {
 		Country country = game.getCountries().get(tag);
+		CombatHistory combatHistory = game.getCombatHistory();
 
 		Logger.getInstance().log(Logger.INFO, "Country info for " + tag);
 		Logger.getInstance().log(Logger.INFO, "Politics: ");
@@ -52,6 +56,12 @@ public class SaveGameUtils {
 		Logger.getInstance().log(Logger.INFO, "Divisions: ");
 		Logger.getInstance().log(Logger.INFO, "\tDivision count: " + country.getUnits().getDivisions().size());
 		Logger.getInstance().log(Logger.INFO, "\tDivision average strength: " + Math.round(country.getUnits().getAverageStrength()));
+		Logger.getInstance().log(Logger.INFO, "");
+		Logger.getInstance().log(Logger.INFO, "Combat data entries: ");
+		Logger.getInstance().log(Logger.INFO, "\tCombat data count: " + combatHistory.getSize());
+		Logger.getInstance().log(Logger.INFO, "\tFirst combat date: " + combatHistory.getFirstDate());
+		Logger.getInstance().log(Logger.INFO, "\tLast combat date: " + combatHistory.getLastDate());
+		Logger.getInstance().log(Logger.INFO, "\tTotal manpower lost: " + combatHistory.getTotalManpowerLost());
 	}
 
 	public static double getAverageMilitaryFactoriesInUse(SaveGame game) {
