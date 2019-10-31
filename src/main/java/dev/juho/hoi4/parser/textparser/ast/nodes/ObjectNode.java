@@ -28,10 +28,7 @@ public class ObjectNode extends ASTNode {
 
 	public ListNode toListNode() {
 		ListNode listNode = new ListNode(new ArrayList<>());
-
-		for (Object obj : children.values()) {
-			listNode.add((ASTNode) obj);
-		}
+		listNode.add(this);
 
 		return listNode;
 	}
