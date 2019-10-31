@@ -39,4 +39,19 @@ public class ObjectNode extends ASTNode {
 	public HashMap<String, Object> getChildren() {
 		return children;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		Iterator it = children.entrySet().iterator();
+		builder.append("object with ").append(children.size()).append(" children:\n");
+
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+
+			builder.append(pair.getKey()).append(": ").append(pair.getValue()).append("\n");
+		}
+
+		return builder.toString();
+	}
 }
