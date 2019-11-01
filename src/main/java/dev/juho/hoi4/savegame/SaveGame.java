@@ -8,6 +8,7 @@ import dev.juho.hoi4.parser.textparser.ast.nodes.StringNode;
 import dev.juho.hoi4.savegame.country.Country;
 import dev.juho.hoi4.savegame.country.data.combat.CombatDataEntry;
 import dev.juho.hoi4.savegame.country.data.combat.CombatHistory;
+import dev.juho.hoi4.savegame.map.Provinces;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
@@ -20,11 +21,13 @@ public class SaveGame {
 	private List<ASTNode> nodes;
 	private HashMap<CountryTag, Country> countries;
 	private CombatHistory combatHistory;
+	private Provinces provinces;
 
 	public SaveGame(List<ASTNode> nodes) {
 		this.nodes = nodes;
 		this.countries = new HashMap<>();
 		this.combatHistory = new CombatHistory();
+		this.provinces = new Provinces();
 	}
 
 	public void build() {
@@ -65,6 +68,10 @@ public class SaveGame {
 			case "combat_data_entry":
 				buildCombatDataEntry((ObjectNode) propertyNode.getValue());
 				break;
+
+			case "provinces":
+				buildProvinces((ObjectNode) propertyNode.getValue());
+				break;
 		}
 	}
 
@@ -89,6 +96,10 @@ public class SaveGame {
 		CombatDataEntry entry = new CombatDataEntry();
 		entry.build(combatDataEntry);
 		combatHistory.add(entry);
+	}
+
+	private void buildProvinces(ObjectNode provincesNode) {
+		provinces.build(provincesNode);
 	}
 
 }

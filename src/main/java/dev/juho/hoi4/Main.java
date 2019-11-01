@@ -47,7 +47,6 @@ public class Main {
 			}
 		}
 
-
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.FOLDER)) {
 			gameFolder = ArgsParser.getInstance().getString(ArgsParser.Argument.FOLDER);
 		} else {
