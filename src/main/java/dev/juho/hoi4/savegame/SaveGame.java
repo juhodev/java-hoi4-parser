@@ -8,11 +8,19 @@ import dev.juho.hoi4.parser.textparser.ast.nodes.StringNode;
 import dev.juho.hoi4.savegame.country.Country;
 import dev.juho.hoi4.savegame.country.data.combat.CombatDataEntry;
 import dev.juho.hoi4.savegame.country.data.combat.CombatHistory;
-import dev.juho.hoi4.savegame.map.Provinces;
+import dev.juho.hoi4.savegame.map.HOIMap;
+import dev.juho.hoi4.savegame.map.States;
+import dev.juho.hoi4.utils.ArgsParser;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 public class SaveGame {
 
@@ -21,13 +29,13 @@ public class SaveGame {
 	private List<ASTNode> nodes;
 	private HashMap<CountryTag, Country> countries;
 	private CombatHistory combatHistory;
-	private Provinces provinces;
+	private States states;
 
 	public SaveGame(List<ASTNode> nodes) {
 		this.nodes = nodes;
 		this.countries = new HashMap<>();
 		this.combatHistory = new CombatHistory();
-		this.provinces = new Provinces();
+		this.states = new States();
 	}
 
 	public void build() {
@@ -41,6 +49,17 @@ public class SaveGame {
 		}
 		this.nodes.clear();
 		Logger.getInstance().timeEnd(Logger.INFO, "building save game");
+
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.MAP)) {
+			HOIMap map = new HOIMap();
+			map.init();
+			Image mapImage = map.createMap(states.getProvinceList());
+			try {
+				ImageIO.write((RenderedImage) mapImage, "PNG", new File("map.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public String getStartDate() {
@@ -69,8 +88,8 @@ public class SaveGame {
 				buildCombatDataEntry((ObjectNode) propertyNode.getValue());
 				break;
 
-			case "provinces":
-				buildProvinces((ObjectNode) propertyNode.getValue());
+			case "states":
+				buildStates((ObjectNode) propertyNode.getValue());
 				break;
 		}
 	}
@@ -98,8 +117,8 @@ public class SaveGame {
 		combatHistory.add(entry);
 	}
 
-	private void buildProvinces(ObjectNode provincesNode) {
-		provinces.build(provincesNode);
+	private void buildStates(ObjectNode statesNode) {
+		states.build(statesNode);
 	}
 
 }

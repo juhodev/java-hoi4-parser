@@ -167,6 +167,7 @@ public class ArgsParser {
 		HELP,
 		OUT,
 		OUTFILE,
+		MAP,
 		DEBUG,
 	}
 
