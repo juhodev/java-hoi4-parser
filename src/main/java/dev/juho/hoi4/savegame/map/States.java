@@ -78,7 +78,7 @@ public class States {
 		}
 	}
 
-	public List<State> getProvinceList() {
+	public List<State> getStateList() {
 		return stateList;
 	}
 

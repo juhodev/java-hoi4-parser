@@ -51,14 +51,7 @@ public class SaveGame {
 		Logger.getInstance().timeEnd(Logger.INFO, "building save game");
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.MAP)) {
-			HOIMap map = new HOIMap();
-			map.init();
-			Image mapImage = map.createMap(states.getProvinceList());
-			try {
-				ImageIO.write((RenderedImage) mapImage, "PNG", new File("map.png"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			writeImage();
 		}
 	}
 
@@ -108,6 +101,17 @@ public class SaveGame {
 			} else {
 				Logger.getInstance().log(Logger.WARNING, "Couldn't find country tag " + pair.getKey());
 			}
+		}
+	}
+
+	private void writeImage() {
+		HOIMap map = new HOIMap();
+		map.init();
+		Image mapImage = map.createMap(states.getStateList());
+		try {
+			ImageIO.write((RenderedImage) mapImage, "PNG", new File("map.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
