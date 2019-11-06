@@ -1,10 +1,6 @@
 package dev.juho.hoi4.parser.textparser.token;
 
 import dev.juho.hoi4.utils.CharArray;
-import dev.juho.hoi4.utils.Logger;
-
-import java.util.regex.Pattern;
-
 
 public class TextTokenizer {
 
@@ -18,9 +14,6 @@ public class TextTokenizer {
 	private static final char START_OBJECT = '{';
 	private static final char END_OBJECT = '}';
 	private static final char EQUALS = '=';
-
-	private final Pattern intRegex = Pattern.compile("^[0-9]*$");
-	private final Pattern doubleRegex = Pattern.compile("^([0-9]|\\.)*$");
 
 	private boolean isKey;
 	private TextParserToken[] tokens;
