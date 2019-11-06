@@ -107,6 +107,7 @@ public class SaveGame {
 	private void writeImage() {
 		HOIMap map = new HOIMap();
 		map.init();
+		map.setCombatProvinces(combatHistory.getCombatProvinces());
 		Image mapImage = map.createMap(states.getStateList());
 		try {
 			ImageIO.write((RenderedImage) mapImage, "PNG", new File("map.png"));

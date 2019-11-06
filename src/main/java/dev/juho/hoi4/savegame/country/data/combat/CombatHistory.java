@@ -38,4 +38,14 @@ public class CombatHistory {
 		return count;
 	}
 
+	public List<Integer> getCombatProvinces() {
+		List<Integer> provinceList = new ArrayList<>();
+
+		for (CombatDataEntry entry : combatDataEntries) {
+			provinceList.add(entry.getCombatData().getProvince());
+		}
+
+		return provinceList;
+	}
+
 }
