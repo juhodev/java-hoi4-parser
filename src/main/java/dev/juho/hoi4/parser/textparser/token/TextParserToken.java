@@ -1,21 +1,27 @@
 package dev.juho.hoi4.parser.textparser.token;
 
-public class TextParserToken<T> {
+public class TextParserToken {
 
 	private Type type;
-	private T value;
+	private char[] value;
+	private int length;
 
-	public TextParserToken(Type type, T value) {
+	public TextParserToken(Type type, char[] value, int length) {
 		this.type = type;
 		this.value = value;
+		this.length = length;
 	}
 
 	public Type getType() {
 		return type;
 	}
 
-	public T getValue() {
+	public char[] getValue() {
 		return value;
+	}
+
+	public int getLength() {
+		return length;
 	}
 
 	public enum Type {

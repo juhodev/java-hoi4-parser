@@ -1,5 +1,8 @@
 package dev.juho.hoi4.parser.textparser.token;
 
+import dev.juho.hoi4.utils.CharArray;
+import dev.juho.hoi4.utils.Logger;
+
 import java.util.regex.Pattern;
 
 
@@ -26,7 +29,6 @@ public class TextTokenizer {
 
 	private int position;
 
-	private StringBuilder strBuilder;
 	private TextParserInputStream in;
 
 	private boolean hasSeenFileIdentifier;
@@ -38,7 +40,6 @@ public class TextTokenizer {
 		this.tokensCapacity = capacity;
 		this.tokensSize = 0;
 		this.position = 0;
-		this.strBuilder = new StringBuilder();
 		this.hasSeenFileIdentifier = false;
 	}
 
@@ -106,24 +107,25 @@ public class TextTokenizer {
 		char nextChar = in.next();
 		isKey = true;
 
-		return new TextParserToken<>(TextParserToken.Type.START_OBJECT, nextChar);
+		return new TextParserToken(TextParserToken.Type.START_OBJECT, new char[]{nextChar}, 1);
 	}
 
 	private TextParserToken readEndObject() {
 		char nextChar = in.next();
 		isKey = true;
 
-		return new TextParserToken<>(TextParserToken.Type.END_OBJECT, nextChar);
+		return new TextParserToken(TextParserToken.Type.END_OBJECT, new char[]{nextChar}, 1);
 	}
 
 	private TextParserToken readEquals() {
 		char nextChar = in.next();
 
-		return new TextParserToken<>(TextParserToken.Type.OPERATION, nextChar);
+		return new TextParserToken(TextParserToken.Type.OPERATION, new char[]{nextChar}, 1);
 	}
 
 	private TextParserToken readKey() {
 		boolean isProbablyAValue = false;
+		CharArray chars = new CharArray(20);
 
 		while (true) {
 			char next = in.peek();
@@ -136,41 +138,39 @@ public class TextTokenizer {
 				isProbablyAValue = true;
 				break;
 			} else {
-				strBuilder.append(in.next());
+				chars.append(in.next());
 			}
 		}
 
 		if (isProbablyAValue) {
-			String str = strBuilder.toString();
-			strBuilder.delete(0, strBuilder.length());
-
-			if (intRegex.matcher(str).matches()) {
-				if (str.length() > 9) {
-					return new TextParserToken<>(TextParserToken.Type.LONG, Long.parseLong(str));
+			TextParserToken.Type type = arrType(chars);
+			if (type == TextParserToken.Type.INTEGER) {
+				if (chars.size() > 9) {
+					return new TextParserToken(TextParserToken.Type.LONG, chars.chars(), chars.size());
 				} else {
-					return new TextParserToken<>(TextParserToken.Type.INTEGER, Integer.parseInt(str));
+					return new TextParserToken(TextParserToken.Type.INTEGER, chars.chars(), chars.size());
 				}
-			} else if (doubleRegex.matcher(str).matches()) {
-				return new TextParserToken<>(TextParserToken.Type.DOUBLE, Double.parseDouble(str));
-			} else if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
-				return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
+			} else if (type == TextParserToken.Type.DOUBLE) {
+				return new TextParserToken(TextParserToken.Type.DOUBLE, chars.chars(), chars.size());
+			} else if (chars.startsWith('y', 'e', 's') || chars.startsWith('n', 'o')) {
+				return new TextParserToken(TextParserToken.Type.BOOLEAN, chars.chars(), chars.size());
 			} else {
 				if (!hasSeenFileIdentifier) {
-					if (str.equalsIgnoreCase("HOI4txt")) {
+					if (chars.startsWith('H', 'O', 'I', '4', 't', 'x', 't')) {
 						hasSeenFileIdentifier = true;
 						return null;
 					}
 				}
 
-				return new TextParserToken<>(TextParserToken.Type.STRING, str);
+				return new TextParserToken(TextParserToken.Type.STRING, chars.chars(), chars.size());
 			}
 		}
-		String str = strBuilder.toString();
-		strBuilder.delete(0, strBuilder.length());
-		return new TextParserToken<>(TextParserToken.Type.KEY, str);
+		return new TextParserToken(TextParserToken.Type.KEY, chars.chars(), chars.size());
 	}
 
 	private TextParserToken readEnumOrBoolean() {
+		CharArray chars = new CharArray(30);
+
 		while (true) {
 			char next = in.peek();
 
@@ -178,20 +178,17 @@ public class TextTokenizer {
 				isKey = true;
 				break;
 			} else {
-				strBuilder.append(in.next());
+				chars.append(in.next());
 			}
 		}
 
-		String str = strBuilder.toString();
-		strBuilder.delete(0, strBuilder.length());
-
-		if (str.length() == 2 || str.length() == 3) {
-			if (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("no")) {
-				return new TextParserToken<>(TextParserToken.Type.BOOLEAN, str);
+		if (chars.size() <= 3) {
+			if (chars.startsWith('y', 'e', 's') || chars.startsWith('n', 'o')) {
+				return new TextParserToken(TextParserToken.Type.BOOLEAN, chars.chars(), chars.size());
 			}
 		}
 
-		return new TextParserToken<>(TextParserToken.Type.STRING, str.toUpperCase());
+		return new TextParserToken(TextParserToken.Type.STRING, chars.chars(), chars.size());
 	}
 
 	private TextParserToken ignoreUntilSomethingNotStupid() {
@@ -225,6 +222,8 @@ public class TextTokenizer {
 	private TextParserToken readString() {
 		// Skip "
 		in.next();
+
+		CharArray chars = new CharArray(30);
 		while (true) {
 			char next = in.next();
 
@@ -232,25 +231,24 @@ public class TextTokenizer {
 				isKey = true;
 				break;
 			} else {
-				strBuilder.append(next);
+				chars.append(next);
 			}
 		}
 
-		String str = strBuilder.toString();
-		strBuilder.delete(0, strBuilder.length());
-		return new TextParserToken<>(TextParserToken.Type.STRING, str);
+		return new TextParserToken(TextParserToken.Type.STRING, chars.chars(), chars.size());
 	}
 
 	private TextParserToken readNumber() {
 		TextParserToken.Type type = TextParserToken.Type.INTEGER;
+		CharArray chars = new CharArray(12);
 
 		while (true) {
 			char next = in.next();
 
 			if (Character.isDigit(next) || next == '-') {
-				strBuilder.append(next);
+				chars.append(next);
 			} else if (next == '.') {
-				strBuilder.append(next);
+				chars.append(next);
 				type = TextParserToken.Type.DOUBLE;
 			} else {
 				isKey = true;
@@ -259,18 +257,40 @@ public class TextTokenizer {
 		}
 
 		if (type == TextParserToken.Type.INTEGER) {
-			String str = strBuilder.toString();
-			strBuilder.delete(0, strBuilder.length());
-			if (str.length() <= 9) {
-				return new TextParserToken<>(type, Integer.parseInt(str));
+			if (chars.size() <= 9) {
+				return new TextParserToken(type, chars.chars(), chars.size());
 			} else {
-				return new TextParserToken<>(TextParserToken.Type.LONG, Long.parseLong(str));
+				return new TextParserToken(TextParserToken.Type.LONG, chars.chars(), chars.size());
 			}
 		} else {
-			String str = strBuilder.toString();
-			strBuilder.delete(0, strBuilder.length());
-			return new TextParserToken<>(type, Double.parseDouble(str));
+			return new TextParserToken(type, chars.chars(), chars.size());
 		}
+	}
+
+	private TextParserToken.Type arrType(CharArray array) {
+		char[] arr = array.chars();
+		boolean hasDot = false;
+
+		for (int i = 0; i < array.size(); i++) {
+			char c = arr[i];
+
+			if (Character.isDigit(c)) {
+				continue;
+			}
+
+			if (c == '.') {
+				hasDot = true;
+				continue;
+			}
+
+			return TextParserToken.Type.STRING;
+		}
+
+		if (hasDot) {
+			return TextParserToken.Type.DOUBLE;
+		}
+
+		return TextParserToken.Type.INTEGER;
 	}
 
 }

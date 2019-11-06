@@ -55,23 +55,23 @@ public class AST {
 
 				switch (value.getType()) {
 					case STRING:
-						return new PropertyNode<>(next.getValue().toString(), readString(tokenizer));
+						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readString(tokenizer));
 
 					case INTEGER:
-						return new PropertyNode<>(next.getValue().toString(), readInt(tokenizer));
+						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readInt(tokenizer));
 
 					case DOUBLE:
-						return new PropertyNode<>(next.getValue().toString(), readDouble(tokenizer));
+						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readDouble(tokenizer));
 
 					case LONG:
-						return new PropertyNode<>(next.getValue().toString(), readLong(tokenizer));
+						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readLong(tokenizer));
 
 					case BOOLEAN:
-						return new PropertyNode<>(next.getValue().toString(), readBoolean(tokenizer));
+						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readBoolean(tokenizer));
 
 					case START_OBJECT:
 						tokenizer.next();
-						return new PropertyNode<>(next.getValue().toString(), readObjectOrList(tokenizer));
+						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readObjectOrList(tokenizer));
 				}
 			} else {
 				Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + next.getValue() + " at " + tokenizer.getPosition());
@@ -80,19 +80,20 @@ public class AST {
 		} else {
 			switch (next.getType()) {
 				case STRING:
-					return new StringNode(next.getValue().toString());
+					return new StringNode(new String(next.getValue(), 0, next.getLength()));
 
 				case INTEGER:
-					return new IntegerNode((int) next.getValue());
+					return new IntegerNode(charArrayToInt(next.getValue(), next.getLength()));
 
 				case DOUBLE:
-					return new DoubleNode((double) next.getValue());
+					return new DoubleNode(charArrayToDouble(next.getValue(), next.getLength()));
 
 				case LONG:
-					return new LongNode((long) next.getValue());
+					return new LongNode(charArrayToLong(next.getValue(), next.getLength()));
 
 				case BOOLEAN:
-					return new BooleanNode(next.getValue().toString().equalsIgnoreCase("yes"));
+					char[] arr = next.getValue();
+					return new BooleanNode(arr[0] != 'n' && arr[1] != 'o');
 
 				case START_OBJECT:
 					return readObjectOrList(tokenizer);
@@ -104,23 +105,29 @@ public class AST {
 	}
 
 	private LongNode readLong(TextTokenizer tokenizer) {
-		return new LongNode((long) tokenizer.next().getValue());
+		TextParserToken next = tokenizer.next();
+		return new LongNode(charArrayToLong(next.getValue(), next.getLength()));
 	}
 
 	private BooleanNode readBoolean(TextTokenizer tokenizer) {
-		return new BooleanNode(tokenizer.next().getValue().toString().equalsIgnoreCase("yes"));
+		TextParserToken next = tokenizer.next();
+		char[] arr = next.getValue();
+		return new BooleanNode(arr[0] != 'n' && arr[1] != 'o');
 	}
 
 	private StringNode readString(TextTokenizer tokenizer) {
-		return new StringNode(tokenizer.next().getValue().toString());
+		TextParserToken next = tokenizer.next();
+		return new StringNode(new String(next.getValue(), 0, next.getLength()));
 	}
 
 	private IntegerNode readInt(TextTokenizer tokenizer) {
-		return new IntegerNode((int) tokenizer.next().getValue());
+		TextParserToken next = tokenizer.next();
+		return new IntegerNode(charArrayToInt(next.getValue(), next.getLength()));
 	}
 
 	private DoubleNode readDouble(TextTokenizer tokenizer) {
-		return new DoubleNode((double) tokenizer.next().getValue());
+		TextParserToken next = tokenizer.next();
+		return new DoubleNode(charArrayToDouble(next.getValue(), next.getLength()));
 	}
 
 	private ASTNode readObjectOrList(TextTokenizer tokenizer) {
@@ -170,6 +177,56 @@ public class AST {
 			ListNode listNode = new ListNode(childrenList);
 			return new PropertyNode<>(key, listNode);
 		}
+	}
+
+	//	https://stackoverflow.com/a/12297485
+	private int charArrayToInt(char[] arr, int length) {
+		int result = 0;
+
+		for (int i = 0; i < length; i++) {
+			int digit = (int) arr[i] - (int) '0';
+			result *= 10;
+			result += digit;
+		}
+
+		return result;
+	}
+
+	private long charArrayToLong(char[] arr, int length) {
+		long result = 0;
+
+		for (int i = 0; i < length; i++) {
+			int digit = (int) arr[i] - (int) '0';
+			result *= 10;
+			result += digit;
+		}
+
+		return result;
+	}
+
+	private double charArrayToDouble(char[] arr, int length) {
+		double result = 0;
+		boolean seenDot = false;
+		int count = 1;
+
+		for (int i = 0; i < length; i++) {
+			if (arr[i] == '.') {
+				seenDot = true;
+				continue;
+			}
+
+			int digit = (int) arr[i] - (int) '0';
+			if (seenDot) {
+				result *= 10;
+				result += digit;
+			} else {
+				double num = (double) digit / count;
+				count *= 10;
+				result += num;
+			}
+		}
+
+		return result;
 	}
 
 }

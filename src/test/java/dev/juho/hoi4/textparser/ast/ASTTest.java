@@ -5,13 +5,20 @@ import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
 import dev.juho.hoi4.parser.textparser.token.TextParserInputStream;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
+import dev.juho.hoi4.utils.Logger;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
 public class ASTTest {
+
+	@BeforeClass
+	public static void before() {
+		Logger.LOG_LEVEL = Logger.DEBUG;
+	}
 
 	@Test
 	public void parsePropertyNodeTest() {
