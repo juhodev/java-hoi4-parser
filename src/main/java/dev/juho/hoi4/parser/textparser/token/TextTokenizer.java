@@ -118,7 +118,7 @@ public class TextTokenizer {
 
 	private TextParserToken readKey() {
 		boolean isProbablyAValue = false;
-		CharArray chars = new CharArray(20);
+		CharArray chars = new CharArray(25);
 
 		while (true) {
 			char next = in.peek();
@@ -162,8 +162,7 @@ public class TextTokenizer {
 	}
 
 	private TextParserToken readEnumOrBoolean() {
-		CharArray chars = new CharArray(30);
-
+		CharArray chars = new CharArray(3);
 		while (true) {
 			char next = in.peek();
 
