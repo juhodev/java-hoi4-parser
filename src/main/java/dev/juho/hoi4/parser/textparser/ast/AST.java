@@ -18,17 +18,13 @@ public class AST {
 	}
 
 	public void build(TextTokenizer tokenizer) {
-		List<ASTNode> astNodes = new ArrayList<>();
-
 		while (!tokenizer.eof()) {
 			ASTNode node = read(tokenizer);
 
 			if (node != null) {
-				astNodes.add(node);
+				nodes.add(node);
 			}
 		}
-
-		this.nodes = astNodes;
 	}
 
 	public List<ASTNode> getNodes() {

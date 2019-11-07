@@ -87,11 +87,14 @@ public class Main {
 			}
 		}
 
-		Logger.getInstance().log(Logger.INFO, "Average military factories in use: " + SaveGameUtils.getAverageMilitaryFactoriesInUse(parser.getSaveGame()));
-		double[] avrgDataThing = SaveGameUtils.getAverageDivisionsAndManpowerCount(parser.getSaveGame());
-
-		Logger.getInstance().log(Logger.INFO, "Average divisions: " + avrgDataThing[0] + ", total manpower: " + String.format("%.0f", avrgDataThing[1]));
-		SaveGameUtils.printCountry(parser.getSaveGame(), CountryTag.GER);
+		List<String> tagStrings = ArgsParser.getInstance().getList(ArgsParser.Argument.COUNTRY);
+		for (String countryTagString : tagStrings) {
+			if (Utils.hasEnum(CountryTag.values(), countryTagString)) {
+				CountryTag selectedTag = CountryTag.valueOf(countryTagString);
+				SaveGameUtils.printCountry(parser.getSaveGame(), selectedTag);
+				Logger.getInstance().log(Logger.INFO, "");
+			}
+		}
 	}
 
 }
