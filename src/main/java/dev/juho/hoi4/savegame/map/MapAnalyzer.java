@@ -71,7 +71,7 @@ public class MapAnalyzer {
 	}
 
 	private void loadStates(HOIMap map) {
-		CSVLoader loader = new CSVLoader(new File("states.csv"), ",");
+		CSVLoader loader = new CSVLoader(new File("states.csv"), ",", false);
 
 		List<String[]> rows = new ArrayList<>();
 		try {
@@ -93,7 +93,7 @@ public class MapAnalyzer {
 	}
 
 	private void loadProvinces() {
-		CSVLoader loader = new CSVLoader(new File("provinces.csv"), ";");
+		CSVLoader loader = new CSVLoader(new File("provinces.csv"), ";", false);
 
 		List<String[]> rows = new ArrayList<>();
 		try {
