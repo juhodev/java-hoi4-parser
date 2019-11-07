@@ -1,10 +1,10 @@
-package dev.juho.hoi4.parser.textparser.token;
+package dev.juho.hoi4.parser;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class TextParserInputStream {
+public class ParserInputStream {
 
 	private BufferedInputStream is;
 	private byte[] buffer;
@@ -14,7 +14,7 @@ public class TextParserInputStream {
 
 	private int capacity;
 
-	public TextParserInputStream(InputStream is, int capacity) {
+	public ParserInputStream(InputStream is, int capacity) {
 		this.is = new BufferedInputStream(is);
 		this.currentPos = 0;
 		this.capacity = capacity;
@@ -23,7 +23,23 @@ public class TextParserInputStream {
 		readToBuffer();
 	}
 
-	public char next() {
+	public byte nextByte() {
+		if (currentPos + 1 > read) {
+			readToBuffer();
+		}
+
+		return buffer[currentPos++];
+	}
+
+	public byte peekByte() {
+		if (currentPos + 1 > read) {
+			readToBuffer();
+		}
+
+		return buffer[currentPos];
+	}
+
+	public char nextChar() {
 		if (currentPos + 1 > read) {
 			readToBuffer();
 		}
@@ -32,7 +48,7 @@ public class TextParserInputStream {
 		return next;
 	}
 
-	public char peek() {
+	public char peekChar() {
 		if (currentPos + 1 > read) {
 			readToBuffer();
 		}

@@ -1,5 +1,6 @@
 package dev.juho.hoi4.parser.textparser.token;
 
+import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.utils.CharArray;
 
 public class TextTokenizer {
@@ -22,11 +23,11 @@ public class TextTokenizer {
 
 	private int position;
 
-	private TextParserInputStream in;
+	private ParserInputStream in;
 
 	private boolean hasSeenFileIdentifier;
 
-	public TextTokenizer(TextParserInputStream in, int capacity) {
+	public TextTokenizer(ParserInputStream in, int capacity) {
 		this.in = in;
 		this.isKey = true;
 		this.tokens = new TextParserToken[capacity];
@@ -81,7 +82,7 @@ public class TextTokenizer {
 	}
 
 	private TextParserToken read() {
-		char nextChar = in.peek();
+		char nextChar = in.peekChar();
 
 		if (nextChar == WHITESPACE || nextChar == TAB || nextChar == NEW_LINE || nextChar == LINE_RETURN)
 			return ignoreUntilSomethingNotStupid();
@@ -97,21 +98,21 @@ public class TextTokenizer {
 	}
 
 	private TextParserToken readOpenObject() {
-		char nextChar = in.next();
+		char nextChar = in.nextChar();
 		isKey = true;
 
 		return new TextParserToken(TextParserToken.Type.START_OBJECT, new char[]{nextChar}, 1);
 	}
 
 	private TextParserToken readEndObject() {
-		char nextChar = in.next();
+		char nextChar = in.nextChar();
 		isKey = true;
 
 		return new TextParserToken(TextParserToken.Type.END_OBJECT, new char[]{nextChar}, 1);
 	}
 
 	private TextParserToken readEquals() {
-		char nextChar = in.next();
+		char nextChar = in.nextChar();
 
 		return new TextParserToken(TextParserToken.Type.OPERATION, new char[]{nextChar}, 1);
 	}
@@ -121,7 +122,7 @@ public class TextTokenizer {
 		CharArray chars = new CharArray(25);
 
 		while (true) {
-			char next = in.peek();
+			char next = in.peekChar();
 
 			if (next == K_V_SEPARATOR) {
 				isKey = false;
@@ -131,7 +132,7 @@ public class TextTokenizer {
 				isProbablyAValue = true;
 				break;
 			} else {
-				chars.append(in.next());
+				chars.append(in.nextChar());
 			}
 		}
 
@@ -164,13 +165,13 @@ public class TextTokenizer {
 	private TextParserToken readEnumOrBoolean() {
 		CharArray chars = new CharArray(3);
 		while (true) {
-			char next = in.peek();
+			char next = in.peekChar();
 
 			if (next == K_V_SEPARATOR || next == WHITESPACE || next == NEW_LINE || next == LINE_RETURN) {
 				isKey = true;
 				break;
 			} else {
-				chars.append(in.next());
+				chars.append(in.nextChar());
 			}
 		}
 
@@ -184,16 +185,16 @@ public class TextTokenizer {
 	}
 
 	private TextParserToken ignoreUntilSomethingNotStupid() {
-		in.next();
+		in.nextChar();
 
 		while (true) {
-			char next = in.peek();
+			char next = in.peekChar();
 
 			if (next != WHITESPACE && next != TAB) {
 				isKey = true;
 				break;
 			}
-			in.next();
+			in.nextChar();
 		}
 
 		return null;
@@ -201,9 +202,9 @@ public class TextTokenizer {
 
 	private TextParserToken readComment() {
 //		Skip #
-		in.next();
+		in.nextChar();
 		while (true) {
-			char next = in.next();
+			char next = in.nextChar();
 
 			if (next == NEW_LINE) break;
 		}
@@ -213,11 +214,11 @@ public class TextTokenizer {
 
 	private TextParserToken readString() {
 		// Skip "
-		in.next();
+		in.nextChar();
 
 		CharArray chars = new CharArray(30);
 		while (true) {
-			char next = in.next();
+			char next = in.nextChar();
 
 			if (next == STRING_START) {
 				isKey = true;
@@ -235,7 +236,7 @@ public class TextTokenizer {
 		CharArray chars = new CharArray(12);
 
 		while (true) {
-			char next = in.next();
+			char next = in.nextChar();
 
 			if (Character.isDigit(next) || next == '-') {
 				chars.append(next);

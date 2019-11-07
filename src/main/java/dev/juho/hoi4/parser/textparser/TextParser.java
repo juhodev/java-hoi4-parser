@@ -2,7 +2,7 @@ package dev.juho.hoi4.parser.textparser;
 
 import dev.juho.hoi4.parser.Parser;
 import dev.juho.hoi4.parser.textparser.ast.AST;
-import dev.juho.hoi4.parser.textparser.token.TextParserInputStream;
+import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.savegame.SaveGame;
 import dev.juho.hoi4.utils.Logger;
@@ -21,7 +21,7 @@ public class TextParser extends Parser {
 	public void parse() throws IOException {
 		Logger.getInstance().time("Parsing " + getFile().getName());
 
-		TextParserInputStream in = new TextParserInputStream(new FileInputStream(getFile()), 4096 * 8);
+		ParserInputStream in = new ParserInputStream(new FileInputStream(getFile()), 4096 * 8);
 
 		TextTokenizer tokenizer = new TextTokenizer(in, 4096 * 8);
 		AST ast = new AST();

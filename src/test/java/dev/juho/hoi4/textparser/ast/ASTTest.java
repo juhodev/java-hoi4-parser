@@ -3,7 +3,7 @@ package dev.juho.hoi4.textparser.ast;
 import dev.juho.hoi4.parser.textparser.ast.AST;
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
-import dev.juho.hoi4.parser.textparser.token.TextParserInputStream;
+import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.utils.Logger;
 import org.junit.Assert;
@@ -24,7 +24,7 @@ public class ASTTest {
 	public void parsePropertyNodeTest() {
 		String str = "test=\"value\"";
 
-		TextParserInputStream in = new TextParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
@@ -40,7 +40,7 @@ public class ASTTest {
 	public void parseStringNodeTest() {
 		String str = "test=\"value\"";
 
-		TextParserInputStream in = new TextParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
@@ -58,7 +58,7 @@ public class ASTTest {
 	public void parseObjectNode() {
 		String str = "test={a=\"b\"}";
 
-		TextParserInputStream in = new TextParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
@@ -79,7 +79,7 @@ public class ASTTest {
 	public void parseListNode() {
 		String str = "test={ 1 2 }";
 
-		TextParserInputStream in = new TextParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
@@ -103,7 +103,7 @@ public class ASTTest {
 	public void parseObjectInsideList() {
 		String str = "test={{ a=\"b\" }}";
 
-		TextParserInputStream in = new TextParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
@@ -126,7 +126,7 @@ public class ASTTest {
 	public void parseListInsideList() {
 		String str = "test={{ 1 2 }}";
 
-		TextParserInputStream in = new TextParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();

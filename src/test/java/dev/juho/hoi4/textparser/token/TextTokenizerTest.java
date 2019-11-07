@@ -1,14 +1,5 @@
 package dev.juho.hoi4.textparser.token;
 
-import dev.juho.hoi4.parser.textparser.token.TextParserInputStream;
-import dev.juho.hoi4.parser.textparser.token.TextParserToken;
-import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.util.List;
-
 public class TextTokenizerTest {
 //
 //	@Test
