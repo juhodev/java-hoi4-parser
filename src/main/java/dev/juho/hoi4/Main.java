@@ -1,6 +1,7 @@
 package dev.juho.hoi4;
 
 import dev.juho.hoi4.parser.Parser;
+import dev.juho.hoi4.parser.binparser.BinParser;
 import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.TextParser;
 import dev.juho.hoi4.savegame.SaveGame;
@@ -62,7 +63,7 @@ public class Main {
 		File file = new File(gameFolder + "/save games/" + gameName);
 //		File realFile = new File("C:\\Users\\Juho\\Documents\\Paradox Interactive\\Hearts of Iron IV\\save games\\SOV_1949_07_19_14.hoi4");
 		File testFile = new File("test.hoi4");
-		Parser parser = new TextParser(file);
+		Parser parser = new BinParser(file);
 		try {
 			parser.parse();
 		} catch (IOException e) {
