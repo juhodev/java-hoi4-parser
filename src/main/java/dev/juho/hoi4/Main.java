@@ -29,8 +29,6 @@ public class Main {
 		ArgsParser.getInstance().add(ArgsParser.Argument.COUNTRY, ArgsParser.Type.LIST, true, "-country");
 
 		ArgsParser.getInstance().add(ArgsParser.Argument.FOLDER, ArgsParser.Type.STRING, false, "-folder", "-hoi4_folder");
-		ArgsParser.getInstance().add(ArgsParser.Argument.OUTFILE, ArgsParser.Type.STRING, false, "-outFile");
-		ArgsParser.getInstance().add(ArgsParser.Argument.OUT, ArgsParser.Type.NONE, false, "-out");
 		ArgsParser.getInstance().add(ArgsParser.Argument.JSON, ArgsParser.Type.NONE, false, "-json");
 		ArgsParser.getInstance().add(ArgsParser.Argument.JSON_LIMIT, ArgsParser.Type.STRING, false, "-json_limit");
 		ArgsParser.getInstance().add(ArgsParser.Argument.SAVE_GAME, ArgsParser.Type.STRING, false, "-save_game");
@@ -73,20 +71,6 @@ public class Main {
 
 		List<ASTNode> astNodes = parser.getNodes();
 
-		if (ArgsParser.getInstance().has(ArgsParser.Argument.OUT)) {
-			if (!ArgsParser.getInstance().has(ArgsParser.Argument.OUTFILE)) {
-				try {
-					SaveGameUtils.saveToFile(parser.getSaveGame(), countryTags);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else {
-				try {
-					SaveGameUtils.saveToFile(parser.getSaveGame(), countryTags, ArgsParser.getInstance().getString(ArgsParser.Argument.OUTFILE));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
 			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
 			jsonPrinter.print();

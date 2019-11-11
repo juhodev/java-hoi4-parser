@@ -165,8 +165,6 @@ public class ArgsParser {
 		COUNTRY,
 		FOLDER,
 		HELP,
-		OUT,
-		OUTFILE,
 		JSON,
 		JSON_LIMIT,
 		SAVE_GAME,
