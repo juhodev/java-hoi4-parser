@@ -3,6 +3,7 @@ package dev.juho.hoi4;
 import dev.juho.hoi4.parser.Parser;
 import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.TextParser;
+import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.savegame.SaveGame;
 import dev.juho.hoi4.savegame.SaveGameUtils;
 import dev.juho.hoi4.utils.ArgsParser;
@@ -30,6 +31,8 @@ public class Main {
 		ArgsParser.getInstance().add(ArgsParser.Argument.FOLDER, ArgsParser.Type.STRING, false, "-folder", "-hoi4_folder");
 		ArgsParser.getInstance().add(ArgsParser.Argument.OUTFILE, ArgsParser.Type.STRING, false, "-outFile");
 		ArgsParser.getInstance().add(ArgsParser.Argument.OUT, ArgsParser.Type.NONE, false, "-out");
+		ArgsParser.getInstance().add(ArgsParser.Argument.JSON, ArgsParser.Type.NONE, false, "-json");
+		ArgsParser.getInstance().add(ArgsParser.Argument.JSON_LIMIT, ArgsParser.Type.STRING, false, "-json_limit");
 		ArgsParser.getInstance().add(ArgsParser.Argument.SAVE_GAME, ArgsParser.Type.STRING, false, "-save_game");
 		ArgsParser.getInstance().add(ArgsParser.Argument.MAP, ArgsParser.Type.NONE, false, "-map");
 		ArgsParser.getInstance().add(ArgsParser.Argument.DEBUG, ArgsParser.Type.NONE, false, "-debug");
@@ -84,6 +87,9 @@ public class Main {
 					e.printStackTrace();
 				}
 			}
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
+			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
+			jsonPrinter.print();
 		}
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.SAVE_GAME)) {

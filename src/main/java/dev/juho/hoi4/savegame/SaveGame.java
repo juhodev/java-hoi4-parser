@@ -67,6 +67,17 @@ public class SaveGame {
 		return combatHistory;
 	}
 
+	public void print() {
+		List<String> tagStrings = ArgsParser.getInstance().getList(ArgsParser.Argument.COUNTRY);
+		for (String countryTagString : tagStrings) {
+			if (Utils.hasEnum(CountryTag.values(), countryTagString)) {
+				CountryTag selectedTag = CountryTag.valueOf(countryTagString);
+				SaveGameUtils.printCountry(this, selectedTag);
+				Logger.getInstance().log(Logger.INFO, "");
+			}
+		}
+	}
+
 	private void readProperty(PropertyNode propertyNode) {
 		switch (propertyNode.getKey()) {
 			case "start_date":
