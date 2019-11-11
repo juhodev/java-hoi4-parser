@@ -90,7 +90,10 @@ public class TextTokenizer {
 		if (nextChar == START_OBJECT) return readOpenObject();
 		if (nextChar == END_OBJECT) return readEndObject();
 		if (isKey) return readKey();
-		if (nextChar == STRING_START) return readString();
+		if (nextChar == STRING_START) {
+			CharArray chars = readString(true);
+			return new TextParserToken(TextParserToken.Type.STRING, chars.chars(), chars.size());
+		}
 		if (nextChar == EQUALS) return readEquals();
 		if (Character.isLetter(nextChar)) return readEnumOrBoolean();
 		if (Character.isDigit(nextChar) || nextChar == '-') return readNumber();
@@ -123,6 +126,18 @@ public class TextTokenizer {
 
 		while (true) {
 			char next = in.peekChar();
+			if (next == STRING_START) {
+				CharArray strArray = readString(false);
+				char peek = in.peekChar();
+
+				if (peek == WHITESPACE || peek == NEW_LINE || peek == LINE_RETURN || peek == END_OBJECT) {
+					return new TextParserToken(TextParserToken.Type.STRING, strArray.copy(1, strArray.size() - 1), strArray.size() - 1);
+				}
+
+				strArray.append('"');
+				chars = strArray;
+				continue;
+			}
 
 			if (next == K_V_SEPARATOR) {
 				isKey = false;
@@ -212,11 +227,12 @@ public class TextTokenizer {
 		return null;
 	}
 
-	private TextParserToken readString() {
-		// Skip "
-		in.nextChar();
-
+	private CharArray readString(boolean skip) {
 		CharArray chars = new CharArray(30);
+		// Skip "
+		if (skip) in.nextChar();
+		else chars.append(in.nextChar());
+
 		while (true) {
 			char next = in.nextChar();
 
@@ -228,7 +244,7 @@ public class TextTokenizer {
 			}
 		}
 
-		return new TextParserToken(TextParserToken.Type.STRING, chars.chars(), chars.size());
+		return chars;
 	}
 
 	private TextParserToken readNumber() {

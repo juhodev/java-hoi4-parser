@@ -29,6 +29,15 @@ public class CharArray {
 		return true;
 	}
 
+	public char[] copy(int start, int len) {
+		char[] newArray = new char[len];
+		for (int i = 0; i < len; i++) {
+			newArray[i] = arr[start + i];
+		}
+
+		return newArray;
+	}
+
 	public int size() {
 		return pos;
 	}
