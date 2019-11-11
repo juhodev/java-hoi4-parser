@@ -24,7 +24,7 @@ public class ASTTest {
 	public void parsePropertyNodeTest() {
 		String str = "test=\"value\"";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
@@ -40,7 +40,7 @@ public class ASTTest {
 	public void parseStringNodeTest() {
 		String str = "test=\"value\"";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
@@ -58,7 +58,7 @@ public class ASTTest {
 	public void parseObjectNode() {
 		String str = "test={a=\"b\"}";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
@@ -79,7 +79,7 @@ public class ASTTest {
 	public void parseListNode() {
 		String str = "test={ 1 2 }";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
@@ -103,7 +103,7 @@ public class ASTTest {
 	public void parseObjectInsideList() {
 		String str = "test={{ a=\"b\" }}";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
@@ -126,7 +126,7 @@ public class ASTTest {
 	public void parseListInsideList() {
 		String str = "test={{ 1 2 }}";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()), 128);
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
 		AST ast = new AST();
