@@ -1,6 +1,7 @@
 package dev.juho.hoi4.parser.textparser.ast;
 
-public abstract class ASTNode<T> {
+
+public abstract class ASTNode {
 
 	private Type type;
 
