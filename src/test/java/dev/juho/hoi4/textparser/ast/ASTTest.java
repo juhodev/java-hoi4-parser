@@ -100,6 +100,24 @@ public class ASTTest {
 	}
 
 	@Test
+	public void parseListWithASingleElement() {
+		String str = "test={ 1 }";
+
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
+		TextTokenizer tokenizer = new TextTokenizer(in, 128);
+
+		AST ast = new AST();
+		ast.build(tokenizer);
+
+		List<ASTNode> nodes = ast.getNodes();
+		PropertyNode node = (PropertyNode) nodes.get(0);
+		ListNode listNode = (ListNode) node.getValue();
+		Assert.assertNotNull(listNode.getChildren().get(0));
+		IntegerNode child = (IntegerNode) listNode.getChildren().get(0);
+		Assert.assertEquals(1, child.getValue());
+	}
+
+	@Test
 	public void parseObjectInsideList() {
 		String str = "test={{ a=\"b\" }}";
 
@@ -148,6 +166,71 @@ public class ASTTest {
 		IntegerNode secondChild = (IntegerNode) childChildNodes.get(1);
 		Assert.assertEquals(1, firstChild.getValue());
 		Assert.assertEquals(2, secondChild.getValue());
+	}
+
+	@Test
+	public void parseStringInsideList() {
+		String str = "test={ \"Coloured Buttons\" }";
+
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
+		TextTokenizer tokenizer = new TextTokenizer(in, 128);
+
+		AST ast = new AST();
+		ast.build(tokenizer);
+		List<ASTNode> nodes = ast.getNodes();
+
+		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		PropertyNode node = (PropertyNode) nodes.get(0);
+		ListNode listNode = (ListNode) node.getValue();
+		StringNode firstChild = (StringNode) listNode.getChildren().get(0);
+
+		Assert.assertEquals("Coloured Buttons", firstChild.getValue());
+	}
+
+	@Test
+	public void parseStringListWithMultipleStrings() {
+		String str = "test={ \"Coloured Buttons\" \"test\" }";
+
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
+		TextTokenizer tokenizer = new TextTokenizer(in, 128);
+
+		AST ast = new AST();
+		ast.build(tokenizer);
+		List<ASTNode> nodes = ast.getNodes();
+
+		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		PropertyNode node = (PropertyNode) nodes.get(0);
+		ListNode listNode = (ListNode) node.getValue();
+		StringNode firstChild = (StringNode) listNode.getChildren().get(0);
+		StringNode secondChild = (StringNode) listNode.getChildren().get(1);
+
+		Assert.assertEquals("Coloured Buttons", firstChild.getValue());
+		Assert.assertEquals("test", secondChild.getValue());
+	}
+
+	@Test
+	public void parseObjectWithQuoteKeys() {
+		String str = "test={ \"1\"={ 4 } \"2\"={ 5 } }";
+
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
+		TextTokenizer tokenizer = new TextTokenizer(in, 128);
+
+		AST ast = new AST();
+		ast.build(tokenizer);
+		List<ASTNode> nodes = ast.getNodes();
+
+		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		PropertyNode node = (PropertyNode) nodes.get(0);
+		ObjectNode objectNode = (ObjectNode) node.getValue();
+
+		Assert.assertNotNull(objectNode.get("\"1\""));
+		Assert.assertNotNull(objectNode.get("\"2\""));
+
+		ListNode childOne = (ListNode) objectNode.get("\"1\"");
+		ListNode childTwo = (ListNode) objectNode.get("\"2\"");
+
+		Assert.assertEquals(4, ((IntegerNode) childOne.getChildren().get(0)).getValue());
+		Assert.assertEquals(5, ((IntegerNode) childTwo.getChildren().get(0)).getValue());
 	}
 
 }
