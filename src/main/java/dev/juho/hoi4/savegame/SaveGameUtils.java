@@ -23,7 +23,7 @@ import java.util.Map;
 public class SaveGameUtils {
 
 	public static void saveToFile(SaveGame game, List<CountryTag> tag) throws IOException {
-		saveToFile(game, tag, tag + "-" + new Date().getTime() + "-save-game.json");
+		saveToFile(game, tag, new Date().getTime() + "-save-game.json");
 	}
 
 	public static void saveToFile(SaveGame game, List<CountryTag> tags, String fileName) throws IOException {

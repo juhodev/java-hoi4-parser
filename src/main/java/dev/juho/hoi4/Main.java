@@ -60,8 +60,6 @@ public class Main {
 		}
 
 		File file = new File(gameFolder + "/save games/" + gameName);
-//		File realFile = new File("C:\\Users\\Juho\\Documents\\Paradox Interactive\\Hearts of Iron IV\\save games\\SOV_1949_07_19_14.hoi4");
-		File testFile = new File("test.hoi4");
 		Parser parser = new TextParser(file);
 		try {
 			parser.parse();
