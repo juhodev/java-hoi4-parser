@@ -30,6 +30,7 @@ public class Main {
 		ArgsParser.getInstance().add(ArgsParser.Argument.FOLDER, ArgsParser.Type.STRING, false, "-folder", "-hoi4_folder");
 		ArgsParser.getInstance().add(ArgsParser.Argument.OUTFILE, ArgsParser.Type.STRING, false, "-outFile");
 		ArgsParser.getInstance().add(ArgsParser.Argument.OUT, ArgsParser.Type.NONE, false, "-out");
+		ArgsParser.getInstance().add(ArgsParser.Argument.SAVE_GAME, ArgsParser.Type.STRING, false, "-save_game");
 		ArgsParser.getInstance().add(ArgsParser.Argument.MAP, ArgsParser.Type.NONE, false, "-map");
 		ArgsParser.getInstance().add(ArgsParser.Argument.DEBUG, ArgsParser.Type.NONE, false, "-debug");
 
@@ -67,7 +68,7 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		parser.getSaveGame().build();
+		List<ASTNode> astNodes = parser.getNodes();
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.OUT)) {
 			if (!ArgsParser.getInstance().has(ArgsParser.Argument.OUTFILE)) {
@@ -85,13 +86,10 @@ public class Main {
 			}
 		}
 
-		List<String> tagStrings = ArgsParser.getInstance().getList(ArgsParser.Argument.COUNTRY);
-		for (String countryTagString : tagStrings) {
-			if (Utils.hasEnum(CountryTag.values(), countryTagString)) {
-				CountryTag selectedTag = CountryTag.valueOf(countryTagString);
-				SaveGameUtils.printCountry(parser.getSaveGame(), selectedTag);
-				Logger.getInstance().log(Logger.INFO, "");
-			}
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.SAVE_GAME)) {
+			SaveGame saveGame = new SaveGame(parser.getNodes());
+			saveGame.build();
+			saveGame.print();
 		}
 	}
 
