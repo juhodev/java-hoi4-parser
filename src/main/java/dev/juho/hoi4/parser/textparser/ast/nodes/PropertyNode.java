@@ -2,19 +2,19 @@ package dev.juho.hoi4.parser.textparser.ast.nodes;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 
-public class PropertyNode<T> extends ASTNode {
+public class PropertyNode extends ASTNode {
 
 	private String key;
-	private T value;
+	private ASTNode value;
 
-	public PropertyNode(String key, T value) {
+	public PropertyNode(String key, ASTNode value) {
 		super(Type.PROPERTY);
 
 		this.key = key;
 		this.value = value;
 	}
 
-	public T getValue() {
+	public ASTNode getValue() {
 		return value;
 	}
 

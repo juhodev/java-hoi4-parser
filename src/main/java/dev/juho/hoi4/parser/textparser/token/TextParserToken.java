@@ -26,13 +26,8 @@ public class TextParserToken {
 
 	public enum Type {
 		OPERATION,
-		LONG,
-		DOUBLE,
-		INTEGER,
 		START_OBJECT,
 		END_OBJECT,
-		BOOLEAN,
-		KEY,
 		STRING,
 	}
 

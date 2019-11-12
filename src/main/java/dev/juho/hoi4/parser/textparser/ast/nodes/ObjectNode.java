@@ -9,9 +9,9 @@ import java.util.*;
 
 public class ObjectNode extends ASTNode {
 
-	private HashMap<String, Object> children;
+	private HashMap<String, ASTNode> children;
 
-	public ObjectNode(HashMap<String, Object> children) {
+	public ObjectNode(HashMap<String, ASTNode> children) {
 		super(Type.OBJECT);
 
 		this.children = children;
@@ -36,7 +36,7 @@ public class ObjectNode extends ASTNode {
 		return listNode;
 	}
 
-	public HashMap<String, Object> getChildren() {
+	public HashMap<String, ASTNode> getChildren() {
 		return children;
 	}
 

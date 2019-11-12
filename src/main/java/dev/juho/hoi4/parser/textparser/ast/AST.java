@@ -1,5 +1,6 @@
 package dev.juho.hoi4.parser.textparser.ast;
 
+import dev.juho.hoi4.parser.textparser.TextParser;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
@@ -32,146 +33,146 @@ public class AST {
 	}
 
 	private ASTNode read(TextTokenizer tokenizer) {
-		TextParserToken next = tokenizer.peek();
+		TextParserToken next = tokenizer.next();
+		TextParserToken afterNext = tokenizer.peek();
 
-		if (next.getType() == TextParserToken.Type.KEY) return readProperty(tokenizer);
-		Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + next.getValue() + " at " + tokenizer.getPosition());
+		if (afterNext.getType() == TextParserToken.Type.OPERATION) {
+			return readProperty(next, tokenizer);
+		}
+
+		String asString = new String(next.getValue(), 0, next.getLength());
+
+		if (asString.equalsIgnoreCase("hoi4txt")) {
+			return null;
+		}
+
+//		if (next.getType() == TextParserToken.Type.KEY) return readProperty(tokenizer);
+		Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + asString + " at " + tokenizer.getPosition());
 		System.exit(0);
 		return null;
 	}
 
-	private ASTNode readProperty(TextTokenizer tokenizer) {
+	private ASTNode readProperty(TextParserToken key, TextTokenizer tokenizer) {
+//		skip =
+		tokenizer.next();
+
+		TextParserToken next = tokenizer.peek();
+
+		ASTNode value = null;
+		if (next.getType() == TextParserToken.Type.START_OBJECT) {
+			tokenizer.next();
+			value = readObject(tokenizer);
+		}
+		if (next.getType() == TextParserToken.Type.STRING)
+			value = readString(tokenizer);
+
+		return new PropertyNode(new String(key.getValue(), 0, key.getLength()), value);
+	}
+
+	private ASTNode readObject(TextTokenizer tokenizer) {
 		TextParserToken next = tokenizer.next();
 
-		TextParserToken operation = tokenizer.peek();
-		if (operation.getType() == TextParserToken.Type.OPERATION) {
-			tokenizer.next();
-			if (next.getType() == TextParserToken.Type.KEY) {
-				TextParserToken value = tokenizer.peek();
-
-				switch (value.getType()) {
-					case STRING:
-						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readString(tokenizer));
-
-					case INTEGER:
-						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readInt(tokenizer));
-
-					case DOUBLE:
-						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readDouble(tokenizer));
-
-					case LONG:
-						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readLong(tokenizer));
-
-					case BOOLEAN:
-						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readBoolean(tokenizer));
-
-					case START_OBJECT:
-						tokenizer.next();
-						return new PropertyNode<>(new String(next.getValue(), 0, next.getLength()), readObjectOrList(tokenizer));
-				}
-			} else {
-				Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + next.getValue() + " at " + tokenizer.getPosition());
-				System.exit(0);
-			}
-		} else {
-			switch (next.getType()) {
-				case STRING:
-					return new StringNode(new String(next.getValue(), 0, next.getLength()));
-
-				case INTEGER:
-					return new IntegerNode(charArrayToInt(next.getValue(), next.getLength()));
-
-				case DOUBLE:
-					return new DoubleNode(charArrayToDouble(next.getValue(), next.getLength()));
-
-				case LONG:
-					return new LongNode(charArrayToLong(next.getValue(), next.getLength()));
-
-				case BOOLEAN:
-					char[] arr = next.getValue();
-					return new BooleanNode(arr[0] != 'n' && arr[1] != 'o');
-
-				case START_OBJECT:
-					return readObjectOrList(tokenizer);
-			}
+		// Not sure if I should return an empty list or an empty object
+		if (next.getType() == TextParserToken.Type.END_OBJECT) {
+			return new ObjectNode(new HashMap<>());
 		}
 
-		Logger.getInstance().log(Logger.DEBUG, "HUH? " + next.getType() + "next: " + next.getType());
-		return null;
-	}
+		TextParserToken afterNext = tokenizer.peek();
 
-	private LongNode readLong(TextTokenizer tokenizer) {
-		TextParserToken next = tokenizer.next();
-		return new LongNode(charArrayToLong(next.getValue(), next.getLength()));
-	}
+		if (afterNext.getType() != TextParserToken.Type.OPERATION) {
+			return readList(next, tokenizer);
+		}
 
-	private BooleanNode readBoolean(TextTokenizer tokenizer) {
-		TextParserToken next = tokenizer.next();
-		char[] arr = next.getValue();
-		return new BooleanNode(arr[0] != 'n' && arr[1] != 'o');
-	}
+		HashMap<String, ASTNode> children = new HashMap<>();
 
-	private StringNode readString(TextTokenizer tokenizer) {
-		TextParserToken next = tokenizer.next();
-		return new StringNode(new String(next.getValue(), 0, next.getLength()));
-	}
-
-	private IntegerNode readInt(TextTokenizer tokenizer) {
-		TextParserToken next = tokenizer.next();
-		return new IntegerNode(charArrayToInt(next.getValue(), next.getLength()));
-	}
-
-	private DoubleNode readDouble(TextTokenizer tokenizer) {
-		TextParserToken next = tokenizer.next();
-		return new DoubleNode(charArrayToDouble(next.getValue(), next.getLength()));
-	}
-
-	private ASTNode readObjectOrList(TextTokenizer tokenizer) {
-		HashMap<String, Object> children = new HashMap<>();
-
-		String key = "";
-		List<ASTNode> childrenList = new ArrayList<>();
-//		tokenizer.next();
-		ASTNode.Type type = ASTNode.Type.OBJECT;
-
-		TextParserToken token = tokenizer.peek();
-		while (token.getType() != TextParserToken.Type.END_OBJECT) {
-			ASTNode property = readProperty(tokenizer);
-
-			if (property.getType() != ASTNode.Type.PROPERTY) {
-				type = ASTNode.Type.LIST;
-				childrenList.add(property);
+		while (next.getType() != TextParserToken.Type.END_OBJECT) {
+			tokenizer.next();
+			TextParserToken value = tokenizer.peek();
+			ASTNode nodeValue;
+			if (value.getType() == TextParserToken.Type.START_OBJECT) {
+				tokenizer.next();
+				nodeValue = readObject(tokenizer);
 			} else {
-				PropertyNode propNode = (PropertyNode) property;
-
-				if (children.containsKey(propNode.getKey())) {
-					if (children.get(propNode.getKey()) instanceof ListNode) {
-						ListNode listNode = (ListNode) children.get(propNode.getKey());
-						listNode.add((ASTNode) propNode.getValue());
-						children.put(propNode.getKey(), listNode);
-					} else {
-						key = propNode.getKey();
-						List<ASTNode> listNodes = new ArrayList<>();
-						listNodes.add((ASTNode) children.get(propNode.getKey()));
-						listNodes.add((ASTNode) propNode.getValue());
-						ListNode listNode = new ListNode(listNodes);
-						children.put(propNode.getKey(), listNode);
-					}
-				} else {
-					children.put(propNode.getKey(), propNode.getValue());
-				}
+				nodeValue = readString(tokenizer);
 			}
-			token = tokenizer.peek();
+
+			children.put(new String(next.getValue(), 0, next.getLength()), nodeValue);
+			next = tokenizer.next();
+		}
+
+		return new ObjectNode(children);
+	}
+
+	private ASTNode readList(TextParserToken firstElement, TextTokenizer tokenizer) {
+		List<ASTNode> children = new ArrayList<>();
+		if (firstElement.getType() == TextParserToken.Type.START_OBJECT) {
+			children.add(readObject(tokenizer));
+		} else {
+			children.add(readString(firstElement));
+		}
+
+		TextParserToken next = tokenizer.peek();
+		while (next.getType() != TextParserToken.Type.END_OBJECT) {
+			if (next.getType() == TextParserToken.Type.START_OBJECT) {
+				tokenizer.next();
+				children.add(readObject(tokenizer));
+			} else {
+				children.add(readString(tokenizer));
+			}
+
+			next = tokenizer.peek();
 		}
 
 		tokenizer.next();
-		if (type == ASTNode.Type.OBJECT) {
-			return new ObjectNode(children);
-		} else if (key.isEmpty()) {
-			return new ListNode(childrenList);
+		return new ListNode(children);
+	}
+
+	private ASTNode readString(TextTokenizer tokenizer) {
+		return readString(tokenizer.next());
+	}
+
+	private ASTNode readString(TextParserToken next) {
+		char[] value = next.getValue();
+		int length = next.getLength();
+
+		ASTNode.Type numberType = getNumberType(value, length);
+		if (numberType == ASTNode.Type.DOUBLE) return new DoubleNode(charArrayToDouble(value, length));
+		if (numberType == ASTNode.Type.INTEGER) return new IntegerNode(charArrayToInt(value, length));
+		if (numberType == ASTNode.Type.LONG) return new LongNode(charArrayToLong(value, length));
+		if (value[0] == 'n' && value[1] == 'o' || value[0] == 'y' && value[1] == 'e' && value[2] == 's')
+			return readBoolean(next);
+		return new StringNode(new String(value, 0, length));
+	}
+
+	private ASTNode readBoolean(TextParserToken token) {
+		return new BooleanNode(token.getLength() == 3);
+	}
+
+	private ASTNode.Type getNumberType(char[] value, int length) {
+		boolean alreadySeenDot = false;
+		for (int i = 0; i < length; i++) {
+			if (value[i] == '-' && i == 0) continue;
+			if (Character.isDigit(value[i])) continue;
+			if (value[i] == '.') {
+				if (alreadySeenDot) {
+					return ASTNode.Type.STRING;
+				} else {
+					alreadySeenDot = true;
+					continue;
+				}
+			}
+
+			return ASTNode.Type.STRING;
+		}
+
+		if (alreadySeenDot) {
+			return ASTNode.Type.DOUBLE;
 		} else {
-			ListNode listNode = new ListNode(childrenList);
-			return new PropertyNode<>(key, listNode);
+			if (length >= 9) {
+				return ASTNode.Type.LONG;
+			} else {
+				return ASTNode.Type.INTEGER;
+			}
 		}
 	}
 
@@ -213,12 +214,12 @@ public class AST {
 
 			int digit = (int) arr[i] - (int) '0';
 			if (seenDot) {
-				result *= 10;
-				result += digit;
-			} else {
 				double num = (double) digit / count;
 				count *= 10;
 				result += num;
+			} else {
+				result *= 10;
+				result += digit;
 			}
 		}
 
