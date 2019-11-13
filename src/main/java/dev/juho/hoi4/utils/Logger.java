@@ -1,5 +1,6 @@
 package dev.juho.hoi4.utils;
 
+import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
@@ -36,8 +37,16 @@ public class Logger {
 		return instance;
 	}
 
+	public void log(int level, TextParserToken[] tokens, ParserInputStream in, int start, int length) {
+		log(level, "Starting from " + start + " ending at " + length);
+		for (int i = start; i < start + length; i++) {
+			log(level, i + ": " + tokens[i].getType() + ", " + tokens[i].getStart() + "-" + tokens[i].getLength());
+			log(level, "\t" + tokens[i].getStart() + ": " + new String(in.getBuffer(), tokens[i].getStart(), tokens[i].getLength()));
+		}
+	}
+
 	public void log(int level, TextParserToken token) {
-		log(level, "token: " + token.getType() + ", " + token.getStart());
+		log(level, "token: " + token.getType() + ", " + token.getStart() + "-" + token.getLength());
 	}
 
 	public void log(int level, ASTNode node) {

@@ -50,7 +50,8 @@ public class AST {
 		}
 
 //		if (next.getType() == TextParserToken.Type.KEY) return readProperty(tokenizer);
-		Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + asString + " at " + tokenizer.getPosition());
+		Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + asString + " at " + tokenizer.getPosition() + "! Start with -debug for more info");
+		Logger.getInstance().log(Logger.DEBUG, tokenizer.getTokens(), in, Math.max(tokenizer.getPosition() - 10, 0), 15);
 		System.exit(0);
 		return null;
 	}
