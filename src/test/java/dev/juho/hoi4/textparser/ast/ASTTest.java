@@ -303,4 +303,22 @@ public class ASTTest {
 		Assert.assertEquals(100.0, ((DoubleNode) propertyNode.getValue()).getValue(), 0);
 	}
 
+	@Test
+	public void parseTwoSameKeysInObject() {
+		String str = "test={ a=2 a=5 }";
+
+		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
+		TextTokenizer tokenizer = new TextTokenizer(in, 128);
+
+		AST ast = new AST(in);
+		ast.build(tokenizer);
+
+		List<ASTNode> nodes = ast.getNodes();
+		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
+		Assert.assertEquals(propertyNode.getType(), ASTNode.Type.PROPERTY);
+		ObjectNode objectNode = (ObjectNode) propertyNode.getValue();
+		ASTNode shouldBeListNode = (ASTNode) objectNode.get("a");
+		Assert.assertEquals(shouldBeListNode.getType(), ASTNode.Type.LIST);
+	}
+
 }

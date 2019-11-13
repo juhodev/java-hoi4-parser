@@ -8,6 +8,7 @@ import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.utils.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -100,11 +101,34 @@ public class AST {
 				nodeValue = readString(tokenizer);
 			}
 
-			children.put(new String(in.getBuffer(), next.getStart(), next.getLength()), nodeValue);
+			String key = new String(in.getBuffer(), next.getStart(), next.getLength());
+			if (children.containsKey(key)) {
+				ASTNode list = addToOrCreateAList(children, key, nodeValue);
+				children.put(key, list);
+			} else {
+				children.put(new String(in.getBuffer(), next.getStart(), next.getLength()), nodeValue);
+			}
+
 			next = tokenizer.next();
 		}
 
 		return new ObjectNode(children);
+	}
+
+	private ASTNode addToOrCreateAList(HashMap<String, ASTNode> children, String key, ASTNode secondChild) {
+		ASTNode firstChild = children.get(key);
+		ListNode list;
+
+		if (firstChild.getType() == ASTNode.Type.LIST) {
+			list = (ListNode) firstChild;
+			list.add(secondChild);
+			return list;
+		} else {
+			List<ASTNode> newList = new ArrayList<>();
+			newList.add(firstChild);
+			newList.add(secondChild);
+			return new ListNode(newList);
+		}
 	}
 
 	private ASTNode readList(TextParserToken firstElement, TextTokenizer tokenizer) {
