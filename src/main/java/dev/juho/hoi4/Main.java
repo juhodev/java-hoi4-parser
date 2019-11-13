@@ -5,7 +5,6 @@ import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.TextParser;
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.savegame.SaveGame;
-import dev.juho.hoi4.savegame.SaveGameUtils;
 import dev.juho.hoi4.utils.ArgsParser;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
@@ -14,7 +13,6 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Main {
@@ -26,8 +24,8 @@ public class Main {
 		Logger.LOG_LEVEL = Logger.INFO;
 
 		ArgsParser.getInstance().add(ArgsParser.Argument.GAME, ArgsParser.Type.STRING, true, "-game");
-		ArgsParser.getInstance().add(ArgsParser.Argument.COUNTRY, ArgsParser.Type.LIST, true, "-country");
 
+		ArgsParser.getInstance().add(ArgsParser.Argument.COUNTRY, ArgsParser.Type.LIST, false, "-country");
 		ArgsParser.getInstance().add(ArgsParser.Argument.FOLDER, ArgsParser.Type.STRING, false, "-folder", "-hoi4_folder");
 		ArgsParser.getInstance().add(ArgsParser.Argument.JSON, ArgsParser.Type.NONE, false, "-json");
 		ArgsParser.getInstance().add(ArgsParser.Argument.JSON_LIMIT, ArgsParser.Type.STRING, false, "-json_limit");
@@ -39,14 +37,16 @@ public class Main {
 
 		gameName = ArgsParser.getInstance().getString(ArgsParser.Argument.GAME);
 
-		List<String> countries = ArgsParser.getInstance().getList(ArgsParser.Argument.COUNTRY);
-		List<CountryTag> countryTags = new ArrayList<>();
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.COUNTRY)) {
+			List<String> countries = ArgsParser.getInstance().getList(ArgsParser.Argument.COUNTRY);
+			List<CountryTag> countryTags = new ArrayList<>();
 
-		for (String country : countries) {
-			if (Utils.hasEnum(CountryTag.values(), country)) {
-				countryTags.add(CountryTag.valueOf(country));
-			} else {
-				Logger.getInstance().log(Logger.ERROR, "Couldn't find a country " + country);
+			for (String country : countries) {
+				if (Utils.hasEnum(CountryTag.values(), country)) {
+					countryTags.add(CountryTag.valueOf(country));
+				} else {
+					Logger.getInstance().log(Logger.ERROR, "Couldn't find a country " + country);
+				}
 			}
 		}
 
