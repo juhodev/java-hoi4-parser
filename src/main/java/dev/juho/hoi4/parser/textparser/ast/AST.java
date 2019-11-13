@@ -1,5 +1,6 @@
 package dev.juho.hoi4.parser.textparser.ast;
 
+import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.TextParser;
 import dev.juho.hoi4.parser.textparser.ast.nodes.*;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
@@ -13,8 +14,10 @@ import java.util.List;
 public class AST {
 
 	private List<ASTNode> nodes;
+	private ParserInputStream in;
 
-	public AST() {
+	public AST(ParserInputStream in) {
+		this.in = in;
 		this.nodes = new ArrayList<>();
 	}
 
@@ -40,7 +43,7 @@ public class AST {
 			return readProperty(next, tokenizer);
 		}
 
-		String asString = new String(next.getValue(), 0, next.getLength());
+		String asString = new String(in.getBuffer(), next.getStart(), next.getLength());
 
 		if (asString.equalsIgnoreCase("hoi4txt")) {
 			return null;
@@ -66,7 +69,7 @@ public class AST {
 		if (next.getType() == TextParserToken.Type.STRING)
 			value = readString(tokenizer);
 
-		return new PropertyNode(new String(key.getValue(), 0, key.getLength()), value);
+		return new PropertyNode(new String(in.getBuffer(), key.getStart(), key.getLength()), value);
 	}
 
 	private ASTNode readObject(TextTokenizer tokenizer) {
@@ -96,7 +99,7 @@ public class AST {
 				nodeValue = readString(tokenizer);
 			}
 
-			children.put(new String(next.getValue(), 0, next.getLength()), nodeValue);
+			children.put(new String(in.getBuffer(), next.getStart(), next.getLength()), nodeValue);
 			next = tokenizer.next();
 		}
 
@@ -132,26 +135,28 @@ public class AST {
 	}
 
 	private ASTNode readString(TextParserToken next) {
-		char[] value = next.getValue();
 		int length = next.getLength();
 
-		ASTNode.Type numberType = getNumberType(value, length);
-		if (numberType == ASTNode.Type.DOUBLE) return new DoubleNode(charArrayToDouble(value, length));
-		if (numberType == ASTNode.Type.INTEGER) return new IntegerNode(charArrayToInt(value, length));
-		if (numberType == ASTNode.Type.LONG) return new LongNode(charArrayToLong(value, length));
-		if (value[0] == 'n' && value[1] == 'o' || value[0] == 'y' && value[1] == 'e' && value[2] == 's')
+		ASTNode.Type numberType = getNumberType(in.getBuffer(), next.getStart(), length);
+		if (numberType == ASTNode.Type.DOUBLE)
+			return new DoubleNode(charArrayToDouble(in.getBuffer(), next.getStart(), length));
+		if (numberType == ASTNode.Type.INTEGER)
+			return new IntegerNode(charArrayToInt(in.getBuffer(), next.getStart(), length));
+		if (numberType == ASTNode.Type.LONG)
+			return new LongNode(charArrayToLong(in.getBuffer(), next.getStart(), length));
+		if (in.getBuffer()[next.getStart()] == 'n' && in.getBuffer()[next.getStart() + 1] == 'o' || in.getBuffer()[next.getStart()] == 'y' && in.getBuffer()[next.getStart() + 1] == 'e' && in.getBuffer()[next.getStart() + 2] == 's')
 			return readBoolean(next);
-		return new StringNode(new String(value, 0, length));
+		return new StringNode(new String(in.getBuffer(), next.getStart(), length));
 	}
 
 	private ASTNode readBoolean(TextParserToken token) {
 		return new BooleanNode(token.getLength() == 3);
 	}
 
-	private ASTNode.Type getNumberType(char[] value, int length) {
+	private ASTNode.Type getNumberType(byte[] value, int start, int length) {
 		boolean alreadySeenDot = false;
-		for (int i = 0; i < length; i++) {
-			if (value[i] == '-' && i == 0) continue;
+		for (int i = start; i < start + length; i++) {
+			if (value[i] == '-' && i == start) continue;
 			if (Character.isDigit(value[i])) continue;
 			if (value[i] == '.') {
 				if (alreadySeenDot) {
@@ -177,10 +182,10 @@ public class AST {
 	}
 
 	//	https://stackoverflow.com/a/12297485
-	private int charArrayToInt(char[] arr, int length) {
+	private int charArrayToInt(byte[] arr, int start, int length) {
 		int result = 0;
 
-		for (int i = 0; i < length; i++) {
+		for (int i = start; i < start + length; i++) {
 			int digit = (int) arr[i] - (int) '0';
 			result *= 10;
 			result += digit;
@@ -189,10 +194,10 @@ public class AST {
 		return result;
 	}
 
-	private long charArrayToLong(char[] arr, int length) {
+	private long charArrayToLong(byte[] arr, int start, int length) {
 		long result = 0;
 
-		for (int i = 0; i < length; i++) {
+		for (int i = start; i < start + length; i++) {
 			int digit = (int) arr[i] - (int) '0';
 			result *= 10;
 			result += digit;
@@ -201,12 +206,12 @@ public class AST {
 		return result;
 	}
 
-	private double charArrayToDouble(char[] arr, int length) {
+	private double charArrayToDouble(byte[] arr, int start, int length) {
 		double result = 0;
 		boolean seenDot = false;
 		int count = 1;
 
-		for (int i = 0; i < length; i++) {
+		for (int i = start; i < start + length; i++) {
 			if (arr[i] == '.') {
 				seenDot = true;
 				continue;

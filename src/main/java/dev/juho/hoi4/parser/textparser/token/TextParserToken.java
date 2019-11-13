@@ -3,12 +3,11 @@ package dev.juho.hoi4.parser.textparser.token;
 public class TextParserToken {
 
 	private Type type;
-	private char[] value;
-	private int length;
+	private int start, length;
 
-	public TextParserToken(Type type, char[] value, int length) {
+	public TextParserToken(Type type, int start, int length) {
 		this.type = type;
-		this.value = value;
+		this.start = start;
 		this.length = length;
 	}
 
@@ -16,8 +15,8 @@ public class TextParserToken {
 		return type;
 	}
 
-	public char[] getValue() {
-		return value;
+	public int getStart() {
+		return start;
 	}
 
 	public int getLength() {

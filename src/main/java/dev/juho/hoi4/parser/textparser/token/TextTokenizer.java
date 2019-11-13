@@ -1,7 +1,6 @@
 package dev.juho.hoi4.parser.textparser.token;
 
 import dev.juho.hoi4.parser.ParserInputStream;
-import dev.juho.hoi4.utils.CharArray;
 
 public class TextTokenizer {
 
@@ -87,30 +86,27 @@ public class TextTokenizer {
 		if (nextChar == START_OBJECT) return readOpenObject();
 		if (nextChar == END_OBJECT) return readEndObject();
 		if (nextChar == STRING_START) {
-			CharArray chars = readString(true, STRING_START);
-			return new TextParserToken(TextParserToken.Type.STRING, chars.chars(), chars.size());
+			int[] position = readString(true, STRING_START);
+			return new TextParserToken(TextParserToken.Type.STRING, position[0], position[1]);
 		}
 		if (nextChar == EQUALS) return readEquals();
-		CharArray chars = readString(false, EQUALS, WHITESPACE, TAB, NEW_LINE, LINE_RETURN);
-		return new TextParserToken(TextParserToken.Type.STRING, chars.chars(), chars.size());
+		int[] position = readString(false, EQUALS, WHITESPACE, TAB, NEW_LINE, LINE_RETURN);
+		return new TextParserToken(TextParserToken.Type.STRING, position[0], position[1]);
 	}
 
 	private TextParserToken readOpenObject() {
-		char nextChar = in.nextChar();
-
-		return new TextParserToken(TextParserToken.Type.START_OBJECT, new char[]{nextChar}, 1);
+		in.nextChar();
+		return new TextParserToken(TextParserToken.Type.START_OBJECT, in.getPosition() - 1, 1);
 	}
 
 	private TextParserToken readEndObject() {
-		char nextChar = in.nextChar();
-
-		return new TextParserToken(TextParserToken.Type.END_OBJECT, new char[]{nextChar}, 1);
+		in.nextChar();
+		return new TextParserToken(TextParserToken.Type.END_OBJECT, in.getPosition() - 1, 1);
 	}
 
 	private TextParserToken readEquals() {
-		char nextChar = in.nextChar();
-
-		return new TextParserToken(TextParserToken.Type.OPERATION, new char[]{nextChar}, 1);
+		in.nextChar();
+		return new TextParserToken(TextParserToken.Type.OPERATION, in.getPosition() - 1, 1);
 	}
 
 	private void readComment() {
@@ -123,20 +119,29 @@ public class TextTokenizer {
 		}
 	}
 
-	private CharArray readString(boolean skip, char... end) {
-		CharArray chars = new CharArray(30);
+	/**
+	 * @return index 0: start of the string, index: 1 end of the string
+	 */
+	private int[] readString(boolean skip, char... end) {
+		int start = in.getPosition();
+		int length = 1;
+
+		in.nextChar();
 		// Skip "
-		if (skip) in.nextChar();
-		else chars.append(in.nextChar());
+		if (skip) {
+			start = in.getPosition();
+			length = 0;
+		}
 
 		if (in.eof()) {
-			return chars;
+			return new int[]{start, length};
 		}
 
 		char next = in.peekChar();
 
 		while (!containsChar(end, next)) {
-			chars.append(in.nextChar());
+			in.nextChar();
+			length++;
 			if (!in.eof()) {
 				next = in.peekChar();
 			} else {
@@ -147,7 +152,7 @@ public class TextTokenizer {
 //		This will only happen when parsing a string that starts and ends with "
 		if (skip && next == STRING_START) in.nextChar();
 
-		return chars;
+		return new int[]{start, length};
 	}
 
 	private boolean containsChar(char[] array, char c) {

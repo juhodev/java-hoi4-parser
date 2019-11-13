@@ -37,7 +37,7 @@ public class Logger {
 	}
 
 	public void log(int level, TextParserToken token) {
-		log(level, "token: " + token.getType() + ", " + token.getValue());
+		log(level, "token: " + token.getType() + ", " + token.getStart());
 	}
 
 	public void log(int level, ASTNode node) {

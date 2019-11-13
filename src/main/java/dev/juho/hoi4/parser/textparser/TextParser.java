@@ -26,7 +26,7 @@ public class TextParser extends Parser {
 		ParserInputStream in = new ParserInputStream(new FileInputStream(getFile()));
 
 		TextTokenizer tokenizer = new TextTokenizer(in, 4096 * 8);
-		AST ast = new AST();
+		AST ast = new AST(in);
 
 		ast.build(tokenizer);
 		Logger.getInstance().timeEnd(Logger.INFO, "Parsing " + getFile().getName());

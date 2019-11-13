@@ -37,6 +37,14 @@ public class ParserInputStream {
 		return next;
 	}
 
+	public int getPosition() {
+		return currentPos;
+	}
+
+	public byte[] getBuffer() {
+		return buffer;
+	}
+
 	public boolean eof() {
 		return currentPos == read;
 	}

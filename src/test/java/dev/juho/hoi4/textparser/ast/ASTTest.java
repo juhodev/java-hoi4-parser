@@ -22,14 +22,13 @@ public class ASTTest {
 	}
 
 	@Test
-	@Ignore
 	public void skipHOI4Txt() {
 		String str = "HOI4txt\ntest=\"value\"";
 
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
@@ -45,7 +44,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
@@ -61,7 +60,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
@@ -79,7 +78,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
@@ -100,7 +99,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
@@ -124,7 +123,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
@@ -142,7 +141,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
@@ -165,7 +164,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
@@ -193,7 +192,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 		List<ASTNode> nodes = ast.getNodes();
 
@@ -212,7 +211,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 		List<ASTNode> nodes = ast.getNodes();
 
@@ -233,7 +232,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 		List<ASTNode> nodes = ast.getNodes();
 
@@ -258,7 +257,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
@@ -280,7 +279,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
@@ -296,7 +295,7 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST();
+		AST ast = new AST(in);
 		ast.build(tokenizer);
 
 		List<ASTNode> nodes = ast.getNodes();
