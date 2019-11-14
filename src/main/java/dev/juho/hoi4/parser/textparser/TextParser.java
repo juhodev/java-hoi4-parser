@@ -5,7 +5,6 @@ import dev.juho.hoi4.parser.textparser.ast.AST;
 import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
-import dev.juho.hoi4.savegame.SaveGame;
 import dev.juho.hoi4.utils.Logger;
 
 import java.io.*;

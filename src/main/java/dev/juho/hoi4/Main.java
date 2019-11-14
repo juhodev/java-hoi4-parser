@@ -4,7 +4,6 @@ import dev.juho.hoi4.parser.Parser;
 import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.TextParser;
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
-import dev.juho.hoi4.savegame.SaveGame;
 import dev.juho.hoi4.utils.ArgsParser;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
@@ -90,12 +89,6 @@ public class Main {
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
 			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
 			jsonPrinter.print();
-		}
-
-		if (ArgsParser.getInstance().has(ArgsParser.Argument.SAVE_GAME)) {
-			SaveGame saveGame = new SaveGame(parser.getNodes());
-			saveGame.build();
-			saveGame.print();
 		}
 	}
 
