@@ -1,8 +1,7 @@
-package dev.juho.hoi4.parser.textparser.ast;
+package dev.juho.hoi4.parser.textparser.gamefile;
 
 import dev.juho.hoi4.parser.ParserInputStream;
-import dev.juho.hoi4.parser.textparser.TextParser;
-import dev.juho.hoi4.parser.textparser.ast.nodes.*;
+import dev.juho.hoi4.parser.textparser.gamefile.nodes.*;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.utils.Logger;
@@ -11,19 +10,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class AST {
+public class GameFile {
 
-	private List<ASTNode> nodes;
+	private List<GFNode> nodes;
 	private ParserInputStream in;
 
-	public AST(ParserInputStream in) {
+	public GameFile(ParserInputStream in) {
 		this.in = in;
 		this.nodes = new ArrayList<>();
 	}
 
 	public void build(TextTokenizer tokenizer) {
 		while (!tokenizer.eof()) {
-			ASTNode node = read(tokenizer);
+			GFNode node = read(tokenizer);
 
 			if (node != null) {
 				nodes.add(node);
@@ -31,11 +30,11 @@ public class AST {
 		}
 	}
 
-	public List<ASTNode> getNodes() {
+	public List<GFNode> getNodes() {
 		return nodes;
 	}
 
-	private ASTNode read(TextTokenizer tokenizer) {
+	private GFNode read(TextTokenizer tokenizer) {
 		TextParserToken next = tokenizer.next();
 		TextParserToken afterNext = tokenizer.peek();
 
@@ -56,7 +55,7 @@ public class AST {
 		return null;
 	}
 
-	private ASTNode readProperty(TextParserToken key, TextTokenizer tokenizer) {
+	private GFNode readProperty(TextParserToken key, TextTokenizer tokenizer) {
 //		skip =
 		tokenizer.next();
 
@@ -109,7 +108,7 @@ public class AST {
 		return objectNode;
 	}
 
-	private ASTNode readList(TextParserToken firstElement, TextTokenizer tokenizer) {
+	private GFNode readList(TextParserToken firstElement, TextTokenizer tokenizer) {
 		List<Object> children = new ArrayList<>();
 		if (firstElement.getType() == TextParserToken.Type.START_OBJECT) {
 			children.add(readObject(tokenizer));
@@ -140,12 +139,12 @@ public class AST {
 	private Object readString(TextParserToken next) {
 		int length = next.getLength();
 
-		ASTNode.Type numberType = getNumberType(in.getBuffer(), next.getStart(), length);
-		if (numberType == ASTNode.Type.DOUBLE)
+		GFNode.Type numberType = getNumberType(in.getBuffer(), next.getStart(), length);
+		if (numberType == GFNode.Type.DOUBLE)
 			return charArrayToDouble(in.getBuffer(), next.getStart(), length);
-		if (numberType == ASTNode.Type.INTEGER)
+		if (numberType == GFNode.Type.INTEGER)
 			return charArrayToInt(in.getBuffer(), next.getStart(), length);
-		if (numberType == ASTNode.Type.LONG)
+		if (numberType == GFNode.Type.LONG)
 			return charArrayToLong(in.getBuffer(), next.getStart(), length);
 		if (in.getBuffer()[next.getStart()] == 'n' && in.getBuffer()[next.getStart() + 1] == 'o' || in.getBuffer()[next.getStart()] == 'y' && in.getBuffer()[next.getStart() + 1] == 'e' && in.getBuffer()[next.getStart() + 2] == 's')
 			return readBoolean(next);
@@ -156,30 +155,30 @@ public class AST {
 		return token.getLength() == 3;
 	}
 
-	private ASTNode.Type getNumberType(byte[] value, int start, int length) {
+	private GFNode.Type getNumberType(byte[] value, int start, int length) {
 		boolean alreadySeenDot = false;
 		for (int i = start; i < start + length; i++) {
 			if (value[i] == '-' && i == start) continue;
 			if (Character.isDigit(value[i])) continue;
 			if (value[i] == '.') {
 				if (alreadySeenDot) {
-					return ASTNode.Type.STRING;
+					return GFNode.Type.STRING;
 				} else {
 					alreadySeenDot = true;
 					continue;
 				}
 			}
 
-			return ASTNode.Type.STRING;
+			return GFNode.Type.STRING;
 		}
 
 		if (alreadySeenDot) {
-			return ASTNode.Type.DOUBLE;
+			return GFNode.Type.DOUBLE;
 		} else {
 			if (length >= 9) {
-				return ASTNode.Type.LONG;
+				return GFNode.Type.LONG;
 			} else {
-				return ASTNode.Type.INTEGER;
+				return GFNode.Type.INTEGER;
 			}
 		}
 	}

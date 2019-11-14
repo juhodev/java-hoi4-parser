@@ -1,11 +1,11 @@
-package dev.juho.hoi4.parser.textparser.ast;
+package dev.juho.hoi4.parser.textparser.gamefile;
 
 
-public abstract class ASTNode {
+public abstract class GFNode {
 
 	private Type type;
 
-	public ASTNode(Type type) {
+	public GFNode(Type type) {
 		this.type = type;
 	}
 
@@ -16,7 +16,6 @@ public abstract class ASTNode {
 	public enum Type {
 		LONG,
 		BOOLEAN,
-		ENUM,
 		PROPERTY,
 		STRING,
 		INTEGER,

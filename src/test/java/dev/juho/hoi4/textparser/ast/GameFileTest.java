@@ -1,20 +1,19 @@
 package dev.juho.hoi4.textparser.ast;
 
-import dev.juho.hoi4.parser.textparser.ast.AST;
-import dev.juho.hoi4.parser.textparser.ast.ASTNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.*;
+import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
+import dev.juho.hoi4.parser.textparser.gamefile.GameFile;
+import dev.juho.hoi4.parser.textparser.gamefile.nodes.*;
 import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.utils.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
-public class ASTTest {
+public class GameFileTest {
 
 	@BeforeClass
 	public static void before() {
@@ -28,12 +27,12 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
 		Assert.assertNotNull(((PropertyNode) nodes.get(0)).getValue());
 	}
 
@@ -44,12 +43,12 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
 		Assert.assertNotNull(((PropertyNode) nodes.get(0)).getValue());
 	}
 
@@ -60,12 +59,12 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		Assert.assertEquals("test", node.getKey());
 		Assert.assertEquals("value", node.getValue());
@@ -78,12 +77,12 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		Assert.assertTrue(node.getValue() instanceof ObjectNode);
 
@@ -99,14 +98,14 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(ASTNode.Type.LIST, ((ASTNode) node.getValue()).getType());
+		Assert.assertEquals(GFNode.Type.LIST, ((GFNode) node.getValue()).getType());
 
 		ListNode listNode = (ListNode) (node.getValue());
 		List<Object> childNodes = listNode.getChildren();
@@ -123,10 +122,10 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		ListNode listNode = (ListNode) node.getValue();
 		Assert.assertNotNull(listNode.getChildren().get(0));
@@ -141,12 +140,12 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		Assert.assertTrue(node.getValue() instanceof ListNode);
 
@@ -164,19 +163,19 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(ASTNode.Type.LIST, ((ASTNode) node.getValue()).getType());
+		Assert.assertEquals(GFNode.Type.LIST, ((GFNode) node.getValue()).getType());
 
 		ListNode listNode = (ListNode) node.getValue();
 		List<Object> childNodes = listNode.getChildren();
 		ListNode childList = (ListNode) childNodes.get(0);
-		Assert.assertEquals(ASTNode.Type.LIST, childList.getType());
+		Assert.assertEquals(GFNode.Type.LIST, childList.getType());
 
 		List<Object> childChildNodes = childList.getChildren();
 		Object firstChild = childChildNodes.get(0);
@@ -192,11 +191,11 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
-		List<ASTNode> nodes = ast.getNodes();
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
+		List<GFNode> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		ListNode listNode = (ListNode) node.getValue();
 		Object firstChild = listNode.getChildren().get(0);
@@ -211,11 +210,11 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
-		List<ASTNode> nodes = ast.getNodes();
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
+		List<GFNode> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		ListNode listNode = (ListNode) node.getValue();
 		Object firstChild = listNode.getChildren().get(0);
@@ -232,11 +231,11 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
-		List<ASTNode> nodes = ast.getNodes();
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
+		List<GFNode> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
+		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		ObjectNode objectNode = (ObjectNode) node.getValue();
 
@@ -257,19 +256,19 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
 		ListNode outsideList = (ListNode) propertyNode.getValue();
 		ListNode insideListOne = (ListNode) outsideList.getChildren().get(0);
 		ListNode insideListTwo = (ListNode) outsideList.getChildren().get(1);
 
-		Assert.assertEquals(propertyNode.getType(), ASTNode.Type.PROPERTY);
-		Assert.assertEquals(outsideList.getType(), ASTNode.Type.LIST);
-		Assert.assertEquals(insideListOne.getType(), ASTNode.Type.LIST);
-		Assert.assertEquals(insideListTwo.getType(), ASTNode.Type.LIST);
+		Assert.assertEquals(propertyNode.getType(), GFNode.Type.PROPERTY);
+		Assert.assertEquals(outsideList.getType(), GFNode.Type.LIST);
+		Assert.assertEquals(insideListOne.getType(), GFNode.Type.LIST);
+		Assert.assertEquals(insideListTwo.getType(), GFNode.Type.LIST);
 	}
 
 	@Test
@@ -279,12 +278,12 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(propertyNode.getType(), ASTNode.Type.PROPERTY);
+		Assert.assertEquals(propertyNode.getType(), GFNode.Type.PROPERTY);
 		Assert.assertTrue(propertyNode.getValue() instanceof ObjectNode);
 	}
 
@@ -295,10 +294,10 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
 		Assert.assertEquals(100.0, (double) propertyNode.getValue(), 0);
 	}
@@ -310,15 +309,15 @@ public class ASTTest {
 		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
 		TextTokenizer tokenizer = new TextTokenizer(in, 128);
 
-		AST ast = new AST(in);
-		ast.build(tokenizer);
+		GameFile gameFile = new GameFile(in);
+		gameFile.build(tokenizer);
 
-		List<ASTNode> nodes = ast.getNodes();
+		List<GFNode> nodes = gameFile.getNodes();
 		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(propertyNode.getType(), ASTNode.Type.PROPERTY);
+		Assert.assertEquals(propertyNode.getType(), GFNode.Type.PROPERTY);
 		ObjectNode objectNode = (ObjectNode) propertyNode.getValue();
-		ASTNode shouldBeListNode = (ASTNode) objectNode.get("a");
-		Assert.assertEquals(shouldBeListNode.getType(), ASTNode.Type.LIST);
+		GFNode shouldBeListNode = (GFNode) objectNode.get("a");
+		Assert.assertEquals(shouldBeListNode.getType(), GFNode.Type.LIST);
 	}
 
 }

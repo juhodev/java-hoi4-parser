@@ -1,6 +1,6 @@
 package dev.juho.hoi4.parser;
 
-import dev.juho.hoi4.parser.textparser.ast.ASTNode;
+import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,5 +20,5 @@ public abstract class Parser {
 
 	public abstract void parse() throws IOException;
 
-	public abstract List<ASTNode> getNodes();
+	public abstract List<GFNode> getNodes();
 }

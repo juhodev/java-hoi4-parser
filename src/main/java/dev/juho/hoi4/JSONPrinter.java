@@ -1,7 +1,7 @@
 package dev.juho.hoi4;
 
-import dev.juho.hoi4.parser.textparser.ast.ASTNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.*;
+import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
+import dev.juho.hoi4.parser.textparser.gamefile.nodes.*;
 import dev.juho.hoi4.utils.ArgsParser;
 import dev.juho.hoi4.utils.Logger;
 import org.json.JSONArray;
@@ -10,14 +10,13 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class JSONPrinter {
 
-	private List<ASTNode> nodeList;
+	private List<GFNode> nodeList;
 
-	public JSONPrinter(List<ASTNode> nodeList) {
+	public JSONPrinter(List<GFNode> nodeList) {
 		this.nodeList = nodeList;
 	}
 
@@ -28,7 +27,7 @@ public class JSONPrinter {
 
 		JSONObject obj = new JSONObject();
 
-		for (ASTNode node : nodeList) {
+		for (GFNode node : nodeList) {
 			PropertyNode propertyNode = (PropertyNode) node;
 			String key = propertyNode.getKey();
 			Object value = propertyNode.getValue();

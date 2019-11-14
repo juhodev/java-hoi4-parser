@@ -1,9 +1,9 @@
 package dev.juho.hoi4.parser.textparser;
 
 import dev.juho.hoi4.parser.Parser;
-import dev.juho.hoi4.parser.textparser.ast.AST;
 import dev.juho.hoi4.parser.ParserInputStream;
-import dev.juho.hoi4.parser.textparser.ast.ASTNode;
+import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
+import dev.juho.hoi4.parser.textparser.gamefile.GameFile;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.utils.Logger;
 
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class TextParser extends Parser {
 
-	private List<ASTNode> nodes;
+	private List<GFNode> nodes;
 
 	public TextParser(File file) {
 		super(file);
@@ -25,15 +25,15 @@ public class TextParser extends Parser {
 		ParserInputStream in = new ParserInputStream(new FileInputStream(getFile()));
 
 		TextTokenizer tokenizer = new TextTokenizer(in, 4096 * 8);
-		AST ast = new AST(in);
+		GameFile gameFile = new GameFile(in);
 
-		ast.build(tokenizer);
+		gameFile.build(tokenizer);
 		Logger.getInstance().timeEnd(Logger.INFO, "Parsing " + getFile().getName());
-		nodes = ast.getNodes();
+		nodes = gameFile.getNodes();
 	}
 
 	@Override
-	public List<ASTNode> getNodes() {
+	public List<GFNode> getNodes() {
 		return nodes;
 	}
 }

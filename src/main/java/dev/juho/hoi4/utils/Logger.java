@@ -1,8 +1,6 @@
 package dev.juho.hoi4.utils;
 
 import dev.juho.hoi4.parser.ParserInputStream;
-import dev.juho.hoi4.parser.textparser.ast.ASTNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.*;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
 
 import java.util.*;

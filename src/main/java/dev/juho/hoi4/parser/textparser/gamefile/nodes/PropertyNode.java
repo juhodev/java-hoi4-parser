@@ -1,8 +1,8 @@
-package dev.juho.hoi4.parser.textparser.ast.nodes;
+package dev.juho.hoi4.parser.textparser.gamefile.nodes;
 
-import dev.juho.hoi4.parser.textparser.ast.ASTNode;
+import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 
-public class PropertyNode extends ASTNode {
+public class PropertyNode extends GFNode {
 
 	private String key;
 	private Object value;

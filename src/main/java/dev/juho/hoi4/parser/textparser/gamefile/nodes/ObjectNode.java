@@ -1,14 +1,13 @@
-package dev.juho.hoi4.parser.textparser.ast.nodes;
+package dev.juho.hoi4.parser.textparser.gamefile.nodes;
 
-import dev.juho.hoi4.parser.textparser.ast.ASTNode;
+import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.utils.ArgsParser;
-import dev.juho.hoi4.utils.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.*;
 
-public class ObjectNode extends ASTNode {
+public class ObjectNode extends GFNode {
 
 	private HashMap<String, Object> children;
 	// Consider making all objects lists by default

@@ -1,6 +1,6 @@
-package dev.juho.hoi4.parser.textparser.ast.nodes;
+package dev.juho.hoi4.parser.textparser.gamefile.nodes;
 
-import dev.juho.hoi4.parser.textparser.ast.ASTNode;
+import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.utils.ArgsParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListNode extends ASTNode {
+public class ListNode extends GFNode {
 
 	private List<Object> children;
 

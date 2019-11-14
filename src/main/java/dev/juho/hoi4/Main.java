@@ -3,10 +3,7 @@ package dev.juho.hoi4;
 import dev.juho.hoi4.parser.Parser;
 import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.TextParser;
-import dev.juho.hoi4.parser.textparser.ast.ASTNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.ListNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.ObjectNode;
-import dev.juho.hoi4.parser.textparser.ast.nodes.PropertyNode;
+import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.utils.ArgsParser;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
@@ -87,7 +84,7 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		List<ASTNode> astNodes = parser.getNodes();
+		List<GFNode> astNodes = parser.getNodes();
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
 			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
