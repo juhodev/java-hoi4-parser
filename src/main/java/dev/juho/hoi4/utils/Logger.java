@@ -3,6 +3,7 @@ package dev.juho.hoi4.utils;
 import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Logger {
@@ -21,7 +22,8 @@ public class Logger {
 
 	private static Logger instance;
 
-	private HashMap<String, Date> times;
+	private HashMap<String, Long> times;
+	private static DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
 	public Logger() {
 		times = new HashMap<>();
@@ -116,7 +118,7 @@ public class Logger {
 	 */
 
 	public void time(String name) {
-		times.put(name, new Date());
+		times.put(name, System.nanoTime());
 	}
 
 	public void timeEnd(int level, String name) {
@@ -125,10 +127,10 @@ public class Logger {
 			return;
 		}
 
-		Date startingDate = times.get(name);
-		long elapsedTime = new Date().getTime() - startingDate.getTime();
+		long startingDate = times.get(name);
+		double elapsedTime = (System.nanoTime() - startingDate) / 1000000.0;
 
-		log(level, name + " " + elapsedTime + "ms");
+		log(level, name + " " + decimalFormat.format(elapsedTime) + "ms");
 		times.remove(name);
 	}
 
