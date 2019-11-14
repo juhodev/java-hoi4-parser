@@ -41,7 +41,7 @@ public class Main {
 		gameName = ArgsParser.getInstance().getString(ArgsParser.Argument.GAME);
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.HELP)) {
-			Logger.getInstance().log(Logger.INFO, "Usage: HOI4.jar [options...]");
+			Logger.getInstance().log(Logger.INFO, "Usage: java -jar HOI4.jar [options...]");
 			Logger.getInstance().log(Logger.INFO, "\t-country <TAG> ...    Analyze countries specified by <TAG>");
 			Logger.getInstance().log(Logger.INFO, "\t-debug                Show debug logs");
 			Logger.getInstance().log(Logger.INFO, "\t-game <name>          File name or path to file .hoi4 file");
