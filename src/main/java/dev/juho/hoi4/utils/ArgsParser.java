@@ -167,8 +167,6 @@ public class ArgsParser {
 		HELP,
 		JSON,
 		JSON_LIMIT,
-		SAVE_GAME,
-		MAP,
 		DEBUG,
 	}
 

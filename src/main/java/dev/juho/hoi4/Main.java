@@ -28,8 +28,6 @@ public class Main {
 		ArgsParser.getInstance().add(ArgsParser.Argument.FOLDER, ArgsParser.Type.STRING, false, "-folder", "-hoi4_folder");
 		ArgsParser.getInstance().add(ArgsParser.Argument.JSON, ArgsParser.Type.NONE, false, "-json");
 		ArgsParser.getInstance().add(ArgsParser.Argument.JSON_LIMIT, ArgsParser.Type.STRING, false, "-json_limit");
-		ArgsParser.getInstance().add(ArgsParser.Argument.SAVE_GAME, ArgsParser.Type.STRING, false, "-save_game");
-		ArgsParser.getInstance().add(ArgsParser.Argument.MAP, ArgsParser.Type.NONE, false, "-map");
 		ArgsParser.getInstance().add(ArgsParser.Argument.HELP, ArgsParser.Type.NONE, false, "-help");
 		ArgsParser.getInstance().add(ArgsParser.Argument.DEBUG, ArgsParser.Type.NONE, false, "-debug");
 
@@ -45,8 +43,6 @@ public class Main {
 			Logger.getInstance().log(Logger.INFO, "\t-hoi4_folder <path>   Path to HOI4 folder");
 			Logger.getInstance().log(Logger.INFO, "\t-json                 Saves the .hoi4 as .json file");
 			Logger.getInstance().log(Logger.INFO, "\t-json_limit <limit>   When saving as JSON ignores objects larger than <limit> values");
-			Logger.getInstance().log(Logger.INFO, "\t-map                  Creates a map with all -map_<option> options");
-			Logger.getInstance().log(Logger.INFO, "\t-map_highlight        Highlight countries specified with -country");
 			Logger.getInstance().log(Logger.INFO, "");
 			Logger.getInstance().log(Logger.INFO, "Examples and more option info: https://github.com/juhodev/java-hoi4-parser");
 			System.exit(0);
