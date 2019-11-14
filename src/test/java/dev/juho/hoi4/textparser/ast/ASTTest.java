@@ -68,7 +68,7 @@ public class ASTTest {
 		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		Assert.assertEquals("test", node.getKey());
-		Assert.assertEquals("value", ((StringNode) node.getValue()).getValue());
+		Assert.assertEquals("value", node.getValue());
 	}
 
 	@Test
@@ -85,11 +85,11 @@ public class ASTTest {
 
 		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(ASTNode.Type.OBJECT, node.getValue().getType());
+		Assert.assertTrue(node.getValue() instanceof ObjectNode);
 
 		ObjectNode objectNode = (ObjectNode) ((PropertyNode) nodes.get(0)).getValue();
 		Assert.assertTrue(objectNode.has("a"));
-		Assert.assertEquals("b", ((StringNode) objectNode.get("a")).getValue());
+		Assert.assertEquals("b", objectNode.getString("a"));
 	}
 
 	@Test
@@ -109,11 +109,11 @@ public class ASTTest {
 		Assert.assertEquals(ASTNode.Type.LIST, ((ASTNode) node.getValue()).getType());
 
 		ListNode listNode = (ListNode) (node.getValue());
-		List<ASTNode> childNodes = listNode.getChildren();
-		IntegerNode firstChild = (IntegerNode) childNodes.get(0);
-		IntegerNode secondChild = (IntegerNode) childNodes.get(1);
-		Assert.assertEquals(1, firstChild.getValue());
-		Assert.assertEquals(2, secondChild.getValue());
+		List<Object> childNodes = listNode.getChildren();
+		Object firstChild = childNodes.get(0);
+		Object secondChild = childNodes.get(1);
+		Assert.assertEquals(1, (int) firstChild);
+		Assert.assertEquals(2, (int) secondChild);
 	}
 
 	@Test
@@ -130,8 +130,8 @@ public class ASTTest {
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		ListNode listNode = (ListNode) node.getValue();
 		Assert.assertNotNull(listNode.getChildren().get(0));
-		IntegerNode child = (IntegerNode) listNode.getChildren().get(0);
-		Assert.assertEquals(1, child.getValue());
+		Object child = listNode.getChildren().get(0);
+		Assert.assertEquals(1, (int) child);
 	}
 
 	@Test
@@ -148,13 +148,13 @@ public class ASTTest {
 
 		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(ASTNode.Type.LIST, node.getValue().getType());
+		Assert.assertTrue(node.getValue() instanceof ListNode);
 
 		ListNode listNode = (ListNode) node.getValue();
-		List<ASTNode> childNodes = listNode.getChildren();
+		List<Object> childNodes = listNode.getChildren();
 		ObjectNode objectNode = (ObjectNode) childNodes.get(0);
 		Assert.assertTrue(objectNode.has("a"));
-		Assert.assertEquals("b", ((StringNode) objectNode.get("a")).getValue());
+		Assert.assertEquals("b", objectNode.getString("a"));
 	}
 
 	@Test
@@ -174,15 +174,15 @@ public class ASTTest {
 		Assert.assertEquals(ASTNode.Type.LIST, ((ASTNode) node.getValue()).getType());
 
 		ListNode listNode = (ListNode) node.getValue();
-		List<ASTNode> childNodes = listNode.getChildren();
+		List<Object> childNodes = listNode.getChildren();
 		ListNode childList = (ListNode) childNodes.get(0);
 		Assert.assertEquals(ASTNode.Type.LIST, childList.getType());
 
-		List<ASTNode> childChildNodes = childList.getChildren();
-		IntegerNode firstChild = (IntegerNode) childChildNodes.get(0);
-		IntegerNode secondChild = (IntegerNode) childChildNodes.get(1);
-		Assert.assertEquals(1, firstChild.getValue());
-		Assert.assertEquals(2, secondChild.getValue());
+		List<Object> childChildNodes = childList.getChildren();
+		Object firstChild = childChildNodes.get(0);
+		Object secondChild = childChildNodes.get(1);
+		Assert.assertEquals(1, (int) firstChild);
+		Assert.assertEquals(2, (int) secondChild);
 	}
 
 	@Test
@@ -199,9 +199,9 @@ public class ASTTest {
 		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		ListNode listNode = (ListNode) node.getValue();
-		StringNode firstChild = (StringNode) listNode.getChildren().get(0);
+		Object firstChild = listNode.getChildren().get(0);
 
-		Assert.assertEquals("Coloured Buttons", firstChild.getValue());
+		Assert.assertEquals("Coloured Buttons", firstChild);
 	}
 
 	@Test
@@ -218,11 +218,11 @@ public class ASTTest {
 		Assert.assertEquals(ASTNode.Type.PROPERTY, nodes.get(0).getType());
 		PropertyNode node = (PropertyNode) nodes.get(0);
 		ListNode listNode = (ListNode) node.getValue();
-		StringNode firstChild = (StringNode) listNode.getChildren().get(0);
-		StringNode secondChild = (StringNode) listNode.getChildren().get(1);
+		Object firstChild = listNode.getChildren().get(0);
+		Object secondChild = listNode.getChildren().get(1);
 
-		Assert.assertEquals("Coloured Buttons", firstChild.getValue());
-		Assert.assertEquals("test", secondChild.getValue());
+		Assert.assertEquals("Coloured Buttons", firstChild);
+		Assert.assertEquals("test", secondChild);
 	}
 
 	@Test
@@ -246,8 +246,8 @@ public class ASTTest {
 		ListNode childOne = (ListNode) objectNode.get("1");
 		ListNode childTwo = (ListNode) objectNode.get("2");
 
-		Assert.assertEquals(4, ((IntegerNode) childOne.getChildren().get(0)).getValue());
-		Assert.assertEquals(5, ((IntegerNode) childTwo.getChildren().get(0)).getValue());
+		Assert.assertEquals(4, (int) childOne.getChildren().get(0));
+		Assert.assertEquals(5, (int) childTwo.getChildren().get(0));
 	}
 
 	@Test
@@ -285,7 +285,7 @@ public class ASTTest {
 		List<ASTNode> nodes = ast.getNodes();
 		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
 		Assert.assertEquals(propertyNode.getType(), ASTNode.Type.PROPERTY);
-		Assert.assertEquals(propertyNode.getValue().getType(), ASTNode.Type.OBJECT);
+		Assert.assertTrue(propertyNode.getValue() instanceof ObjectNode);
 	}
 
 	@Test
@@ -300,7 +300,7 @@ public class ASTTest {
 
 		List<ASTNode> nodes = ast.getNodes();
 		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(100.0, ((DoubleNode) propertyNode.getValue()).getValue(), 0);
+		Assert.assertEquals(100.0, (double) propertyNode.getValue(), 0);
 	}
 
 	@Test

@@ -31,42 +31,20 @@ public class JSONPrinter {
 		for (ASTNode node : nodeList) {
 			PropertyNode propertyNode = (PropertyNode) node;
 			String key = propertyNode.getKey();
-			ASTNode value = (ASTNode) propertyNode.getValue();
+			Object value = propertyNode.getValue();
 
-			switch (value.getType()) {
-				case STRING:
-					obj.put(key, ((StringNode) value).getValue());
-					break;
-
-				case LONG:
-					obj.put(key, ((LongNode) value).getValue());
-					break;
-
-				case DOUBLE:
-					obj.put(key, ((DoubleNode) value).getValue());
-					break;
-
-				case INTEGER:
-					obj.put(key, ((IntegerNode) value).getValue());
-					break;
-
-				case LIST:
-					JSONArray listJSON = ((ListNode) value).toJSON();
-					if (listJSON.length() <= limit) {
-						obj.put(key, listJSON);
-					}
-					break;
-
-				case BOOLEAN:
-					obj.put(key, ((BooleanNode) value).getValue());
-					break;
-
-				case OBJECT:
-					JSONObject objJSON = ((ObjectNode) value).toJSON();
-					if (objJSON.length() <= limit) {
-						obj.put(key, objJSON);
-					}
-					break;
+			if (value instanceof ObjectNode) {
+				JSONObject objJSON = ((ObjectNode) value).toJSON();
+				if (objJSON.length() <= limit) {
+					obj.put(key, objJSON);
+				}
+			} else if (value instanceof ListNode) {
+				JSONArray listJSON = ((ListNode) value).toJSON();
+				if (listJSON.length() <= limit) {
+					obj.put(key, listJSON);
+				}
+			} else if (value instanceof PropertyNode) {
+				obj.put(key, value);
 			}
 		}
 

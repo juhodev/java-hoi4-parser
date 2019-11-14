@@ -1,61 +1,58 @@
 package dev.juho.hoi4.parser.textparser.ast.nodes;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
+import dev.juho.hoi4.utils.ArgsParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListNode extends ASTNode {
 
-	private List<ASTNode> children;
+	private List<Object> children;
 
-	public ListNode(List<ASTNode> children) {
+	public ListNode(List<Object> children) {
 		super(Type.LIST);
 
 		this.children = children;
 	}
 
-	public void add(ASTNode child) {
-		children.add(child);
+	public ListNode() {
+		super(Type.LIST);
+
+		this.children = new ArrayList<>();
 	}
 
-	public List<ASTNode> getChildren() {
+	public ListNode add(Object child) {
+		children.add(child);
+		return this;
+	}
+
+	public List<Object> getChildren() {
 		return children;
 	}
 
 	public JSONArray toJSON() {
 		JSONArray array = new JSONArray();
 
-		for (ASTNode value : children) {
-			switch (value.getType()) {
-				case STRING:
-					array.put(((StringNode) value).getValue());
-					break;
+		int limit = Integer.MAX_VALUE;
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON_LIMIT))
+			limit = ArgsParser.getInstance().getInt(ArgsParser.Argument.JSON_LIMIT);
 
-				case LONG:
-					array.put(((LongNode) value).getValue());
-					break;
-
-				case DOUBLE:
-					array.put(((DoubleNode) value).getValue());
-					break;
-
-				case INTEGER:
-					array.put(((IntegerNode) value).getValue());
-					break;
-
-				case BOOLEAN:
-					array.put(((BooleanNode) value).getValue());
-					break;
-
-				case OBJECT:
-					array.put(((ObjectNode) value).toJSON());
-					break;
-
-				case LIST:
-					array.put(((ListNode) value).toJSON());
-					break;
+		for (Object value : children) {
+			if (value instanceof String || value instanceof Boolean || value instanceof Double || value instanceof Integer) {
+				array.put(value);
+			} else if (value instanceof ListNode) {
+				JSONArray listJSON = ((ListNode) value).toJSON();
+				if (listJSON.length() <= limit) {
+					array.put(listJSON);
+				}
+			} else if (value instanceof ObjectNode) {
+				JSONObject objJSON = ((ObjectNode) value).toJSON();
+				if (objJSON.length() <= limit) {
+					array.put(objJSON);
+				}
 			}
 		}
 

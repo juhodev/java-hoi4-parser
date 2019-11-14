@@ -2,6 +2,7 @@ package dev.juho.hoi4.parser.textparser.ast.nodes;
 
 import dev.juho.hoi4.parser.textparser.ast.ASTNode;
 import dev.juho.hoi4.utils.ArgsParser;
+import dev.juho.hoi4.utils.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -9,20 +10,107 @@ import java.util.*;
 
 public class ObjectNode extends ASTNode {
 
-	private HashMap<String, ASTNode> children;
+	private HashMap<String, Object> children;
+	// Consider making all objects lists by default
 
-	public ObjectNode(HashMap<String, ASTNode> children) {
+	public ObjectNode(HashMap<String, Object> children) {
 		super(Type.OBJECT);
 
 		this.children = children;
 	}
 
-	public void set(String key, ASTNode value) {
-		children.put(key, value);
+	public ObjectNode() {
+		super(Type.OBJECT);
+
+		this.children = new HashMap<>();
+	}
+
+	public ObjectNode add(String key, Object value) {
+		if (!children.containsKey(key)) {
+			children.put(key, value);
+			return this;
+		}
+
+		final Object obj = get(key);
+
+		ListNode listNode;
+		if (obj instanceof ListNode) {
+			listNode = (ListNode) obj;
+		} else {
+			listNode = new ListNode();
+			listNode.add(obj);
+		}
+
+		listNode.add(value);
+		children.put(key, listNode);
+		return this;
 	}
 
 	public Object get(String key) {
 		return children.get(key);
+	}
+
+	public int getInt(String key) {
+		final Object object = get(key);
+		if (object instanceof Number) {
+			return ((Number) object).intValue();
+		}
+
+		return -1;
+	}
+
+	public double getDouble(String key) {
+		final Object object = get(key);
+		if (object instanceof Number) {
+			return ((Number) object).doubleValue();
+		}
+
+		return -1;
+	}
+
+	public long getLong(String key) {
+		final Object object = get(key);
+		if (object instanceof Number) {
+			return ((Number) object).longValue();
+		}
+
+		return -1;
+	}
+
+	public String getString(String key) {
+		final Object object = get(key);
+		if (object instanceof String) {
+			return (String) object;
+		}
+
+		return null;
+	}
+
+	public boolean getBoolean(String key) {
+		final Object object = get(key);
+		if (object instanceof Boolean) {
+			return object.equals(Boolean.TRUE);
+		}
+
+		return false;
+	}
+
+	public ObjectNode getObjectNode(String key) {
+		final Object object = get(key);
+		if (object instanceof ObjectNode) {
+			return (ObjectNode) object;
+		}
+
+		return null;
+	}
+
+	public ListNode getListNode(String key) {
+		final Object object = get(key);
+		if (object instanceof ListNode) {
+			return (ListNode) object;
+		}
+
+		return null;
 	}
 
 	public boolean has(String key) {
@@ -36,7 +124,7 @@ public class ObjectNode extends ASTNode {
 		return listNode;
 	}
 
-	public HashMap<String, ASTNode> getChildren() {
+	public HashMap<String, Object> getChildren() {
 		return children;
 	}
 
@@ -51,42 +139,20 @@ public class ObjectNode extends ASTNode {
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
 			String key = (String) pair.getKey();
-			ASTNode value = (ASTNode) pair.getValue();
+			Object value = pair.getValue();
 
-			switch (value.getType()) {
-				case STRING:
-					obj.put(key, ((StringNode) value).getValue());
-					break;
-
-				case LONG:
-					obj.put(key, ((LongNode) value).getValue());
-					break;
-
-				case DOUBLE:
-					obj.put(key, ((DoubleNode) value).getValue());
-					break;
-
-				case INTEGER:
-					obj.put(key, ((IntegerNode) value).getValue());
-					break;
-
-				case LIST:
-					JSONArray listJSON = ((ListNode) value).toJSON();
-					if (listJSON.length() <= limit) {
-						obj.put(key, listJSON);
-					}
-					break;
-
-				case BOOLEAN:
-					obj.put(key, ((BooleanNode) value).getValue());
-					break;
-
-				case OBJECT:
-					JSONObject objJSON = ((ObjectNode) value).toJSON();
-					if (objJSON.length() <= limit) {
-						obj.put(key, objJSON);
-					}
-					break;
+			if (value instanceof String || value instanceof Long || value instanceof Boolean || value instanceof Double || value instanceof Integer) {
+				obj.put(key, value);
+			} else if (value instanceof ListNode) {
+				JSONArray listJSON = ((ListNode) value).toJSON();
+				if (listJSON.length() <= limit) {
+					obj.put(key, listJSON);
+				}
+			} else if (value instanceof ObjectNode) {
+				JSONObject objJSON = ((ObjectNode) value).toJSON();
+				if (objJSON.length() <= limit) {
+					obj.put(key, objJSON);
+				}
 			}
 		}
 

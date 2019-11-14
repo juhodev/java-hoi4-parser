@@ -8,7 +8,6 @@ import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.utils.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -63,7 +62,7 @@ public class AST {
 
 		TextParserToken next = tokenizer.peek();
 
-		ASTNode value = null;
+		Object value = null;
 		if (next.getType() == TextParserToken.Type.START_OBJECT) {
 			tokenizer.next();
 			value = readObject(tokenizer);
@@ -74,7 +73,7 @@ public class AST {
 		return new PropertyNode(new String(in.getBuffer(), key.getStart(), key.getLength()), value);
 	}
 
-	private ASTNode readObject(TextTokenizer tokenizer) {
+	private Object readObject(TextTokenizer tokenizer) {
 		TextParserToken next = tokenizer.next();
 
 		// Not sure if I should return an empty list or an empty object
@@ -88,51 +87,30 @@ public class AST {
 			return readList(next, tokenizer);
 		}
 
-		HashMap<String, ASTNode> children = new HashMap<>();
+		final ObjectNode objectNode = new ObjectNode();
 
 		while (next.getType() != TextParserToken.Type.END_OBJECT) {
 			tokenizer.next();
 			TextParserToken value = tokenizer.peek();
-			ASTNode nodeValue;
+			Object node;
 			if (value.getType() == TextParserToken.Type.START_OBJECT) {
 				tokenizer.next();
-				nodeValue = readObject(tokenizer);
+				node = readObject(tokenizer);
 			} else {
-				nodeValue = readString(tokenizer);
+				node = readString(tokenizer);
 			}
 
 			String key = new String(in.getBuffer(), next.getStart(), next.getLength());
-			if (children.containsKey(key)) {
-				ASTNode list = addToOrCreateAList(children, key, nodeValue);
-				children.put(key, list);
-			} else {
-				children.put(new String(in.getBuffer(), next.getStart(), next.getLength()), nodeValue);
-			}
+			objectNode.add(key, node);
 
 			next = tokenizer.next();
 		}
 
-		return new ObjectNode(children);
-	}
-
-	private ASTNode addToOrCreateAList(HashMap<String, ASTNode> children, String key, ASTNode secondChild) {
-		ASTNode firstChild = children.get(key);
-		ListNode list;
-
-		if (firstChild.getType() == ASTNode.Type.LIST) {
-			list = (ListNode) firstChild;
-			list.add(secondChild);
-			return list;
-		} else {
-			List<ASTNode> newList = new ArrayList<>();
-			newList.add(firstChild);
-			newList.add(secondChild);
-			return new ListNode(newList);
-		}
+		return objectNode;
 	}
 
 	private ASTNode readList(TextParserToken firstElement, TextTokenizer tokenizer) {
-		List<ASTNode> children = new ArrayList<>();
+		List<Object> children = new ArrayList<>();
 		if (firstElement.getType() == TextParserToken.Type.START_OBJECT) {
 			children.add(readObject(tokenizer));
 		} else {
@@ -155,27 +133,27 @@ public class AST {
 		return new ListNode(children);
 	}
 
-	private ASTNode readString(TextTokenizer tokenizer) {
+	private Object readString(TextTokenizer tokenizer) {
 		return readString(tokenizer.next());
 	}
 
-	private ASTNode readString(TextParserToken next) {
+	private Object readString(TextParserToken next) {
 		int length = next.getLength();
 
 		ASTNode.Type numberType = getNumberType(in.getBuffer(), next.getStart(), length);
 		if (numberType == ASTNode.Type.DOUBLE)
-			return new DoubleNode(charArrayToDouble(in.getBuffer(), next.getStart(), length));
+			return charArrayToDouble(in.getBuffer(), next.getStart(), length);
 		if (numberType == ASTNode.Type.INTEGER)
-			return new IntegerNode(charArrayToInt(in.getBuffer(), next.getStart(), length));
+			return charArrayToInt(in.getBuffer(), next.getStart(), length);
 		if (numberType == ASTNode.Type.LONG)
-			return new LongNode(charArrayToLong(in.getBuffer(), next.getStart(), length));
+			return charArrayToLong(in.getBuffer(), next.getStart(), length);
 		if (in.getBuffer()[next.getStart()] == 'n' && in.getBuffer()[next.getStart() + 1] == 'o' || in.getBuffer()[next.getStart()] == 'y' && in.getBuffer()[next.getStart() + 1] == 'e' && in.getBuffer()[next.getStart() + 2] == 's')
 			return readBoolean(next);
-		return new StringNode(new String(in.getBuffer(), next.getStart(), length));
+		return new String(in.getBuffer(), next.getStart(), length);
 	}
 
-	private ASTNode readBoolean(TextParserToken token) {
-		return new BooleanNode(token.getLength() == 3);
+	private boolean readBoolean(TextParserToken token) {
+		return token.getLength() == 3;
 	}
 
 	private ASTNode.Type getNumberType(byte[] value, int start, int length) {

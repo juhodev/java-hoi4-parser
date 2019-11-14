@@ -49,57 +49,6 @@ public class Logger {
 		log(level, "token: " + token.getType() + ", " + token.getStart() + "-" + token.getLength());
 	}
 
-	public void log(int level, ASTNode node) {
-		log(level, node, "");
-	}
-
-	private void log(int level, ASTNode node, String tabs) {
-		switch (node.getType()) {
-			case DOUBLE:
-				log(level, tabs + ((DoubleNode) node).getValue());
-				break;
-
-			case INTEGER:
-				log(level, tabs + ((IntegerNode) node).getValue());
-				break;
-
-			case LONG:
-				log(level, tabs + ((LongNode) node).getValue());
-				break;
-
-			case BOOLEAN:
-				log(level, tabs + ((BooleanNode) node).getValue());
-				break;
-
-			case STRING:
-				log(level, tabs + ((StringNode) node).getValue());
-				break;
-
-			case OBJECT:
-				ObjectNode objectNode = (ObjectNode) node;
-
-				Iterator it = objectNode.getChildren().entrySet().iterator();
-
-				while (it.hasNext()) {
-					Map.Entry<String, Object> pair = (Map.Entry<String, Object>) it.next();
-					log(level, (ASTNode) pair.getValue(), tabs + "\t");
-				}
-				break;
-
-			case LIST:
-				ListNode listNode = (ListNode) node;
-				for (ASTNode listChild : listNode.getChildren()) {
-					log(level, listChild, tabs + "\t");
-				}
-				break;
-
-			case PROPERTY:
-				PropertyNode propertyNode = (PropertyNode) node;
-				log(level, tabs + "Key: " + propertyNode.getKey());
-				log(level, (ASTNode) propertyNode.getValue(), tabs + "\t");
-		}
-	}
-
 	public void log(int level, byte[] bytes) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("bytes: ");
