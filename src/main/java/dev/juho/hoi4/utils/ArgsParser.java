@@ -62,7 +62,7 @@ public class ArgsParser {
 
 		boolean allRequiredArgs = requiredArgsSpecified();
 
-		if (!allRequiredArgs) {
+		if (!allRequiredArgs && !parsedArgs.containsKey(Argument.HELP)) {
 			Logger.getInstance().log(Logger.ERROR, "All required args not found!");
 			System.exit(1);
 		}
