@@ -35,10 +35,7 @@ public class TextTokenizer {
 		position = 0;
 		while (!in.eof()) {
 			TextParserToken token = read();
-
-			if (token != null) {
-				tokens[tokensSize++] = token;
-			}
+			tokens[tokensSize++] = token;
 
 			if (tokensSize >= tokensCapacity) {
 				break;
