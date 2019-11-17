@@ -5,7 +5,23 @@ public class TextParserToken {
 	private Type type;
 	private int start, length;
 
-	public TextParserToken(Type type, int start, int length) {
+	public TextParserToken() {
+		this.type = Type.NONE;
+		this.start = -1;
+		this.length = -1;
+	}
+
+	private TextParserToken(Type type, int start, int length) {
+		this.type = type;
+		this.start = start;
+		this.length = length;
+	}
+
+	public TextParserToken copy() {
+		return new TextParserToken(type, start, length);
+	}
+
+	public void setAll(TextParserToken.Type type, int start, int length) {
 		this.type = type;
 		this.start = start;
 		this.length = length;
@@ -28,6 +44,7 @@ public class TextParserToken {
 		START_OBJECT,
 		END_OBJECT,
 		STRING,
+		NONE,
 	}
 
 }

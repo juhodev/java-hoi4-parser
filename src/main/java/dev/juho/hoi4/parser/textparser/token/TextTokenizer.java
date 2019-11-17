@@ -1,5 +1,7 @@
 package dev.juho.hoi4.parser.textparser.token;
 
+import dev.juho.hoi4.utils.Logger;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +35,7 @@ public class TextTokenizer {
 
 		this.inputLength = -1;
 		this.readHead = -1;
+		fill();
 	}
 
 	public void readInputStream(InputStream in) throws IOException {
@@ -46,8 +49,7 @@ public class TextTokenizer {
 		tokensSize = 0;
 		position = 0;
 		while (readHead != inputLength) {
-			TextParserToken token = read();
-			tokens[tokensSize++] = token;
+			read();
 
 			if (tokensSize >= tokensCapacity) {
 				break;
@@ -87,7 +89,7 @@ public class TextTokenizer {
 		return tokens;
 	}
 
-	private TextParserToken read() {
+	private void read() {
 		byte nextChar = buffer[readHead];
 
 		while (nextChar == WHITESPACE || nextChar == TAB || nextChar == NEW_LINE || nextChar == LINE_RETURN) {
@@ -98,21 +100,26 @@ public class TextTokenizer {
 
 		switch (nextChar) {
 			case START_OBJECT:
-				return new TextParserToken(TextParserToken.Type.START_OBJECT, readHead++, 1);
+				tokens[tokensSize++].setAll(TextParserToken.Type.START_OBJECT, readHead++, 1);
+				break;
 
 			case END_OBJECT:
-				return new TextParserToken(TextParserToken.Type.END_OBJECT, readHead++, 1);
+				tokens[tokensSize++].setAll(TextParserToken.Type.END_OBJECT, readHead++, 1);
+				break;
 
 			case EQUALS:
-				return new TextParserToken(TextParserToken.Type.OPERATION, readHead++, 1);
+				tokens[tokensSize++].setAll(TextParserToken.Type.OPERATION, readHead++, 1);
+				break;
 
 			case STRING_START:
 				int[] quotedStrPositions = readString(true, STRING_START);
-				return new TextParserToken(TextParserToken.Type.STRING, quotedStrPositions[0], quotedStrPositions[1]);
+				tokens[tokensSize++].setAll(TextParserToken.Type.STRING, quotedStrPositions[0], quotedStrPositions[1]);
+				break;
 
 			default:
 				int[] strPositions = readString(false, EQUALS, WHITESPACE, TAB, NEW_LINE, LINE_RETURN);
-				return new TextParserToken(TextParserToken.Type.STRING, strPositions[0], strPositions[1]);
+				tokens[tokensSize++].setAll(TextParserToken.Type.STRING, strPositions[0], strPositions[1]);
+				break;
 		}
 	}
 
@@ -167,6 +174,12 @@ public class TextTokenizer {
 		}
 
 		return false;
+	}
+
+	private void fill() {
+		for (int i = 0; i < tokens.length; i++) {
+			tokens[i] = new TextParserToken();
+		}
 	}
 
 }

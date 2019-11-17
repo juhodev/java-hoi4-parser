@@ -34,7 +34,8 @@ public class GameFile {
 	}
 
 	private GFNode read(TextTokenizer tokenizer) {
-		TextParserToken next = tokenizer.next();
+		// This must be copied because the next tokenizer.peek() might create new tokens which would modify this token
+		TextParserToken next = tokenizer.next().copy();
 		TextParserToken afterNext = tokenizer.peek();
 
 		if (afterNext.getType() == TextParserToken.Type.OPERATION) {
@@ -64,15 +65,16 @@ public class GameFile {
 		if (next.getType() == TextParserToken.Type.START_OBJECT) {
 			tokenizer.next();
 			value = readObject(tokenizer);
-		}
-		if (next.getType() == TextParserToken.Type.STRING)
+		} else if (next.getType() == TextParserToken.Type.STRING) {
 			value = readString(tokenizer);
+		}
 
 		return new PropertyNode(new String(buffer, key.getStart(), key.getLength()), value);
 	}
 
 	private Object readObject(TextTokenizer tokenizer) {
-		TextParserToken next = tokenizer.next();
+		// This must be copied because the next tokenizer.peek() might create new tokens which would modify this token
+		TextParserToken next = tokenizer.next().copy();
 
 		// Not sure if I should return an empty list or an empty object
 		if (next.getType() == TextParserToken.Type.END_OBJECT) {
