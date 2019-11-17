@@ -1,9 +1,7 @@
 package dev.juho.hoi4.textparser.token;
 
-import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
-import dev.juho.hoi4.utils.ArgsParser;
 import dev.juho.hoi4.utils.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -22,8 +20,12 @@ public class TextTokenizerTest {
 	public void testTokenizerKeyValueParsing() {
 		String str = "test=\"value\"";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		TextParserToken firstToken = tokenizer.next();
 		TextParserToken secondToken = tokenizer.next();
@@ -38,8 +40,12 @@ public class TextTokenizerTest {
 	public void testTokenizerKeyNumberParsing() {
 		String str = "test=1";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		TextParserToken firstToken = tokenizer.next();
 		TextParserToken secondToken = tokenizer.next();
@@ -54,8 +60,12 @@ public class TextTokenizerTest {
 	public void testTokenizerKeyObjectParsing() {
 		String str = "test={ a = 3 }";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		Assert.assertEquals(TextParserToken.Type.STRING, tokenizer.next().getType());
 		Assert.assertEquals(TextParserToken.Type.OPERATION, tokenizer.next().getType());
@@ -70,8 +80,12 @@ public class TextTokenizerTest {
 	public void testTokenizerQuotedKeyParsing() {
 		String str = "\"test\"={ a = 3 }";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		Assert.assertEquals(TextParserToken.Type.STRING, tokenizer.next().getType());
 		Assert.assertEquals(TextParserToken.Type.OPERATION, tokenizer.next().getType());

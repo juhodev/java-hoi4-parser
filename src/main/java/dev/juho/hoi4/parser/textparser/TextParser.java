@@ -1,7 +1,6 @@
 package dev.juho.hoi4.parser.textparser;
 
 import dev.juho.hoi4.parser.Parser;
-import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.parser.textparser.gamefile.GameFile;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
@@ -22,10 +21,9 @@ public class TextParser extends Parser {
 	public void parse() throws IOException {
 		Logger.getInstance().time("Parsing " + getFile().getName());
 
-		ParserInputStream in = new ParserInputStream(new FileInputStream(getFile()));
-
-		TextTokenizer tokenizer = new TextTokenizer(in, 4096 * 8);
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(4096 * 8);
+		tokenizer.readInputStream(new FileInputStream(getFile()));
+		GameFile gameFile = new GameFile();
 
 		gameFile.build(tokenizer);
 		Logger.getInstance().timeEnd(Logger.INFO, "Parsing " + getFile().getName());

@@ -1,6 +1,5 @@
 package dev.juho.hoi4.utils;
 
-import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
 
 import java.text.DecimalFormat;
@@ -37,11 +36,11 @@ public class Logger {
 		return instance;
 	}
 
-	public void log(int level, TextParserToken[] tokens, ParserInputStream in, int start, int length) {
+	public void log(int level, TextParserToken[] tokens, byte[] buffer, int start, int length) {
 		log(level, "Starting from " + start + " ending at " + length);
 		for (int i = start; i < start + length; i++) {
 			log(level, i + ": " + tokens[i].getType() + ", " + tokens[i].getStart() + "-" + tokens[i].getLength());
-			log(level, "\t" + tokens[i].getStart() + ": " + new String(in.getBuffer(), tokens[i].getStart(), tokens[i].getLength()));
+			log(level, "\t" + tokens[i].getStart() + ": " + new String(buffer, tokens[i].getStart(), tokens[i].getLength()));
 		}
 	}
 

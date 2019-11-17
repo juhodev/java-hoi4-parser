@@ -1,6 +1,5 @@
 package dev.juho.hoi4.parser.textparser.gamefile;
 
-import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.gamefile.nodes.*;
 import dev.juho.hoi4.parser.textparser.token.TextParserToken;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
@@ -13,14 +12,14 @@ import java.util.List;
 public class GameFile {
 
 	private List<GFNode> nodes;
-	private ParserInputStream in;
+	private byte[] buffer;
 
-	public GameFile(ParserInputStream in) {
-		this.in = in;
+	public GameFile() {
 		this.nodes = new ArrayList<>();
 	}
 
 	public void build(TextTokenizer tokenizer) {
+		buffer = tokenizer.getBuffer();
 		while (!tokenizer.eof()) {
 			GFNode node = read(tokenizer);
 
@@ -42,7 +41,7 @@ public class GameFile {
 			return readProperty(next, tokenizer);
 		}
 
-		String asString = new String(in.getBuffer(), next.getStart(), next.getLength());
+		String asString = new String(buffer, next.getStart(), next.getLength());
 
 		if (asString.equalsIgnoreCase("hoi4txt")) {
 			return null;
@@ -50,7 +49,7 @@ public class GameFile {
 
 //		if (next.getType() == TextParserToken.Type.KEY) return readProperty(tokenizer);
 		Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next.getType() + " - " + asString + " at " + tokenizer.getPosition() + "! Start with -debug for more info");
-		Logger.getInstance().log(Logger.DEBUG, tokenizer.getTokens(), in, Math.max(tokenizer.getPosition() - 10, 0), 15);
+		Logger.getInstance().log(Logger.DEBUG, tokenizer.getTokens(), buffer, Math.max(tokenizer.getPosition() - 10, 0), 15);
 		System.exit(0);
 		return null;
 	}
@@ -69,7 +68,7 @@ public class GameFile {
 		if (next.getType() == TextParserToken.Type.STRING)
 			value = readString(tokenizer);
 
-		return new PropertyNode(new String(in.getBuffer(), key.getStart(), key.getLength()), value);
+		return new PropertyNode(new String(buffer, key.getStart(), key.getLength()), value);
 	}
 
 	private Object readObject(TextTokenizer tokenizer) {
@@ -99,7 +98,7 @@ public class GameFile {
 				node = readString(tokenizer);
 			}
 
-			String key = new String(in.getBuffer(), next.getStart(), next.getLength());
+			String key = new String(buffer, next.getStart(), next.getLength());
 			objectNode.add(key, node);
 
 			next = tokenizer.next();
@@ -139,16 +138,16 @@ public class GameFile {
 	private Object readString(TextParserToken next) {
 		int length = next.getLength();
 
-		GFNode.Type numberType = getNumberType(in.getBuffer(), next.getStart(), length);
+		GFNode.Type numberType = getNumberType(buffer, next.getStart(), length);
 		if (numberType == GFNode.Type.DOUBLE)
-			return charArrayToDouble(in.getBuffer(), next.getStart(), length);
+			return charArrayToDouble(buffer, next.getStart(), length);
 		if (numberType == GFNode.Type.INTEGER)
-			return charArrayToInt(in.getBuffer(), next.getStart(), length);
+			return charArrayToInt(buffer, next.getStart(), length);
 		if (numberType == GFNode.Type.LONG)
-			return charArrayToLong(in.getBuffer(), next.getStart(), length);
-		if (in.getBuffer()[next.getStart()] == 'n' && in.getBuffer()[next.getStart() + 1] == 'o' || in.getBuffer()[next.getStart()] == 'y' && in.getBuffer()[next.getStart() + 1] == 'e' && in.getBuffer()[next.getStart() + 2] == 's')
+			return charArrayToLong(buffer, next.getStart(), length);
+		if (buffer[next.getStart()] == 'n' && buffer[next.getStart() + 1] == 'o' || buffer[next.getStart()] == 'y' && buffer[next.getStart() + 1] == 'e' && buffer[next.getStart() + 2] == 's')
 			return readBoolean(next);
-		return new String(in.getBuffer(), next.getStart(), length);
+		return new String(buffer, next.getStart(), length);
 	}
 
 	private boolean readBoolean(TextParserToken token) {

@@ -3,7 +3,6 @@ package dev.juho.hoi4.textparser.ast;
 import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.parser.textparser.gamefile.GameFile;
 import dev.juho.hoi4.parser.textparser.gamefile.nodes.*;
-import dev.juho.hoi4.parser.ParserInputStream;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.utils.Logger;
 import org.junit.Assert;
@@ -24,10 +23,13 @@ public class GameFileTest {
 	public void skipHOI4Txt() {
 		String str = "HOI4txt\ntest=\"value\"";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -40,10 +42,13 @@ public class GameFileTest {
 	public void parsePropertyNodeTest() {
 		String str = "test=\"value\"";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -56,10 +61,13 @@ public class GameFileTest {
 	public void parseStringNodeTest() {
 		String str = "test=\"value\"";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -74,10 +82,13 @@ public class GameFileTest {
 	public void parseObjectNode() {
 		String str = "test={a=\"b\"}";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -95,10 +106,13 @@ public class GameFileTest {
 	public void parseListNode() {
 		String str = "test={ 1 2 }";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -119,10 +133,13 @@ public class GameFileTest {
 	public void parseListWithASingleElement() {
 		String str = "test={ 1 }";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -137,10 +154,13 @@ public class GameFileTest {
 	public void parseObjectInsideList() {
 		String str = "test={{ a=\"b\" }}";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -160,10 +180,13 @@ public class GameFileTest {
 	public void parseListInsideList() {
 		String str = "test={{ 1 2 }}";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -188,10 +211,13 @@ public class GameFileTest {
 	public void parseStringInsideList() {
 		String str = "test={ \"Coloured Buttons\" }";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 		List<GFNode> nodes = gameFile.getNodes();
 
@@ -207,10 +233,13 @@ public class GameFileTest {
 	public void parseStringListWithMultipleStrings() {
 		String str = "test={ \"Coloured Buttons\" \"test\" }";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 		List<GFNode> nodes = gameFile.getNodes();
 
@@ -228,10 +257,13 @@ public class GameFileTest {
 	public void parseObjectWithQuoteKeys() {
 		String str = "test={ \"1\"={ 4 } \"2\"={ 5 } }";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 		List<GFNode> nodes = gameFile.getNodes();
 
@@ -253,10 +285,13 @@ public class GameFileTest {
 	public void parseListWithTwoLists() {
 		String str = "test={{ 1 } { 2 }}";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -275,10 +310,13 @@ public class GameFileTest {
 	public void parseEmptyList() {
 		String str = "test={}";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -291,10 +329,13 @@ public class GameFileTest {
 	public void parseDouble() {
 		String str = "test=100.00000";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
@@ -306,10 +347,13 @@ public class GameFileTest {
 	public void parseTwoSameKeysInObject() {
 		String str = "test={ a=2 a=5 }";
 
-		ParserInputStream in = new ParserInputStream(new ByteArrayInputStream(str.getBytes()));
-		TextTokenizer tokenizer = new TextTokenizer(in, 128);
-
-		GameFile gameFile = new GameFile(in);
+		TextTokenizer tokenizer = new TextTokenizer(128);
+		try {
+			tokenizer.readInputStream(new ByteArrayInputStream(str.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
 		List<GFNode> nodes = gameFile.getNodes();
