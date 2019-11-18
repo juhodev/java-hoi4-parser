@@ -21,7 +21,7 @@ public class TextParser extends Parser {
 	public void parse() throws IOException {
 		Logger.getInstance().time("Parsing " + getFile().getName());
 
-		TextTokenizer tokenizer = new TextTokenizer(4096 * 8);
+		TextTokenizer tokenizer = new TextTokenizer(4096 * 4);
 		tokenizer.readInputStream(new FileInputStream(getFile()));
 		GameFile gameFile = new GameFile();
 
