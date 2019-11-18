@@ -43,6 +43,7 @@ public class TextTokenizer {
 		buffer = new byte[bis.available()];
 		inputLength = bis.read(buffer, 0, buffer.length);
 		readHead = 0;
+		bis.close();
 	}
 
 	private void createNewTokens() {
