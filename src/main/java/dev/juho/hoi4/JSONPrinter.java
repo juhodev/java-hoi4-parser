@@ -20,7 +20,7 @@ public class JSONPrinter {
 		this.nodeList = nodeList;
 	}
 
-	public void print() {
+	public void print(String gameName) {
 		int limit = Integer.MAX_VALUE;
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON_LIMIT))
 			limit = ArgsParser.getInstance().getInt(ArgsParser.Argument.JSON_LIMIT);
@@ -47,8 +47,8 @@ public class JSONPrinter {
 			}
 		}
 
-		Logger.getInstance().log(Logger.INFO, "Writing json to HOI4-game.json");
-		File outJSON = new File("HOI4-game.json");
+		File outJSON = new File(gameName + ".json");
+		Logger.getInstance().log(Logger.INFO, "Writing json to " + outJSON.getAbsolutePath());
 		try {
 			FileWriter writer = new FileWriter(outJSON);
 			writer.write(obj.toString());
@@ -57,7 +57,7 @@ public class JSONPrinter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Logger.getInstance().log(Logger.INFO, "Game written to HOI4-game.json");
+		Logger.getInstance().log(Logger.INFO, "Game written to " + outJSON.getAbsolutePath());
 	}
 
 }

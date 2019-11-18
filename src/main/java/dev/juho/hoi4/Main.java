@@ -84,7 +84,7 @@ public class Main {
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
 			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
-			jsonPrinter.print();
+			jsonPrinter.print(gameName);
 		}
 	}
 
