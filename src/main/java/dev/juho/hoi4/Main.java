@@ -72,7 +72,14 @@ public class Main {
 			Logger.getInstance().log(Logger.DEBUG, "DEBUG MODE ENABLED");
 		}
 
-		File file = new File(gameFolder + "/save games/" + gameName);
+		boolean isFullPath = Utils.isFullPath(gameName);
+
+		File file;
+		if (isFullPath) {
+			file = new File(gameName);
+		} else {
+			file = new File(gameFolder + "/save games/" + gameName);
+		}
 		Parser parser = new TextParser(file);
 		try {
 			parser.parse();
@@ -84,7 +91,8 @@ public class Main {
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
 			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
-			jsonPrinter.print(gameName);
+			String outFileName = isFullPath ? file.getName() : gameName;
+			jsonPrinter.print(outFileName);
 		}
 	}
 
