@@ -97,7 +97,10 @@ public class TextTokenizer {
 			nextChar = buffer[++readHead];
 		}
 
-		if (nextChar == COMMENT_START) readComment();
+		if (nextChar == COMMENT_START) {
+			readComment();
+			return;
+		}
 
 		switch (nextChar) {
 			case START_OBJECT:
@@ -127,10 +130,9 @@ public class TextTokenizer {
 	private void readComment() {
 //		Skip #
 		readHead++;
-		while (true) {
-			byte next = buffer[readHead];
-
-			if (next == NEW_LINE) break;
+		byte next = buffer[readHead++];
+		while (next != NEW_LINE && next != LINE_RETURN) {
+			next = buffer[readHead++];
 		}
 	}
 
