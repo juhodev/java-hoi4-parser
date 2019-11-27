@@ -161,7 +161,7 @@ public class ArgsParser {
 	}
 
 	public enum Argument {
-		GAME,
+		FILE,
 		COUNTRY,
 		FOLDER,
 		HELP,

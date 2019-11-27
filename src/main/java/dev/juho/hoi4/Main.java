@@ -22,7 +22,7 @@ public class Main {
 	public static void main(String[] args) {
 		Logger.LOG_LEVEL = Logger.INFO;
 
-		ArgsParser.getInstance().add(ArgsParser.Argument.GAME, ArgsParser.Type.STRING, true, "-game");
+		ArgsParser.getInstance().add(ArgsParser.Argument.FILE, ArgsParser.Type.STRING, true, "-file");
 
 		ArgsParser.getInstance().add(ArgsParser.Argument.COUNTRY, ArgsParser.Type.LIST, false, "-country");
 		ArgsParser.getInstance().add(ArgsParser.Argument.FOLDER, ArgsParser.Type.STRING, false, "-folder", "-hoi4_folder");
@@ -33,13 +33,13 @@ public class Main {
 
 		ArgsParser.getInstance().parse(args);
 
-		gameName = ArgsParser.getInstance().getString(ArgsParser.Argument.GAME);
+		gameName = ArgsParser.getInstance().getString(ArgsParser.Argument.FILE);
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.HELP)) {
 			Logger.getInstance().log(Logger.INFO, "Usage: java -jar HOI4.jar [options...]");
 			Logger.getInstance().log(Logger.INFO, "\t-country <TAG> ...    Analyze countries specified by <TAG>");
 			Logger.getInstance().log(Logger.INFO, "\t-debug                Show debug logs");
-			Logger.getInstance().log(Logger.INFO, "\t-game <name>          File name or path to file .hoi4 file");
+			Logger.getInstance().log(Logger.INFO, "\t-file <path>          File name or path to a .hoi4 (or .txt) file");
 			Logger.getInstance().log(Logger.INFO, "\t-hoi4_folder <path>   Path to HOI4 folder");
 			Logger.getInstance().log(Logger.INFO, "\t-json                 Saves the .hoi4 as .json file");
 			Logger.getInstance().log(Logger.INFO, "\t-json_limit <limit>   When saving as JSON ignores objects larger than <limit> values");
