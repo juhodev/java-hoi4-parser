@@ -94,7 +94,10 @@ public class TextTokenizer {
 		byte nextChar = buffer[readHead];
 
 		while (nextChar == WHITESPACE || nextChar == TAB || nextChar == NEW_LINE || nextChar == LINE_RETURN) {
-			nextChar = buffer[++readHead];
+			++readHead;
+
+			if (readHead == inputLength) return;
+			nextChar = buffer[readHead];
 		}
 
 		if (nextChar == COMMENT_START) {
