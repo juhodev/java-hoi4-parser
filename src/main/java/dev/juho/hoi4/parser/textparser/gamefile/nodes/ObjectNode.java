@@ -158,6 +158,51 @@ public class ObjectNode extends GFNode {
 		return obj;
 	}
 
+	public String toJSONString() {
+		if (children.size() == 0) {
+			return "{}";
+		}
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("{");
+
+		int limit = Integer.MAX_VALUE;
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON_LIMIT))
+			limit = ArgsParser.getInstance().getInt(ArgsParser.Argument.JSON_LIMIT);
+
+		Iterator it = children.entrySet().iterator();
+		int valueCount = 0;
+
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			String key = (String) pair.getKey();
+			Object value = pair.getValue();
+
+			builder.append("\"").append(key).append("\":");
+			if (value instanceof String) {
+				builder.append("\"").append(value).append("\"").append(",");
+			} else if (value instanceof Long || value instanceof Boolean || value instanceof Double || value instanceof Integer) {
+				builder.append(value).append(",");
+			} else if (value instanceof ListNode) {
+				String listJSON = ((ListNode) value).toJSONString();
+				builder.append(listJSON).append(",");
+			} else if (value instanceof ObjectNode) {
+				String objJSON = ((ObjectNode) value).toJSONString();
+				builder.append(objJSON).append(",");
+			}
+
+			valueCount++;
+			if (valueCount == limit) {
+				break;
+			}
+		}
+
+		builder.delete(builder.length() - 1, builder.length());
+		builder.append("}");
+
+		return builder.toString();
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

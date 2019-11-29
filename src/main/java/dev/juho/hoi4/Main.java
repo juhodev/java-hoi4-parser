@@ -93,7 +93,11 @@ public class Main {
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
 			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
 			String outFileName = isFullPath ? file.getName() : gameName;
-			jsonPrinter.print(outFileName);
+			try {
+				jsonPrinter.print(outFileName);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
