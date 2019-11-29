@@ -4,6 +4,7 @@ import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 public abstract class Parser {
@@ -20,5 +21,5 @@ public abstract class Parser {
 
 	public abstract void parse() throws IOException;
 
-	public abstract List<GFNode> getNodes();
+	public abstract HashMap<String, Object> getNodes();
 }

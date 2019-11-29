@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
 import java.util.List;
 
 public class GameFileTest {
@@ -32,10 +33,9 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
+		HashMap<String, Object> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
-		Assert.assertNotNull(((PropertyNode) nodes.get(0)).getValue());
+		Assert.assertNotNull(nodes.get("test"));
 	}
 
 	@Test
@@ -51,10 +51,9 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
+		HashMap<String, Object> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
-		Assert.assertNotNull(((PropertyNode) nodes.get(0)).getValue());
+		Assert.assertNotNull(nodes.get("test"));
 	}
 
 	@Test
@@ -70,12 +69,10 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
+		HashMap<String, Object> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
-		PropertyNode node = (PropertyNode) nodes.get(0);
-		Assert.assertEquals("test", node.getKey());
-		Assert.assertEquals("value", node.getValue());
+		Assert.assertNotNull(nodes.get("test"));
+		Assert.assertEquals("value", nodes.get("test"));
 	}
 
 	@Test
@@ -91,13 +88,12 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
+		HashMap<String, Object> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
-		PropertyNode node = (PropertyNode) nodes.get(0);
-		Assert.assertTrue(node.getValue() instanceof ObjectNode);
+		Assert.assertNotNull(nodes.get("test"));
+		Assert.assertTrue(nodes.get("test") instanceof ObjectNode);
 
-		ObjectNode objectNode = (ObjectNode) ((PropertyNode) nodes.get(0)).getValue();
+		ObjectNode objectNode = (ObjectNode) nodes.get("test");
 		Assert.assertTrue(objectNode.has("a"));
 		Assert.assertEquals("b", objectNode.getString("a"));
 	}
@@ -115,13 +111,12 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
+		HashMap<String, Object> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
-		PropertyNode node = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(GFNode.Type.LIST, ((GFNode) node.getValue()).getType());
+		Assert.assertNotNull(nodes.get("test"));
+		Assert.assertEquals(GFNode.Type.LIST, ((GFNode) nodes.get("test")).getType());
 
-		ListNode listNode = (ListNode) (node.getValue());
+		ListNode listNode = (ListNode) nodes.get("test");
 		List<Object> childNodes = listNode.getChildren();
 		Object firstChild = childNodes.get(0);
 		Object secondChild = childNodes.get(1);
@@ -142,9 +137,8 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
-		PropertyNode node = (PropertyNode) nodes.get(0);
-		ListNode listNode = (ListNode) node.getValue();
+		HashMap<String, Object> nodes = gameFile.getNodes();
+		ListNode listNode = (ListNode) nodes.get("test");
 		Assert.assertNotNull(listNode.getChildren().get(0));
 		Object child = listNode.getChildren().get(0);
 		Assert.assertEquals(1, (int) child);
@@ -163,13 +157,11 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
+		HashMap<String, Object> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
-		PropertyNode node = (PropertyNode) nodes.get(0);
-		Assert.assertTrue(node.getValue() instanceof ListNode);
+		Assert.assertTrue(nodes.get("test") instanceof ListNode);
 
-		ListNode listNode = (ListNode) node.getValue();
+		ListNode listNode = (ListNode) nodes.get("test");
 		List<Object> childNodes = listNode.getChildren();
 		ObjectNode objectNode = (ObjectNode) childNodes.get(0);
 		Assert.assertTrue(objectNode.has("a"));
@@ -189,13 +181,11 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
+		HashMap<String, Object> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
-		PropertyNode node = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(GFNode.Type.LIST, ((GFNode) node.getValue()).getType());
+		Assert.assertEquals(GFNode.Type.LIST, ((GFNode) nodes.get("test")).getType());
 
-		ListNode listNode = (ListNode) node.getValue();
+		ListNode listNode = (ListNode) nodes.get("test");
 		List<Object> childNodes = listNode.getChildren();
 		ListNode childList = (ListNode) childNodes.get(0);
 		Assert.assertEquals(GFNode.Type.LIST, childList.getType());
@@ -219,11 +209,9 @@ public class GameFileTest {
 		}
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
-		List<GFNode> nodes = gameFile.getNodes();
+		HashMap<String, Object> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
-		PropertyNode node = (PropertyNode) nodes.get(0);
-		ListNode listNode = (ListNode) node.getValue();
+		ListNode listNode = (ListNode) nodes.get("test");
 		Object firstChild = listNode.getChildren().get(0);
 
 		Assert.assertEquals("Coloured Buttons", firstChild);
@@ -241,11 +229,9 @@ public class GameFileTest {
 		}
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
-		List<GFNode> nodes = gameFile.getNodes();
+		HashMap<String, Object> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
-		PropertyNode node = (PropertyNode) nodes.get(0);
-		ListNode listNode = (ListNode) node.getValue();
+		ListNode listNode = (ListNode) nodes.get("test");
 		Object firstChild = listNode.getChildren().get(0);
 		Object secondChild = listNode.getChildren().get(1);
 
@@ -265,11 +251,9 @@ public class GameFileTest {
 		}
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
-		List<GFNode> nodes = gameFile.getNodes();
+		HashMap<String, Object> nodes = gameFile.getNodes();
 
-		Assert.assertEquals(GFNode.Type.PROPERTY, nodes.get(0).getType());
-		PropertyNode node = (PropertyNode) nodes.get(0);
-		ObjectNode objectNode = (ObjectNode) node.getValue();
+		ObjectNode objectNode = (ObjectNode) nodes.get("test");
 
 		Assert.assertNotNull(objectNode.get("1"));
 		Assert.assertNotNull(objectNode.get("2"));
@@ -294,13 +278,12 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
-		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
-		ListNode outsideList = (ListNode) propertyNode.getValue();
+		HashMap<String, Object> nodes = gameFile.getNodes();
+
+		ListNode outsideList = (ListNode) nodes.get("test");
 		ListNode insideListOne = (ListNode) outsideList.getChildren().get(0);
 		ListNode insideListTwo = (ListNode) outsideList.getChildren().get(1);
 
-		Assert.assertEquals(propertyNode.getType(), GFNode.Type.PROPERTY);
 		Assert.assertEquals(outsideList.getType(), GFNode.Type.LIST);
 		Assert.assertEquals(insideListOne.getType(), GFNode.Type.LIST);
 		Assert.assertEquals(insideListTwo.getType(), GFNode.Type.LIST);
@@ -319,10 +302,8 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
-		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(propertyNode.getType(), GFNode.Type.PROPERTY);
-		Assert.assertTrue(propertyNode.getValue() instanceof ObjectNode);
+		HashMap<String, Object> nodes = gameFile.getNodes();
+		Assert.assertTrue(nodes.get("test") instanceof ObjectNode);
 	}
 
 	@Test
@@ -338,9 +319,8 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
-		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(100.0, (double) propertyNode.getValue(), 0);
+		HashMap<String, Object> nodes = gameFile.getNodes();
+		Assert.assertEquals(100.0, (double) nodes.get("test"), 0);
 	}
 
 	@Test
@@ -356,10 +336,8 @@ public class GameFileTest {
 		GameFile gameFile = new GameFile();
 		gameFile.build(tokenizer);
 
-		List<GFNode> nodes = gameFile.getNodes();
-		PropertyNode propertyNode = (PropertyNode) nodes.get(0);
-		Assert.assertEquals(propertyNode.getType(), GFNode.Type.PROPERTY);
-		ObjectNode objectNode = (ObjectNode) propertyNode.getValue();
+		HashMap<String, Object> nodes = gameFile.getNodes();
+		ObjectNode objectNode = (ObjectNode) nodes.get("test");
 		GFNode shouldBeListNode = (GFNode) objectNode.get("a");
 		Assert.assertEquals(shouldBeListNode.getType(), GFNode.Type.LIST);
 	}

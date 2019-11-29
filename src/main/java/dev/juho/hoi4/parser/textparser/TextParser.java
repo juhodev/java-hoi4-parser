@@ -7,11 +7,12 @@ import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.utils.Logger;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
 
 public class TextParser extends Parser {
 
-	private List<GFNode> nodes;
+	private HashMap<String, Object> nodes;
 
 	public TextParser(File file) {
 		super(file);
@@ -31,7 +32,7 @@ public class TextParser extends Parser {
 	}
 
 	@Override
-	public List<GFNode> getNodes() {
+	public HashMap<String, Object> getNodes() {
 		return nodes;
 	}
 }

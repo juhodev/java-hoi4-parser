@@ -11,11 +11,11 @@ import java.util.List;
 
 public class GameFile {
 
-	private List<GFNode> nodes;
+	private HashMap<String, Object> nodes;
 	private byte[] buffer;
 
 	public GameFile() {
-		this.nodes = new ArrayList<>();
+		this.nodes = new HashMap<>();
 	}
 
 	public void build(TextTokenizer tokenizer) {
@@ -24,13 +24,33 @@ public class GameFile {
 			GFNode node = read(tokenizer);
 
 			if (node != null) {
-				nodes.add(node);
+				PropertyNode propertyNode = (PropertyNode) node;
+				add(propertyNode.getKey(), propertyNode.getValue());
 			}
 		}
 	}
 
-	public List<GFNode> getNodes() {
+	public HashMap<String, Object> getNodes() {
 		return nodes;
+	}
+
+	private void add(String key, Object object) {
+		if (!nodes.containsKey(key)) {
+			nodes.put(key, object);
+		} else {
+			Object storedValue = nodes.get(key);
+
+			ListNode listNode;
+			if (storedValue instanceof ListNode) {
+				listNode = (ListNode) storedValue;
+			} else {
+				listNode = new ListNode();
+				listNode.add(storedValue);
+			}
+
+			listNode.add(object);
+			nodes.put(key, listNode);
+		}
 	}
 
 	private GFNode read(TextTokenizer tokenizer) {

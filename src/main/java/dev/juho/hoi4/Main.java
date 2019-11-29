@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Main {
@@ -87,7 +88,7 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		List<GFNode> astNodes = parser.getNodes();
+		HashMap<String, Object> astNodes = parser.getNodes();
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
 			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
