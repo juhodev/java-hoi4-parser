@@ -36,6 +36,8 @@ public class GameFile {
 
 	private void add(String key, Object object) {
 		if (key.equalsIgnoreCase("countries")) {
+//			Save the countries object as a string and not as an object to save memory
+//			The countries object is like half of the .hoi4 meaning it will use a shit ton of memory
 			StringDataNode dataNode = new StringDataNode();
 			dataNode.generate((ObjectNode) object);
 			nodes.put(key, dataNode);
