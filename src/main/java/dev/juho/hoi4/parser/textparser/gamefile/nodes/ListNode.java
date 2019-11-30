@@ -60,11 +60,17 @@ public class ListNode extends GFNode {
 	}
 
 	public String toJSONString() {
+		StringBuilder builder = new StringBuilder();
+		appendToStringBuilder(builder);
+		return builder.toString();
+	}
+
+	public void appendToStringBuilder(StringBuilder builder) {
 		if (children.size() == 0) {
-			return "[]";
+			builder.append("{}");
+			return;
 		}
 
-		StringBuilder builder = new StringBuilder();
 		builder.append("[");
 
 		int limit = Integer.MAX_VALUE;
@@ -91,7 +97,5 @@ public class ListNode extends GFNode {
 		}
 		builder.delete(builder.length() - 1, builder.length());
 		builder.append("]");
-
-		return builder.toString();
 	}
 }

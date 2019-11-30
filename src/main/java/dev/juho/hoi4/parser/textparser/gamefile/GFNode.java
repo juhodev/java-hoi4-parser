@@ -22,6 +22,7 @@ public abstract class GFNode {
 		DOUBLE,
 		OBJECT,
 		LIST,
+		STRING_DATA,
 	}
 
 }

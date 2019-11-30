@@ -55,6 +55,9 @@ public class JSONPrinter {
 				builder.append(listJSON);
 			} else if (value instanceof String) {
 				builder.append("\"").append(value).append("\"");
+			} else if (value instanceof StringDataNode) {
+				String data = ((StringDataNode) value).getData();
+				builder.append(data);
 			} else {
 				builder.append(value);
 			}

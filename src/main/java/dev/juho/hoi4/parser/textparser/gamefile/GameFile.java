@@ -35,6 +35,13 @@ public class GameFile {
 	}
 
 	private void add(String key, Object object) {
+		if (key.equalsIgnoreCase("countries")) {
+			StringDataNode dataNode = new StringDataNode();
+			dataNode.generate((ObjectNode) object);
+			nodes.put(key, dataNode);
+			return;
+		}
+
 		if (!nodes.containsKey(key)) {
 			nodes.put(key, object);
 		} else {

@@ -158,12 +158,12 @@ public class ObjectNode extends GFNode {
 		return obj;
 	}
 
-	public String toJSONString() {
+	public void appendToStringBuilder(StringBuilder builder) {
 		if (children.size() == 0) {
-			return "{}";
+			builder.append("{}");
+			return;
 		}
 
-		StringBuilder builder = new StringBuilder();
 		builder.append("{");
 
 		int limit = Integer.MAX_VALUE;
@@ -199,7 +199,11 @@ public class ObjectNode extends GFNode {
 
 		builder.delete(builder.length() - 1, builder.length());
 		builder.append("}");
+	}
 
+	public String toJSONString() {
+		StringBuilder builder = new StringBuilder();
+		appendToStringBuilder(builder);
 		return builder.toString();
 	}
 
