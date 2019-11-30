@@ -20,6 +20,7 @@ public class TextParser extends Parser {
 
 	@Override
 	public void parse() throws IOException {
+		Logger.getInstance().log(Logger.INFO, "Starting parsing " + getFile().getName());
 		Logger.getInstance().time("Parsing " + getFile().getName());
 
 		TextTokenizer tokenizer = new TextTokenizer(4096 * 4);

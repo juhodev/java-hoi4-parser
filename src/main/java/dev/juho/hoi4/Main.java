@@ -91,6 +91,7 @@ public class Main {
 		HashMap<String, Object> astNodes = parser.getNodes();
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
+			Logger.getInstance().time("Write JSON");
 			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
 			String outFileName = isFullPath ? file.getName() : gameName;
 			try {
@@ -98,6 +99,7 @@ public class Main {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			Logger.getInstance().timeEnd(Logger.INFO, "Write JSON");
 		}
 	}
 
