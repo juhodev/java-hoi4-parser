@@ -85,11 +85,13 @@ public class ListNode extends GFNode {
 			} else if (value instanceof Boolean || value instanceof Double || value instanceof Integer) {
 				builder.append(value).append(",");
 			} else if (value instanceof ListNode) {
-				String listJSON = ((ListNode) value).toJSONString();
-				builder.append(listJSON).append(",");
+				ListNode listNode = (ListNode) value;
+				listNode.appendToStringBuilder(builder);
+				builder.append(",");
 			} else if (value instanceof ObjectNode) {
-				String objJSON = ((ObjectNode) value).toJSONString();
-				builder.append(objJSON).append(",");
+				ObjectNode objectNode = (ObjectNode) value;
+				objectNode.appendToStringBuilder(builder);
+				builder.append(",");
 			}
 
 			valueCount++;
