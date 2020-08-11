@@ -1,6 +1,8 @@
 package dev.juho.hoi4.parser.textparser.token;
 
+import dev.juho.hoi4.profiler.Profiler;
 import dev.juho.hoi4.utils.Logger;
+import jdk.internal.jline.internal.Log;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -8,183 +10,253 @@ import java.io.InputStream;
 
 public class TextTokenizer {
 
-	private static final char NEW_LINE = '\n';
-	private static final char TAB = '\t';
-	private static final char WHITESPACE = ' ';
-	private static final char STRING_START = '"';
-	private static final char COMMENT_START = '#';
-	private static final char LINE_RETURN = '\r';
-	private static final char START_OBJECT = '{';
-	private static final char END_OBJECT = '}';
-	private static final char EQUALS = '=';
+	private byte[] fileContent;
+	private int totalRead;
 
-	private TextParserToken[] tokens;
-	private int tokensCapacity;
-	private int tokensSize;
+	private int bufferRead;
 
-	private int position;
+	private byte[] equalsArray;
+	private byte[] openBracketArray;
+	private byte[] closedBracketArray;
+	private byte[] whitespaceArray;
+	private byte[] escapedChars;
+	private byte[] quoteArray;
+	private byte[] stringArray;
 
-	private byte[] buffer;
-	private int inputLength, readHead;
+	/*
 
-	public TextTokenizer(int capacity) {
-		this.tokens = new TextParserToken[capacity];
-		this.tokensCapacity = capacity;
-		this.tokensSize = 0;
-		this.position = 0;
+	a = { es = { 1 2 3 } m = 3 }
 
-		this.inputLength = -1;
-		this.readHead = -1;
-		fill();
+   [0010000001000000000000010000]
+   [0000100000010000000000000000]
+   [0000000000000000000100000001]
+
+
+	 */
+
+	public TextTokenizer() {
+		this.totalRead = 0;
+		this.bufferRead = 0;
 	}
 
-	public void readInputStream(InputStream in) throws IOException {
-		BufferedInputStream bis = new BufferedInputStream(in);
-		buffer = new byte[bis.available()];
-		inputLength = bis.read(buffer, 0, buffer.length);
-		readHead = 0;
-		bis.close();
+	public void read(InputStream is) throws IOException {
+		Logger.getInstance().time("tokenizer read");
+		BufferedInputStream bis = new BufferedInputStream(is);
+
+		fileContent = new byte[bis.available()];
+		byte[] buffer = new byte[4096 * 4];
+
+		int read;
+		while ((read = bis.read(buffer)) != -1) {
+			System.arraycopy(buffer, 0, fileContent, totalRead, read);
+			totalRead += read;
+		}
+
+		equalsArray = new byte[fileContent.length];
+		openBracketArray = new byte[fileContent.length];
+		closedBracketArray = new byte[fileContent.length];
+		whitespaceArray = new byte[fileContent.length];
+		escapedChars = new byte[fileContent.length];
+		quoteArray = new byte[fileContent.length];
+
+		process();
+		Logger.getInstance().timeEnd(Logger.INFO, "tokenizer read");
 	}
 
-	private void createNewTokens() {
-		tokensSize = 0;
-		position = 0;
-		while (readHead != inputLength) {
-			read();
+	public void process() {
+		findChar('=', equalsArray);
+		findChar('{', openBracketArray);
+		findChar('}', closedBracketArray);
+		findChar(' ', whitespaceArray);
+		findChar('"', quoteArray);
+		skipEscaped();
+		this.stringArray = findStrings();
+//		skipHoiText();
+	}
 
-			if (tokensSize >= tokensCapacity) {
-				break;
+	public enum Type {
+		EQUALS,
+		OPEN_BRACKET,
+		CLOSED_BRACKET,
+		STRING,
+		NONE,
+	}
+
+	public Type peek() {
+		return peek(0);
+	}
+
+	public Type peek(int length) {
+		if (bufferRead + length >= fileContent.length) {
+			return Type.NONE;
+		}
+
+		// This seems like a bad idea but I guess it works
+		if (length != 0 && stringArray[bufferRead + length] == 1) {
+			return peekAfterString();
+		}
+
+		if (quoteArray[bufferRead + length] == 1) {
+			length += 1;
+
+			if (bufferRead + length >= fileContent.length) {
+				return Type.NONE;
 			}
 		}
-	}
 
-	public byte[] getBuffer() {
-		return buffer;
-	}
-
-	public TextParserToken peek() {
-		if (position == tokensSize) {
-			createNewTokens();
+		if (equalsArray[bufferRead + length] == 1) {
+			return Type.EQUALS;
 		}
 
-		return tokens[position];
-	}
-
-	public TextParserToken next() {
-		if (position == tokensSize) {
-			createNewTokens();
+		if (openBracketArray[bufferRead + length] == 1) {
+			return Type.OPEN_BRACKET;
 		}
 
-		return tokens[position++];
-	}
+		if (closedBracketArray[bufferRead + length] == 1) {
+			return Type.CLOSED_BRACKET;
+		}
 
-	public boolean eof() {
-		return position > 0 && position == tokensSize && tokensSize != tokensCapacity;
+		if (stringArray[bufferRead + length] == 1) {
+			return Type.STRING;
+		}
+
+		return lookForNext(length);
 	}
 
 	public int getPosition() {
-		return position;
+		return bufferRead;
 	}
 
-	public TextParserToken[] getTokens() {
-		return tokens;
+	public String readString() {
+		if (quoteArray[bufferRead] == 1) {
+			bufferRead++;
+		}
+
+		int strLength = 0;
+		int strStart = bufferRead;
+		for (int i = bufferRead; i < stringArray.length; i++) {
+			if (stringArray[i] == 1) {
+				strLength++;
+				continue;
+			}
+
+			break;
+		}
+
+		bufferRead += strLength;
+		if (strStart >= fileContent.length) {
+			return "no";
+		}
+
+		if (quoteArray[bufferRead] == 1) {
+			bufferRead++;
+		}
+
+		return new String(fileContent, strStart, strLength);
 	}
 
-	private void read() {
-		byte nextChar = buffer[readHead];
-
-		while (nextChar == WHITESPACE || nextChar == TAB || nextChar == NEW_LINE || nextChar == LINE_RETURN) {
-			++readHead;
-
-			if (readHead == inputLength) return;
-			nextChar = buffer[readHead];
-		}
-
-		if (nextChar == COMMENT_START) {
-			readComment();
-			return;
-		}
-
-		switch (nextChar) {
-			case START_OBJECT:
-				tokens[tokensSize++].setAll(TextParserToken.Type.START_OBJECT, readHead++, 1);
-				break;
-
-			case END_OBJECT:
-				tokens[tokensSize++].setAll(TextParserToken.Type.END_OBJECT, readHead++, 1);
-				break;
-
-			case EQUALS:
-				tokens[tokensSize++].setAll(TextParserToken.Type.OPERATION, readHead++, 1);
-				break;
-
-			case STRING_START:
-				int[] quotedStrPositions = readString(true, STRING_START);
-				tokens[tokensSize++].setAll(TextParserToken.Type.STRING, quotedStrPositions[0], quotedStrPositions[1]);
-				break;
-
-			default:
-				int[] strPositions = readString(false, EQUALS, WHITESPACE, TAB, NEW_LINE, LINE_RETURN);
-				tokens[tokensSize++].setAll(TextParserToken.Type.STRING, strPositions[0], strPositions[1]);
-				break;
-		}
+	public boolean eof() {
+		return peek() == Type.NONE;
 	}
 
-	private void readComment() {
-//		Skip #
-		readHead++;
-		byte next = buffer[readHead++];
-		while (next != NEW_LINE && next != LINE_RETURN) {
-			next = buffer[readHead++];
+	public void skip() {
+		bufferRead++;
+	}
+
+	private void skipHoiText() {
+		// HOI4txt
+		if (fileContent[0] == 'H' && fileContent[1] == 'O' && fileContent[2] == 'I') {
+			bufferRead = 7;
 		}
 	}
 
-	/**
-	 * @return index 0: start of the string, index: 1 end of the string
-	 */
-	private int[] readString(boolean skip, char... end) {
-		int start = readHead++;
-		int length = 1;
-
-		// Skip "
-		if (skip) {
-			start = readHead;
-			length = 0;
-		}
-
-		if (readHead == inputLength) {
-			return new int[]{start, length};
-		}
-
-		byte next = buffer[readHead];
-
-		while (!containsChar(end, next)) {
-			readHead++;
-			length++;
-			if (readHead != inputLength) {
-				next = buffer[readHead];
-			} else {
-				break;
+	private Type peekAfterString() {
+		for (int i = bufferRead; i < fileContent.length; i++) {
+			if (stringArray[i] != 1) {
+				return peek(i - bufferRead);
 			}
 		}
 
-//		This will only happen when parsing a string that starts and ends with "
-		if (skip && next == STRING_START) readHead++;
-
-		return new int[]{start, length};
+		return Type.NONE;
 	}
 
-	private boolean containsChar(char[] array, byte c) {
-		for (char x : array) {
-			if (x == c) return true;
+	private Type lookForNext(int off) {
+		for (int i = bufferRead + off; i < fileContent.length; i++) {
+			if (equalsArray[i] == 1) {
+				if (off == 0) {
+					bufferRead = i;
+				}
+				return Type.EQUALS;
+			}
+
+			if (openBracketArray[i] == 1) {
+				if (off == 0) {
+					bufferRead = i;
+				}
+				return Type.OPEN_BRACKET;
+			}
+
+			if (closedBracketArray[i] == 1) {
+				if (off == 0) {
+					bufferRead = i;
+				}
+				return Type.CLOSED_BRACKET;
+			}
+
+			if (stringArray[i] == 1) {
+				if (off == 0) {
+					bufferRead = i;
+				}
+				return Type.STRING;
+			}
 		}
 
-		return false;
+		return Type.NONE;
 	}
 
-	private void fill() {
-		for (int i = 0; i < tokens.length; i++) {
-			tokens[i] = new TextParserToken();
+	private byte[] findStrings() {
+		byte[] result = new byte[fileContent.length];
+
+		boolean insideString = false;
+
+		for (int i = 0; i < fileContent.length; i++) {
+			if (quoteArray[i] == 1) insideString = !insideString;
+
+			byte b = (byte) ((equalsArray[i] | openBracketArray[i] | closedBracketArray[i] | whitespaceArray[i] | quoteArray[i]) ^ 1);
+			if (b == 1) {
+				boolean escaped = escapedChars[i] == 1;
+				if (escaped) {
+					result[i] = 0;
+					continue;
+				}
+			}
+
+			if (whitespaceArray[i] == 1 && insideString) {
+				result[i] = 1;
+				continue;
+			}
+
+			result[i] = b;
+		}
+
+		return result;
+	}
+
+	private void skipEscaped() {
+		for (int i = 0; i < fileContent.length; i++) {
+			byte b = fileContent[i];
+
+			if (b >= 9 && b <= 13) {
+				escapedChars[i] = 1;
+			}
+		}
+	}
+
+	private void findChar(char c, byte[] array) {
+		for (int i = 0; i < fileContent.length; i++) {
+			if (fileContent[i] == c) {
+				array[i] = 1;
+			}
 		}
 	}
 

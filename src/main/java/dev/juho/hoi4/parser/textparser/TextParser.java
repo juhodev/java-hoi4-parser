@@ -4,6 +4,7 @@ import dev.juho.hoi4.parser.Parser;
 import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.parser.textparser.gamefile.GameFile;
 import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
+import dev.juho.hoi4.profiler.Profiler;
 import dev.juho.hoi4.utils.Logger;
 
 import java.io.*;
@@ -22,12 +23,14 @@ public class TextParser extends Parser {
 	public void parse() throws IOException {
 		Logger.getInstance().log(Logger.INFO, "Starting parsing " + getFile().getName());
 		Logger.getInstance().time("Parsing " + getFile().getName());
+		Profiler.getInstance().start("parse_file");
 
-		TextTokenizer tokenizer = new TextTokenizer(4096 * 4);
-		tokenizer.readInputStream(new FileInputStream(getFile()));
+		TextTokenizer tokenizer = new TextTokenizer();
+		tokenizer.read(new FileInputStream(getFile()));
 		GameFile gameFile = new GameFile();
 
 		gameFile.build(tokenizer);
+		Profiler.getInstance().end("parse_file");
 		Logger.getInstance().timeEnd(Logger.INFO, "Parsing " + getFile().getName());
 		nodes = gameFile.getNodes();
 	}

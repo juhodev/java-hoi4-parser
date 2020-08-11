@@ -4,12 +4,14 @@ import dev.juho.hoi4.parser.Parser;
 import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.TextParser;
 import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
+import dev.juho.hoi4.profiler.Profiler;
 import dev.juho.hoi4.utils.ArgsParser;
 import dev.juho.hoi4.utils.Logger;
 import dev.juho.hoi4.utils.Utils;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +75,12 @@ public class Main {
 			Logger.getInstance().log(Logger.DEBUG, "DEBUG MODE ENABLED");
 		}
 
+		Profiler.getInstance().register("parse_file");
+		Profiler.getInstance().register("write_json");
+		Profiler.getInstance().register("read_file");
+		Profiler.getInstance().register("tokenizer_read");
+		Profiler.getInstance().register("gamefile_read");
+
 		boolean isFullPath = Utils.isFullPath(gameName);
 
 		File file;
@@ -92,6 +100,7 @@ public class Main {
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
 			Logger.getInstance().time("Write JSON");
+			Profiler.getInstance().start("write_json");
 			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
 			String outFileName = isFullPath ? file.getName() : gameName;
 			try {
@@ -99,7 +108,18 @@ public class Main {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			Profiler.getInstance().end("write_json");
 			Logger.getInstance().timeEnd(Logger.INFO, "Write JSON");
+		}
+
+		File chromeFormat = new File("chrome_format.json");
+		try {
+			FileWriter writer = new FileWriter(chromeFormat);
+			writer.write(Profiler.getInstance().getChromeFormat());
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
