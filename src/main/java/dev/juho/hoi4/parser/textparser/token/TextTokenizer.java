@@ -23,17 +23,6 @@ public class TextTokenizer {
 	private byte[] quoteArray;
 	private byte[] stringArray;
 
-	/*
-
-	a = { es = { 1 2 3 } m = 3 }
-
-   [0010000001000000000000010000]
-   [0000100000010000000000000000]
-   [0000000000000000000100000001]
-
-
-	 */
-
 	public TextTokenizer() {
 		this.totalRead = 0;
 		this.bufferRead = 0;
@@ -64,14 +53,8 @@ public class TextTokenizer {
 	}
 
 	public void process() {
-		findChar('=', equalsArray);
-		findChar('{', openBracketArray);
-		findChar('}', closedBracketArray);
-		findChar(' ', whitespaceArray);
-		findChar('"', quoteArray);
-		skipEscaped();
+		findSpecialChars();
 		this.stringArray = findStrings();
-//		skipHoiText();
 	}
 
 	public enum Type {
@@ -144,9 +127,6 @@ public class TextTokenizer {
 		}
 
 		bufferRead += strLength;
-		if (strStart >= fileContent.length) {
-			return "no";
-		}
 
 		if (quoteArray[bufferRead] == 1) {
 			bufferRead++;
@@ -161,13 +141,6 @@ public class TextTokenizer {
 
 	public void skip() {
 		bufferRead++;
-	}
-
-	private void skipHoiText() {
-		// HOI4txt
-		if (fileContent[0] == 'H' && fileContent[1] == 'O' && fileContent[2] == 'I') {
-			bufferRead = 7;
-		}
 	}
 
 	private Type peekAfterString() {
@@ -242,20 +215,43 @@ public class TextTokenizer {
 		return result;
 	}
 
-	private void skipEscaped() {
+	private void findSpecialChars() {
+		final byte equals = (byte) '=';
+		final byte openBracket = (byte) '{';
+		final byte closedBracket = (byte) '}';
+		final byte whitespace = (byte) ' ';
+		final byte quote = (byte) '"';
+
 		for (int i = 0; i < fileContent.length; i++) {
 			byte b = fileContent[i];
 
 			if (b >= 9 && b <= 13) {
 				escapedChars[i] = 1;
+				continue;
 			}
-		}
-	}
 
-	private void findChar(char c, byte[] array) {
-		for (int i = 0; i < fileContent.length; i++) {
-			if (fileContent[i] == c) {
-				array[i] = 1;
+			if (b == equals) {
+				equalsArray[i] = 1;
+				continue;
+			}
+
+			if (b == openBracket) {
+				openBracketArray[i] = 1;
+				continue;
+			}
+
+			if (b == closedBracket) {
+				closedBracketArray[i] = 1;
+				continue;
+			}
+
+			if (b == whitespace) {
+				whitespaceArray[i] = 1;
+				continue;
+			}
+
+			if (b == quote) {
+				quoteArray[i] = 1;
 			}
 		}
 	}
