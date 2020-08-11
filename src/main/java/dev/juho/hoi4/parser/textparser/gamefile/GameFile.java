@@ -34,15 +34,6 @@ public class GameFile {
 	}
 
 	private void add(String key, Object object) {
-		if (key.equalsIgnoreCase("countries") || key.equalsIgnoreCase("provinces") || key.equalsIgnoreCase("state") || key.equalsIgnoreCase("equipments") || key.equalsIgnoreCase("division_templates")) {
-//			Save the countries object as a string and not as an object to save memory
-//			The countries object is like half of the .hoi4 meaning it will use a shit ton of memory
-			StringDataNode dataNode = new StringDataNode();
-			dataNode.generate((ObjectNode) object);
-			nodes.put(key, dataNode);
-			return;
-		}
-
 		if (!nodes.containsKey(key)) {
 			nodes.put(key, object);
 		} else {
@@ -63,7 +54,6 @@ public class GameFile {
 
 	private GFNode read(TextTokenizer tokenizer) {
 		Profiler.getInstance().start("gamefile_read");
-		// This must be copied because the next tokenizer.peek() might create new tokens which would modify this token
 		TextTokenizer.Type next = tokenizer.peek();
 
 		TextTokenizer.Type afterNext = tokenizer.peek(1);
@@ -78,16 +68,12 @@ public class GameFile {
 			return null;
 		}
 
-//		if (next.getType() == TextParserToken.Type.KEY) return readProperty(tokenizer);
 		Logger.getInstance().log(Logger.ERROR, "Couldn't read next token " + next + " - " + asString + " at " + tokenizer.getPosition() + "! Start with -debug for more info");
-//		Logger.getInstance().log(Logger.DEBUG, tokenizer.getTokens(), buffer, Math.max(tokenizer.getPosition() - 10, 0), 15);
 		System.exit(0);
 		return null;
 	}
 
 	private GFNode readProperty(String key, TextTokenizer tokenizer) {
-//		skip =
-//		tokenizer.next().forget();
 		tokenizer.skip();
 
 		TextTokenizer.Type next = tokenizer.peek();
@@ -98,7 +84,6 @@ public class GameFile {
 			value = readObject(tokenizer);
 		} else if (next == TextTokenizer.Type.STRING) {
 			value = tokenizer.readString();
-//			value = readString(tokenizer);
 		}
 
 		Profiler.getInstance().end("gamefile_read");
@@ -106,7 +91,6 @@ public class GameFile {
 	}
 
 	private Object readObject(TextTokenizer tokenizer) {
-		// This must be copied because the next tokenizer.peek() might create new tokens which would modify this token
 		TextTokenizer.Type next = tokenizer.peek();
 
 		// Not sure if I should return an empty list or an empty object
@@ -127,7 +111,6 @@ public class GameFile {
 
 		final ObjectNode objectNode = new ObjectNode();
 
-//		tokenizer.skip();
 		while (next != TextTokenizer.Type.CLOSED_BRACKET) {
 			String key = tokenizer.readString();
 			tokenizer.skip();
@@ -137,7 +120,6 @@ public class GameFile {
 				tokenizer.skip();
 				node = readObject(tokenizer);
 			} else {
-//				node = readString(tokenizer);
 				node = tokenizer.readString();
 			}
 
