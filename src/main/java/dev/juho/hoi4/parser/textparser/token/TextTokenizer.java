@@ -13,7 +13,6 @@ public class TextTokenizer {
 	private byte[] fileContent;
 	private int totalRead;
 
-	private int bufferRead;
 
 	private static final short STRING = 0;
 	private static final short EQUALS = 2;
@@ -30,7 +29,6 @@ public class TextTokenizer {
 		this.tokensRead = 0;
 
 		this.totalRead = 0;
-		this.bufferRead = 0;
 	}
 
 	public void read(InputStream is) throws IOException {
@@ -167,7 +165,7 @@ public class TextTokenizer {
 	}
 
 	public int getPosition() {
-		return bufferRead;
+		return tokensRead;
 	}
 
 	public String readString() {
