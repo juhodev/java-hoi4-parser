@@ -25,7 +25,7 @@ public class TextTokenizer {
 	private int tokensLength, tokensRead;
 
 	public TextTokenizer() {
-		this.tokens = new long[50000000];
+		this.tokens = new long[1024 * 4 * 4];
 		this.tokensLength = 0;
 		this.tokensRead = 0;
 
@@ -189,11 +189,22 @@ public class TextTokenizer {
 
 	private void addToken(int start, short length, short type) {
 		long packed = pack(start, length, type);
+
+		if (tokensLength == tokens.length - 1) {
+			resizeTokens();
+		}
+
 		tokens[tokensLength++] = packed;
 	}
 
 	private long pack(int start, short length, short type) {
 		return (long) start << (16 + 16) | (long) length << 16 | (long) type;
+	}
+
+	private void resizeTokens() {
+		long[] newTokens = new long[tokens.length * 2];
+		System.arraycopy(tokens, 0, newTokens, 0, tokensLength);
+		tokens = newTokens;
 	}
 
 }
