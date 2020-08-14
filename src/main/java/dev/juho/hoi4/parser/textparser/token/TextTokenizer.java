@@ -178,6 +178,12 @@ public class TextTokenizer {
 		final byte nineChar = (byte) '9';
 		final byte dashChar = (byte) '-';
 
+		final byte yChar = (byte) 'y';
+		final byte eChar = (byte) 'e';
+		final byte sChar = (byte) 's';
+		final byte nChar = (byte) 'n';
+		final byte oChar = (byte) 'o';
+
 		long curr = tokens[tokensRead++];
 
 		int currStart = (int) (curr >>> (16 + 16));
@@ -197,6 +203,19 @@ public class TextTokenizer {
 
 			if (numberType == NUMBER_TYPE_DOUBLE) {
 				return charArrayToDouble(fileContent, currStart, currLength);
+			}
+		}
+
+		if (currLength == 2 || currLength == 3) {
+			boolean stringIsYes = fileContent[currStart] == yChar && fileContent[currStart + 1] == eChar && fileContent[currStart + 2] == sChar;
+			boolean stringIsNo = fileContent[currStart] == nChar && fileContent[currStart + 1] == oChar;
+
+			if (stringIsYes) {
+				return true;
+			}
+
+			if (stringIsNo) {
+				return false;
 			}
 		}
 

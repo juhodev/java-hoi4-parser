@@ -230,6 +230,16 @@ public class GameFileTest {
 	}
 
 	@Test
+	public void parseBoolean() {
+		String str = "test=yes";
+		GameFile gameFile = parse(str);
+
+		HashMap<String, Object> nodes = gameFile.getNodes();
+		boolean bool = (boolean) nodes.get("test");
+		Assert.assertTrue(bool);
+	}
+
+	@Test
 	public void parseLastStringFully() {
 		String str = "test=string";
 		GameFile gameFile = parse(str);
