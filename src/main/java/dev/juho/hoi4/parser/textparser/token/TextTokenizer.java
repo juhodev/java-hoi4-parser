@@ -50,7 +50,7 @@ public class TextTokenizer {
 		}
 
 		process();
-		Logger.getInstance().timeEnd(Logger.INFO, "tokenizer read");
+		Logger.getInstance().timeEnd(Logger.DEBUG, "tokenizer read");
 	}
 
 	public void process() {
