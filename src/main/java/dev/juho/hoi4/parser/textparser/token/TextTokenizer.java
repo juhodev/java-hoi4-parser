@@ -127,7 +127,7 @@ public class TextTokenizer {
 		}
 
 		if (strStart != -1) {
-			addToken(strStart, (short) (fileContent.length - 1 - strStart), STRING);
+			addToken(strStart, (short) (fileContent.length - strStart), STRING);
 		}
 	}
 

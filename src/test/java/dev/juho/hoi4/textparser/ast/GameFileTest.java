@@ -229,6 +229,16 @@ public class GameFileTest {
 		Assert.assertEquals(shouldBeListNode.getType(), GFNode.Type.LIST);
 	}
 
+	@Test
+	public void parseLastStringFully() {
+		String str = "test=string";
+		GameFile gameFile = parse(str);
+
+		HashMap<String, Object> nodes = gameFile.getNodes();
+		String s = (String) nodes.get("test");
+		Assert.assertEquals("string", s);
+	}
+
 	private GameFile parse(String str) {
 		TextTokenizer tokenizer = new TextTokenizer();
 		try {
