@@ -1,9 +1,7 @@
 package dev.juho.hoi4;
 
 import dev.juho.hoi4.parser.Parser;
-import dev.juho.hoi4.parser.data.CountryTag;
 import dev.juho.hoi4.parser.textparser.TextParser;
-import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.profiler.Profiler;
 import dev.juho.hoi4.utils.ArgsParser;
 import dev.juho.hoi4.utils.Logger;
@@ -13,9 +11,7 @@ import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Main {
 
@@ -27,7 +23,6 @@ public class Main {
 
 		ArgsParser.getInstance().add(ArgsParser.Argument.FILE, ArgsParser.Type.STRING, true, "-file");
 
-		ArgsParser.getInstance().add(ArgsParser.Argument.COUNTRY, ArgsParser.Type.LIST, false, "-country");
 		ArgsParser.getInstance().add(ArgsParser.Argument.FOLDER, ArgsParser.Type.STRING, false, "-folder", "-hoi4_folder");
 		ArgsParser.getInstance().add(ArgsParser.Argument.JSON, ArgsParser.Type.NONE, false, "-json");
 		ArgsParser.getInstance().add(ArgsParser.Argument.JSON_LIMIT, ArgsParser.Type.STRING, false, "-json_limit");
@@ -40,7 +35,6 @@ public class Main {
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.HELP)) {
 			Logger.getInstance().log(Logger.INFO, "Usage: java -jar HOI4.jar [options...]");
-			Logger.getInstance().log(Logger.INFO, "\t-country <TAG> ...    Analyze countries specified by <TAG>");
 			Logger.getInstance().log(Logger.INFO, "\t-debug                Show debug logs");
 			Logger.getInstance().log(Logger.INFO, "\t-file <path>          File name or path to a .hoi4 (or .txt) file");
 			Logger.getInstance().log(Logger.INFO, "\t-hoi4_folder <path>   Path to HOI4 folder");
@@ -49,19 +43,6 @@ public class Main {
 			Logger.getInstance().log(Logger.INFO, "");
 			Logger.getInstance().log(Logger.INFO, "Examples and more option info: https://github.com/juhodev/java-hoi4-parser");
 			System.exit(0);
-		}
-
-		if (ArgsParser.getInstance().has(ArgsParser.Argument.COUNTRY)) {
-			List<String> countries = ArgsParser.getInstance().getList(ArgsParser.Argument.COUNTRY);
-			List<CountryTag> countryTags = new ArrayList<>();
-
-			for (String country : countries) {
-				if (Utils.hasEnum(CountryTag.values(), country)) {
-					countryTags.add(CountryTag.valueOf(country));
-				} else {
-					Logger.getInstance().log(Logger.ERROR, "Couldn't find a country " + country);
-				}
-			}
 		}
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.FOLDER)) {
