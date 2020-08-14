@@ -54,6 +54,8 @@ public class Main {
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.DEBUG)) {
 			Logger.LOG_LEVEL = Logger.DEBUG;
 			Logger.getInstance().log(Logger.DEBUG, "DEBUG MODE ENABLED");
+		} else {
+			Profiler.getInstance().disable();
 		}
 
 		Profiler.getInstance().register("parse_file");
