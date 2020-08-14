@@ -62,9 +62,9 @@ public class GameFile {
 			return readProperty(tokenizer.readString(), tokenizer);
 		}
 
-		String asString = tokenizer.readString();
+		Object asString = tokenizer.readString();
 
-		if (asString.equalsIgnoreCase("hoi4txt")) {
+		if (asString instanceof String && ((String) asString).equalsIgnoreCase("hoi4txt")) {
 			return null;
 		}
 
@@ -73,7 +73,7 @@ public class GameFile {
 		return null;
 	}
 
-	private GFNode readProperty(String key, TextTokenizer tokenizer) {
+	private GFNode readProperty(Object key, TextTokenizer tokenizer) {
 		tokenizer.skip();
 
 		TextTokenizer.Type next = tokenizer.peek();
@@ -87,7 +87,7 @@ public class GameFile {
 		}
 
 		Profiler.getInstance().end("gamefile_read");
-		return new PropertyNode(key, value);
+		return new PropertyNode(key.toString(), value);
 	}
 
 	private Object readObject(TextTokenizer tokenizer) {
@@ -112,7 +112,7 @@ public class GameFile {
 		final ObjectNode objectNode = new ObjectNode();
 
 		while (next != TextTokenizer.Type.CLOSED_BRACKET) {
-			String key = tokenizer.readString();
+			Object key = tokenizer.readString();
 			tokenizer.skip();
 			TextTokenizer.Type value = tokenizer.peek();
 			Object node;
@@ -123,7 +123,7 @@ public class GameFile {
 				node = tokenizer.readString();
 			}
 
-			objectNode.add(key, node);
+			objectNode.add(key.toString(), node);
 
 			next = tokenizer.peek();
 		}
@@ -156,103 +156,4 @@ public class GameFile {
 		tokenizer.skip();
 		return new ListNode(children);
 	}
-
-//	private Object readString(TextParserToken next) {
-//		int length = next.getLength();
-//
-//		GFNode.Type numberType = getNumberType(buffer, next.getStart(), length);
-//		if (numberType == GFNode.Type.DOUBLE)
-//			return charArrayToDouble(buffer, next.getStart(), length);
-//		if (numberType == GFNode.Type.INTEGER)
-//			return charArrayToInt(buffer, next.getStart(), length);
-//		if (numberType == GFNode.Type.LONG)
-//			return charArrayToLong(buffer, next.getStart(), length);
-//		if (buffer[next.getStart()] == 'n' && buffer[next.getStart() + 1] == 'o' || buffer[next.getStart()] == 'y' && buffer[next.getStart() + 1] == 'e' && buffer[next.getStart() + 2] == 's')
-//			return readBoolean(next);
-//		next.forget();
-//		return new String(buffer, next.getStart(), length);
-//	}
-
-	private boolean readBoolean(TextParserToken token) {
-		return token.getLength() == 3;
-	}
-
-	private GFNode.Type getNumberType(byte[] value, int start, int length) {
-		boolean alreadySeenDot = false;
-		for (int i = start; i < start + length; i++) {
-			if (value[i] == '-' && i == start) continue;
-			if (Character.isDigit(value[i])) continue;
-			if (value[i] == '.') {
-				if (alreadySeenDot) {
-					return GFNode.Type.STRING;
-				} else {
-					alreadySeenDot = true;
-					continue;
-				}
-			}
-
-			return GFNode.Type.STRING;
-		}
-
-		if (alreadySeenDot) {
-			return GFNode.Type.DOUBLE;
-		} else {
-			if (length >= 9) {
-				return GFNode.Type.LONG;
-			} else {
-				return GFNode.Type.INTEGER;
-			}
-		}
-	}
-
-	//	https://stackoverflow.com/a/12297485
-	private int charArrayToInt(byte[] arr, int start, int length) {
-		int result = 0;
-
-		for (int i = start; i < start + length; i++) {
-			int digit = (int) arr[i] - (int) '0';
-			result *= 10;
-			result += digit;
-		}
-
-		return result;
-	}
-
-	private long charArrayToLong(byte[] arr, int start, int length) {
-		long result = 0;
-
-		for (int i = start; i < start + length; i++) {
-			int digit = (int) arr[i] - (int) '0';
-			result *= 10;
-			result += digit;
-		}
-
-		return result;
-	}
-
-	private double charArrayToDouble(byte[] arr, int start, int length) {
-		double result = 0;
-		boolean seenDot = false;
-		int count = 1;
-
-		for (int i = start; i < start + length; i++) {
-			if (arr[i] == '.') {
-				seenDot = true;
-				continue;
-			}
-
-			int digit = (int) arr[i] - (int) '0';
-			if (seenDot) {
-				double num = (double) digit / count;
-				count *= 10;
-				result += num;
-			} else {
-				result *= 10;
-				result += digit;
-			}
-		}
-
-		return result;
-	}
-
 }

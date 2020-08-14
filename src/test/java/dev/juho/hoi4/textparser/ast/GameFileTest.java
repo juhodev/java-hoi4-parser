@@ -71,7 +71,6 @@ public class GameFileTest {
 	}
 
 	@Test
-	@Ignore
 	public void parseListNode() {
 		String str = "test={ 1 2 }";
 		GameFile gameFile = parse(str);
@@ -90,7 +89,6 @@ public class GameFileTest {
 	}
 
 	@Test
-	@Ignore
 	public void parseListWithASingleElement() {
 		String str = "test={ 1 }";
 		GameFile gameFile = parse(str);
@@ -119,7 +117,6 @@ public class GameFileTest {
 	}
 
 	@Test
-	@Ignore
 	public void parseListInsideList() {
 		String str = "test={{ 1 2 }}";
 		GameFile gameFile = parse(str);
@@ -212,7 +209,7 @@ public class GameFileTest {
 		Assert.assertTrue(nodes.get("test") instanceof ObjectNode);
 	}
 
-	@Test @Ignore
+	@Test
 	public void parseDouble() {
 		String str = "test=100.00000";
 		GameFile gameFile = parse(str);

@@ -1,5 +1,6 @@
 package dev.juho.hoi4.parser.textparser.token;
 
+import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.profiler.Profiler;
 import dev.juho.hoi4.utils.Logger;
 import jdk.internal.jline.internal.Log;
@@ -19,6 +20,10 @@ public class TextTokenizer {
 	private static final short OPEN_BRACKET = 3;
 	private static final short CLOSED_BRACKET = 4;
 
+	private static final byte NUMBER_TYPE_INT = 0;
+	private static final byte NUMBER_TYPE_LONG = 1;
+	private static final byte NUMBER_TYPE_DOUBLE = 2;
+	private static final byte NUMBER_TYPE_STRING = 3;
 
 	private long[] tokens;
 	private int tokensLength, tokensRead;
@@ -168,11 +173,32 @@ public class TextTokenizer {
 		return tokensRead;
 	}
 
-	public String readString() {
+	public Object readString() {
+		final byte zeroChar = (byte) '0';
+		final byte nineChar = (byte) '9';
+		final byte dashChar = (byte) '-';
+
 		long curr = tokens[tokensRead++];
 
 		int currStart = (int) (curr >>> (16 + 16));
 		short currLength = (short) (curr >>> 16);
+
+		// This means the string is actually a number (starts with either a "-" or a number)
+		if ((fileContent[currStart] == dashChar && (fileContent[currStart + 1] >= zeroChar && fileContent[currStart + 1] <= nineChar)) || (fileContent[currStart] >= zeroChar && fileContent[currStart] <= nineChar)) {
+			byte numberType = getNumberType(fileContent, currStart, currLength);
+
+			if (numberType == NUMBER_TYPE_INT) {
+				return charArrayToInt(fileContent, currStart, currLength);
+			}
+
+			if (numberType == NUMBER_TYPE_LONG) {
+				return charArrayToLong(fileContent, currStart, currLength);
+			}
+
+			if (numberType == NUMBER_TYPE_DOUBLE) {
+				return charArrayToDouble(fileContent, currStart, currLength);
+			}
+		}
 
 		return new String(fileContent, currStart, currLength);
 	}
@@ -203,6 +229,84 @@ public class TextTokenizer {
 		long[] newTokens = new long[tokens.length * 2];
 		System.arraycopy(tokens, 0, newTokens, 0, tokensLength);
 		tokens = newTokens;
+	}
+
+	private byte getNumberType(byte[] value, int start, int length) {
+		boolean alreadySeenDot = false;
+		for (int i = start; i < start + length; i++) {
+			if (value[i] == '-' && i == start) continue;
+			if (Character.isDigit(value[i])) continue;
+			if (value[i] == '.') {
+				if (alreadySeenDot) {
+					return NUMBER_TYPE_STRING;
+				} else {
+					alreadySeenDot = true;
+					continue;
+				}
+			}
+
+			return NUMBER_TYPE_STRING;
+		}
+
+		if (alreadySeenDot) {
+			return NUMBER_TYPE_DOUBLE;
+		} else {
+			if (length >= 9) {
+				return NUMBER_TYPE_LONG;
+			} else {
+				return NUMBER_TYPE_INT;
+			}
+		}
+	}
+
+	//	https://stackoverflow.com/a/12297485
+	private int charArrayToInt(byte[] arr, int start, int length) {
+		int result = 0;
+
+		for (int i = start; i < start + length; i++) {
+			int digit = (int) arr[i] - (int) '0';
+			result *= 10;
+			result += digit;
+		}
+
+		return result;
+	}
+
+	private long charArrayToLong(byte[] arr, int start, int length) {
+		long result = 0;
+
+		for (int i = start; i < start + length; i++) {
+			int digit = (int) arr[i] - (int) '0';
+			result *= 10;
+			result += digit;
+		}
+
+		return result;
+	}
+
+	private double charArrayToDouble(byte[] arr, int start, int length) {
+		double result = 0;
+		boolean seenDot = false;
+		int count = 1;
+
+		for (int i = start; i < start + length; i++) {
+			if (arr[i] == '.') {
+				seenDot = true;
+				continue;
+			}
+
+			int digit = (int) arr[i] - (int) '0';
+			if (seenDot) {
+				double num = (double) digit / count;
+				count *= 10;
+				result += num;
+			} else {
+				result *= 10;
+				result += digit;
+			}
+		}
+
+		return result;
 	}
 
 }
