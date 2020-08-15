@@ -1,16 +1,8 @@
 package dev.juho.hoi4.textparser.token;
 
-import dev.juho.hoi4.parser.textparser.token.TextParserToken;
-import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.profiler.Profiler;
-import dev.juho.hoi4.utils.ArgsParser;
 import dev.juho.hoi4.utils.Logger;
-import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 public class TextTokenizerTest {
 

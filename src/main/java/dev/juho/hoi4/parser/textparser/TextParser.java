@@ -1,15 +1,12 @@
 package dev.juho.hoi4.parser.textparser;
 
 import dev.juho.hoi4.parser.Parser;
-import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.parser.textparser.gamefile.GameFile;
-import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
 import dev.juho.hoi4.profiler.Profiler;
 import dev.juho.hoi4.utils.Logger;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.List;
 
 public class TextParser extends Parser {
 

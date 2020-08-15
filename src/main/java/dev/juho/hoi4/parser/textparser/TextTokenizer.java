@@ -1,4 +1,4 @@
-package dev.juho.hoi4.parser.textparser.token;
+package dev.juho.hoi4.parser.textparser;
 
 import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.profiler.Profiler;

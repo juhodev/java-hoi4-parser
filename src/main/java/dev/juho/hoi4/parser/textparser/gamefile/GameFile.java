@@ -1,8 +1,7 @@
 package dev.juho.hoi4.parser.textparser.gamefile;
 
 import dev.juho.hoi4.parser.textparser.gamefile.nodes.*;
-import dev.juho.hoi4.parser.textparser.token.TextParserToken;
-import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
+import dev.juho.hoi4.parser.textparser.TextTokenizer;
 import dev.juho.hoi4.profiler.Profiler;
 import dev.juho.hoi4.utils.Logger;
 

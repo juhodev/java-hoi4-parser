@@ -3,12 +3,11 @@ package dev.juho.hoi4.textparser.ast;
 import dev.juho.hoi4.parser.textparser.gamefile.GFNode;
 import dev.juho.hoi4.parser.textparser.gamefile.GameFile;
 import dev.juho.hoi4.parser.textparser.gamefile.nodes.*;
-import dev.juho.hoi4.parser.textparser.token.TextTokenizer;
+import dev.juho.hoi4.parser.textparser.TextTokenizer;
 import dev.juho.hoi4.profiler.Profiler;
 import dev.juho.hoi4.utils.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
