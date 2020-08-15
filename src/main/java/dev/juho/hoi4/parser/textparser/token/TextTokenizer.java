@@ -14,11 +14,11 @@ public class TextTokenizer {
 	private byte[] fileContent;
 	private int totalRead;
 
-
-	private static final short STRING = 0;
-	private static final short EQUALS = 2;
-	private static final short OPEN_BRACKET = 3;
-	private static final short CLOSED_BRACKET = 4;
+	public static final short TYPE_STRING = 0;
+	public static final short TYPE_EQUALS = 2;
+	public static final short TYPE_OPEN_BRACKET = 3;
+	public static final short TYPE_CLOSED_BRACKET = 4;
+	public static final short TYPE_NONE = 5;
 
 	private static final byte NUMBER_TYPE_INT = 0;
 	private static final byte NUMBER_TYPE_LONG = 1;
@@ -68,7 +68,7 @@ public class TextTokenizer {
 
 			if (b >= 9 && b <= 13) {
 				if (strStart != -1) {
-					addToken(strStart, (short) (i - strStart), STRING);
+					addToken(strStart, (short) (i - strStart), TYPE_STRING);
 					strStart = -1;
 				}
 				continue;
@@ -76,34 +76,34 @@ public class TextTokenizer {
 
 			if (b == equals) {
 				if (strStart != -1) {
-					addToken(strStart, (short) (i - strStart), STRING);
+					addToken(strStart, (short) (i - strStart), TYPE_STRING);
 					strStart = -1;
 				}
-				addToken(i, (short) 1, EQUALS);
+				addToken(i, (short) 1, TYPE_EQUALS);
 				continue;
 			}
 
 			if (b == openBracket) {
 				if (strStart != -1) {
-					addToken(strStart, (short) (i - strStart), STRING);
+					addToken(strStart, (short) (i - strStart), TYPE_STRING);
 					strStart = -1;
 				}
-				addToken(i, (short) 1, OPEN_BRACKET);
+				addToken(i, (short) 1, TYPE_OPEN_BRACKET);
 				continue;
 			}
 
 			if (b == closedBracket) {
 				if (strStart != -1) {
-					addToken(strStart, (short) (i - strStart), STRING);
+					addToken(strStart, (short) (i - strStart), TYPE_STRING);
 					strStart = -1;
 				}
-				addToken(i, (short) 1, CLOSED_BRACKET);
+				addToken(i, (short) 1, TYPE_CLOSED_BRACKET);
 				continue;
 			}
 
 			if (b == whitespace) {
 				if (strStart != -1 && !quotedStr) {
-					addToken(strStart, (short) (i - strStart), STRING);
+					addToken(strStart, (short) (i - strStart), TYPE_STRING);
 					strStart = -1;
 				}
 				continue;
@@ -111,7 +111,7 @@ public class TextTokenizer {
 
 			if (b == quote) {
 				if (strStart != -1 && quotedStr) {
-					addToken(strStart, (short) (i - strStart), STRING);
+					addToken(strStart, (short) (i - strStart), TYPE_STRING);
 					strStart = -1;
 					quotedStr = false;
 					continue;
@@ -127,46 +127,21 @@ public class TextTokenizer {
 		}
 
 		if (strStart != -1) {
-			addToken(strStart, (short) (fileContent.length - strStart), STRING);
+			addToken(strStart, (short) (fileContent.length - strStart), TYPE_STRING);
 		}
 	}
 
-	public enum Type {
-		EQUALS,
-		OPEN_BRACKET,
-		CLOSED_BRACKET,
-		STRING,
-		NONE,
-	}
-
-	public Type peek() {
+	public short peek() {
 		return peek(0);
 	}
 
-	public Type peek(int length) {
+	public short peek(int length) {
 		if (tokensRead + length >= tokensLength) {
-			return Type.NONE;
+			return TYPE_NONE;
 		}
 
 		long token = tokens[tokensRead + length];
-		short type = (short) token;
-
-		switch (type) {
-			case STRING:
-				return Type.STRING;
-
-			case EQUALS:
-				return Type.EQUALS;
-
-			case OPEN_BRACKET:
-				return Type.OPEN_BRACKET;
-
-			case CLOSED_BRACKET:
-				return Type.CLOSED_BRACKET;
-
-			default:
-				return Type.NONE;
-		}
+		return (short) token;
 	}
 
 	public int getPosition() {
@@ -223,7 +198,7 @@ public class TextTokenizer {
 	}
 
 	public boolean eof() {
-		return peek() == Type.NONE;
+		return peek() == TYPE_NONE;
 	}
 
 	public void skip() {
