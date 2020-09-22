@@ -168,6 +168,7 @@ public class ArgsParser {
 		JSON,
 		JSON_LIMIT,
 		DEBUG,
+		OUT_FILE,
 	}
 
 }

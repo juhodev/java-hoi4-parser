@@ -1,5 +1,6 @@
 package dev.juho.hoi4;
 
+import com.sun.org.apache.bcel.internal.generic.Type;
 import dev.juho.hoi4.parser.Parser;
 import dev.juho.hoi4.parser.textparser.TextParser;
 import dev.juho.hoi4.profiler.Profiler;
@@ -28,6 +29,7 @@ public class Main {
 		ArgsParser.getInstance().add(ArgsParser.Argument.JSON_LIMIT, ArgsParser.Type.STRING, false, "-json_limit");
 		ArgsParser.getInstance().add(ArgsParser.Argument.HELP, ArgsParser.Type.NONE, false, "-help");
 		ArgsParser.getInstance().add(ArgsParser.Argument.DEBUG, ArgsParser.Type.NONE, false, "-debug");
+		ArgsParser.getInstance().add(ArgsParser.Argument.OUT_FILE, ArgsParser.Type.STRING, false, "-out", "-out_file", "-outfile");
 
 		ArgsParser.getInstance().parse(args);
 
@@ -40,6 +42,7 @@ public class Main {
 			Logger.getInstance().log(Logger.INFO, "\t-hoi4_folder <path>   Path to HOI4 folder");
 			Logger.getInstance().log(Logger.INFO, "\t-json                 Saves the .hoi4 as .json file");
 			Logger.getInstance().log(Logger.INFO, "\t-json_limit <limit>   When saving as JSON ignores objects larger than <limit> values");
+			Logger.getInstance().log(Logger.INFO, "\t-out                  File name for the output file (when -json is used)");
 			Logger.getInstance().log(Logger.INFO, "");
 			Logger.getInstance().log(Logger.INFO, "Examples and more option info: https://github.com/juhodev/java-hoi4-parser");
 			System.exit(0);
@@ -79,20 +82,10 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		HashMap<String, Object> astNodes = parser.getNodes();
+		HashMap<String, Object> nodes = parser.getNodes();
 
 		if (ArgsParser.getInstance().has(ArgsParser.Argument.JSON)) {
-			Logger.getInstance().time("Write JSON");
-			Profiler.getInstance().start("write_json");
-			JSONPrinter jsonPrinter = new JSONPrinter(astNodes);
-			String outFileName = isFullPath ? file.getName() : gameName;
-			try {
-				jsonPrinter.print(outFileName);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			Profiler.getInstance().end("write_json");
-			Logger.getInstance().timeEnd(Logger.INFO, "Write JSON");
+			printJSON(nodes, isFullPath, file);
 		}
 
 		File chromeFormat = new File("chrome_format.json");
@@ -104,6 +97,29 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static void printJSON(HashMap<String, Object> nodes, boolean isFullPath, File gameFile) {
+		Logger.getInstance().time("Write JSON");
+		Profiler.getInstance().start("write_json");
+
+		JSONPrinter jsonPrinter = new JSONPrinter(nodes);
+		String outFileName;
+
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.OUT_FILE)) {
+			outFileName = ArgsParser.getInstance().getString(ArgsParser.Argument.OUT_FILE);
+		} else {
+			outFileName = isFullPath ? gameFile.getName() : gameName;
+		}
+
+		try {
+			jsonPrinter.print(outFileName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		Profiler.getInstance().end("write_json");
+		Logger.getInstance().timeEnd(Logger.INFO, "Write JSON");
 	}
 
 }
