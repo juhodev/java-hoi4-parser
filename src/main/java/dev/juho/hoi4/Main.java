@@ -30,6 +30,7 @@ public class Main {
 		ArgsParser.getInstance().add(ArgsParser.Argument.HELP, ArgsParser.Type.NONE, false, "-help");
 		ArgsParser.getInstance().add(ArgsParser.Argument.DEBUG, ArgsParser.Type.NONE, false, "-debug");
 		ArgsParser.getInstance().add(ArgsParser.Argument.OUT_FILE, ArgsParser.Type.STRING, false, "-out", "-out_file", "-outfile");
+		ArgsParser.getInstance().add(ArgsParser.Argument.ONLY_PRINT_OUT_FILE, ArgsParser.Type.NONE, false, "-only_out_file", "-ouf");
 
 		ArgsParser.getInstance().parse(args);
 
@@ -43,6 +44,7 @@ public class Main {
 			Logger.getInstance().log(Logger.INFO, "\t-json                 Saves the .hoi4 as .json file");
 			Logger.getInstance().log(Logger.INFO, "\t-json_limit <limit>   When saving as JSON ignores objects larger than <limit> values");
 			Logger.getInstance().log(Logger.INFO, "\t-out                  File name for the output file (when -json is used)");
+			Logger.getInstance().log(Logger.INFO, "\t-only_out_file        Only prints out the out file path after the file .hoi4 has been parsed");
 			Logger.getInstance().log(Logger.INFO, "");
 			Logger.getInstance().log(Logger.INFO, "Examples and more option info: https://github.com/juhodev/java-hoi4-parser");
 			System.exit(0);

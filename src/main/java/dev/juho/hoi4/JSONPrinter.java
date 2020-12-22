@@ -69,6 +69,9 @@ public class JSONPrinter {
 		writer.write("}");
 		writer.flush();
 		writer.close();
+		if (ArgsParser.getInstance().has(ArgsParser.Argument.ONLY_PRINT_OUT_FILE)) {
+			System.out.println(outJSON.getAbsolutePath());
+		}
 		Logger.getInstance().log(Logger.INFO, "Game written to " + outJSON.getAbsolutePath());
 	}
 

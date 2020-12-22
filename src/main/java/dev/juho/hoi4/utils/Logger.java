@@ -93,7 +93,7 @@ public class Logger {
 		}
 
 
-		if (LOG_LEVEL >= level) {
+		if (LOG_LEVEL >= level && !ArgsParser.getInstance().has(ArgsParser.Argument.ONLY_PRINT_OUT_FILE)) {
 			System.out.println(timePrefix + " " + logLevelPrefix + ": " + message);
 		}
 	}
